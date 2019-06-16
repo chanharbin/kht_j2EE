@@ -61,15 +61,13 @@ public class IdProvider {
             {
                 timestamp=tilNextMillis(timestamp);
             }
-            else
-            {
-                sequence=0L;
-            }
-            //System.out.println("fuck_timestamp: "+timestamp);
+        }
+        else{
+            sequence=0L;
         }
         lastTimestamp=timestamp;
-        //System.out.println("fuck_timestamp: "+timestamp);
-        //System.out.println("fuck_sequence: "+sequence);
+        System.out.println(sequence);
+        System.out.println(timestamp);
         return ((timestamp-twepoch))<<timestampLeftShift|sequence;
     }
 
@@ -80,7 +78,7 @@ public class IdProvider {
      */
     protected long tilNextMillis(long lastTimestamp)
     {
-        System.out.println("lastTimestamp: "+lastTimestamp);
+        //System.out.println("lastTimestamp: "+lastTimestamp);
         long timestamp=timeGen();
         while(timestamp<=lastTimestamp)
         {

@@ -18,7 +18,7 @@ public class IdProviderTest {
     @Test
     public void getId() {
         for(int i=0;i<5;i++) {
-            System.out.println(idProvider.getId("fuck"));
+            System.out.println(idProvider.getId("fff"));
         }
     }
 

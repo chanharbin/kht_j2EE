@@ -22,6 +22,5 @@ public class EmployeeServiceImplTest {
     public void getEmployeeById() {
         Result employeeById = employeeService.getEmployeeById("123");
         System.out.println(employeeById.getMsg());
-
     }
 }
