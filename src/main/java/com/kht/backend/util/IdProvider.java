@@ -30,12 +30,10 @@ public class IdProvider {
      * @param prefix
      * @return 生成不重复的id
      */
-    public String getId(String prefix)
-    {
+    public String getId(String prefix) {
         long suffix=nextId();
         char[] tempString=new char[8];
-        for(int i=7;i>=0;i--)
-        {
+        for(int i=7;i>=0;i--) {
             tempString[i]=bitTochar[(int)(suffix&charMasks)];
             suffix>>=charBits;
         }
@@ -46,19 +44,15 @@ public class IdProvider {
      * @return 返回不重复的id
      */
 
-    protected synchronized long nextId()
-    {
+    protected synchronized long nextId() {
         long timestamp=timeGen();
-        if(timestamp<lastTimestamp)
-        {
+        if(timestamp<lastTimestamp) {
             throw new RuntimeException(
                     String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
         }
-        if(timestamp==lastTimestamp)
-        {
+        if(timestamp==lastTimestamp) {
             sequence=(sequence+1)&sequenceMask;
-            if(sequence==0)
-            {
+            if(sequence==0){
                 timestamp=tilNextMillis(timestamp);
             }
         }
@@ -76,12 +70,10 @@ public class IdProvider {
      * @param lastTimestamp
      * @return 延迟后的时间戳
      */
-    protected long tilNextMillis(long lastTimestamp)
-    {
+    protected long tilNextMillis(long lastTimestamp) {
         //System.out.println("lastTimestamp: "+lastTimestamp);
         long timestamp=timeGen();
-        while(timestamp<=lastTimestamp)
-        {
+        while(timestamp<=lastTimestamp) {
             timestamp=timeGen();
         }
         return  timestamp;
@@ -90,8 +82,7 @@ public class IdProvider {
      *
      * @return 当前时间戳
      */
-    protected long timeGen()
-    {
+    protected long timeGen() {
         return System.currentTimeMillis();
     }
 }

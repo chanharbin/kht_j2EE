@@ -19,8 +19,4 @@ public interface EmployeeService {
     public Result modifyEmployee(EmployeeModel employeeModel);
 
     public Result getEmployeeById(String id);
-
-
-
-
 }
