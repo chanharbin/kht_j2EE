@@ -20,7 +20,4 @@ public interface EmployeeService {
 
     public Result getEmployeeById(String id);
 
-
-
-
 }
