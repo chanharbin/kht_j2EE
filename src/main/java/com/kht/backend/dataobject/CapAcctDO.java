@@ -71,7 +71,7 @@ public class CapAcctDO {
      *
      * @mbg.generated Sun Jun 16 10:25:53 CST 2019
      */
-    private Integer orgCode;
+    private String orgCode;
 
     /**
      *
@@ -276,7 +276,7 @@ public class CapAcctDO {
      *
      * @mbg.generated Sun Jun 16 10:25:53 CST 2019
      */
-    public Integer getOrgCode() {
+    public String getOrgCode() {
         return orgCode;
     }
 
@@ -288,7 +288,7 @@ public class CapAcctDO {
      *
      * @mbg.generated Sun Jun 16 10:25:53 CST 2019
      */
-    public void setOrgCode(Integer orgCode) {
+    public void setOrgCode(String orgCode) {
         this.orgCode = orgCode;
     }
 

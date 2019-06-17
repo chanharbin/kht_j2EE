@@ -34,6 +34,7 @@
     <result column="ANS_TEN" jdbcType="CHAR" property="ansTen" />
     <result column="BANK_TYPE" jdbcType="CHAR" property="bankType" />
     <result column="BANK_CARD_CODE" jdbcType="VARCHAR" property="bankCardCode" />
+    <result column="OPEN_CHANNEL" jdbcType="CHAR" property="openChannel" />
     <result column="CMT_TIME" jdbcType="BIGINT" property="cmtTime" />
     <result column="INFO_STATUS" jdbcType="CHAR" property="infoStatus" />
   </resultMap>
@@ -46,7 +47,7 @@
     INFO_CODE, NAME, GENDER, ID_TYPE, ID_CODE, ID_EFF_DATE, ID_EXP_DATE, TELEPHONE, EMAIL, 
     ADDRESS, OCCUPATION, COMPANY, EDUCATION, ORG_CODE, IMG_CODE, ANS_ONE, ANS_TWO, ANS_THREE, 
     ANS_FOUR, ANS_FIVE, ANS_SIX, ANS_SEVEN, ANS_EIGHT, ANS_NINE, ANS_TEN, BANK_TYPE, 
-    BANK_CARD_CODE, CMT_TIME, INFO_STATUS
+    BANK_CARD_CODE, OPEN_CHANNEL, CMT_TIME, INFO_STATUS
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--
@@ -82,7 +83,7 @@
       ANS_ONE, ANS_TWO, ANS_THREE, ANS_FOUR, 
       ANS_FIVE, ANS_SIX, ANS_SEVEN, ANS_EIGHT, 
       ANS_NINE, ANS_TEN, BANK_TYPE, BANK_CARD_CODE, 
-      CMT_TIME, INFO_STATUS)
+      OPEN_CHANNEL, CMT_TIME, INFO_STATUS)
     values (#{infoCode,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{gender,jdbcType=CHAR}, 
       #{idType,jdbcType=CHAR}, #{idCode,jdbcType=VARCHAR}, #{idEffDate,jdbcType=BIGINT}, 
       #{idExpDate,jdbcType=BIGINT}, #{telephone,jdbcType=BIGINT}, #{email,jdbcType=VARCHAR}, 
@@ -91,7 +92,7 @@
       #{ansOne,jdbcType=CHAR}, #{ansTwo,jdbcType=CHAR}, #{ansThree,jdbcType=CHAR}, #{ansFour,jdbcType=CHAR}, 
       #{ansFive,jdbcType=CHAR}, #{ansSix,jdbcType=CHAR}, #{ansSeven,jdbcType=CHAR}, #{ansEight,jdbcType=CHAR}, 
       #{ansNine,jdbcType=CHAR}, #{ansTen,jdbcType=CHAR}, #{bankType,jdbcType=CHAR}, #{bankCardCode,jdbcType=VARCHAR}, 
-      #{cmtTime,jdbcType=BIGINT}, #{infoStatus,jdbcType=CHAR})
+      #{openChannel, jdbcType=CHAR}, #{cmtTime,jdbcType=BIGINT}, #{infoStatus,jdbcType=CHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kht.backend.dataobject.AcctOpenInfoDO">
     <!--
@@ -182,6 +183,9 @@
       <if test="bankCardCode != null">
         BANK_CARD_CODE,
       </if>
+      <if test="openChannel != null">
+        OPEN_CHANNEL,
+      </if>
       <if test="cmtTime != null">
         CMT_TIME,
       </if>
@@ -270,6 +274,9 @@
       </if>
       <if test="bankCardCode != null">
         #{bankCardCode,jdbcType=VARCHAR},
+      </if>
+      <if test="openChannel != null">
+        #{openChannel,jdbcType=CHAR},
       </if>
       <if test="cmtTime != null">
         #{cmtTime,jdbcType=BIGINT},
@@ -365,6 +372,9 @@
       <if test="bankCardCode != null">
         BANK_CARD_CODE = #{bankCardCode,jdbcType=VARCHAR},
       </if>
+      <if test="openChannel != null">
+        OPEN_CHANNEL = #{openChannel,jdbcType=CHAR},
+      </if>
       <if test="cmtTime != null">
         CMT_TIME = #{cmtTime,jdbcType=BIGINT},
       </if>
@@ -407,6 +417,7 @@
       ANS_TEN = #{ansTen,jdbcType=CHAR},
       BANK_TYPE = #{bankType,jdbcType=CHAR},
       BANK_CARD_CODE = #{bankCardCode,jdbcType=VARCHAR},
+      OPEN_CHANNEL = #{openChannel,jdbcType=CHAR},
       CMT_TIME = #{cmtTime,jdbcType=BIGINT},
       INFO_STATUS = #{infoStatus,jdbcType=CHAR}
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
