@@ -20,6 +20,17 @@
     -->
     SUB_CODE, VALUE_CODE, VALUE, MAIN_CODE
   </sql>
+  <resultMap id="DataDictionaryResultMap" type="com.kht.backend.service.model.DataDictionaryModel">
+    <result column="MAIN_CODE" jdbcType="INTEGER" property="mainCode" />
+    <result column="SUB_CODE" jdbcType="INTEGER" property="subCode" />
+    <result column="COL_NAME" jdbcType="VARCHAR" property="colName" />
+    <result column="COL_CODE" jdbcType="VARCHAR" property="colCode" />
+    <result column="VALUE_CODE" jdbcType="VARCHAR" property="valueCode" />
+    <result column="VALUE" jdbcType="VARCHAR" property="value" />
+  </resultMap>
+  <sql id="Data_Dictionary_Column_List">
+    MAIN_CODE, SUB_CODE, COL_NAME, COL_CODE, VALUE_CODE, VALUE
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
@@ -30,6 +41,11 @@
     <include refid="Base_Column_List" />
     from sub_data_dict
     where SUB_CODE = #{subCode,jdbcType=INTEGER}
+  </select>
+  <select id="listAll" resultMap="DataDictionaryResultMap">
+    select
+    <include refid="Data_Dictionary_Column_List" />
+    from sub_data_dict natural join main_data_dict
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
