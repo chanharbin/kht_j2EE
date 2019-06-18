@@ -46,7 +46,7 @@
     select
     <include refid="Base_Column_List" />
     from employee
-    where EMPLOYEE_NAME = #{name,jdbcType=VARCHAR}
+    where EMPLOYEE_NAME  LIKE CONCAT(CONCAT('%', #{name}), '%')
   </select>
 
   <select id="listAll" resultMap="BaseResultMap">

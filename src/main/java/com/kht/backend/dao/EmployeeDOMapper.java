@@ -37,7 +37,7 @@ public interface EmployeeDOMapper {
      */
     EmployeeDO selectByPrimaryKey(String employeeCode);
 
-    EmployeeDO selectByName(String name);
+    List<EmployeeDO> selectByName(String name);
 
     List<EmployeeDO> listAll();
 

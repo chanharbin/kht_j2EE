@@ -1,22 +1,35 @@
 package com.kht.backend.service;
 
+import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.model.EmployeeModel;
 
 public interface EmployeeService {
+    //删除员工
+    public Result deleteEmployee(String employeeCode);
 
-    public Result increaseEmployee(EmployeeModel employeeModel) throws ServiceException;
+    //新增员工账号
+    public Result increaseEmployee(EmployeeDO employeeDO, String orgCode);
 
+    //员工登录
+    public Result employeeLogin(String employeeCode,String employeePwd);
+
+    //修改员工信息
+    public Result modifyEmployee(EmployeeDO employeeDO);
+
+    //根据姓名获取员工列表
     public Result getEmployeeByName(String name);
 
-    public Result getEmployee(int pageNum);
+    //获取员工列表
+    public Result listEmployee(int pageNum);
 
-    public Result deleteEmployee(String id);
+    //获取用户审核资料
+    public Result getUserValidationInfo(String customerCode);
 
-    public Result employeeLogin(String employeeId, String employeePwd);
-
-    public Result modifyEmployee(EmployeeModel employeeModel);
-
+    //根据员工编号获取员工
     public Result getEmployeeById(String id);
+
+
+
 }
