@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
@@ -34,3 +35,4 @@ public interface UserService {
     //获取用户审核状态
     public Result getState(int infoCode);
 }
+*/
