@@ -4,8 +4,8 @@ import com.kht.backend.dataobject.SubDataDictDO;
 import com.kht.backend.service.model.DataDictionaryModel;
 import org.springframework.stereotype.Component;
 
-
 import java.util.List;
+
 @Component
 public interface SubDataDictDOMapper {
     /**
@@ -57,4 +57,5 @@ public interface SubDataDictDOMapper {
     int updateByPrimaryKey(SubDataDictDO record);
 
     List<DataDictionaryModel> listAll();
+
 }
