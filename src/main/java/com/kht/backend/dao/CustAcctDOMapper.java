@@ -61,4 +61,6 @@ public interface CustAcctDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int updateByPrimaryKey(CustAcctDO record);
+
+    CustAcctDO selectByUserCode(int userCode);
 }

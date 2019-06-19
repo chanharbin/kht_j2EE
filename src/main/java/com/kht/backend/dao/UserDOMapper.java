@@ -66,6 +66,4 @@ public interface UserDOMapper {
      */
     int updateByPrimaryKey(UserDO record);
 
-    int updateInfoCodeByTelephone(@Param("telephone") Long telephone, @Param("infoCode") Integer infoCode);
-
 }

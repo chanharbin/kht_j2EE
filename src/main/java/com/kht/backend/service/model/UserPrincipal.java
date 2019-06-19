@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
+//TODO 修改数据库后待改
 public class UserPrincipal implements UserDetails {
-    //userType为0时 username为telephone ，为1时 username 为employeeCode
     private String username;
     @JsonIgnore
     private String password;
@@ -41,7 +41,7 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority>authorities=null;
         return new UserPrincipal(
                 employeeDO.getEmployeeCode(),
-                "",
+                "",//employeeDO.getEmployeePwd(),
                 0,
                 authorities,
                 employeeDO.getEmployeeCode());

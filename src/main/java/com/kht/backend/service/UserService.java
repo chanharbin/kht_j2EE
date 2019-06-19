@@ -1,4 +1,3 @@
-/*
 package com.kht.backend.service;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
@@ -24,7 +23,7 @@ public interface UserService {
     public Result userLogin(Long telephone,String password);
 
     //获取客户信息
-    public Result getUserInfo(String customerCode);
+    public Result getUserInfo(int userCode);
 
     //提交审核资料
     public Result increaseAccountOpenInfo(Long telephone,AcctOpenInfoDO acctOpenInfoDO);
@@ -35,5 +34,3 @@ public interface UserService {
     //获取用户审核状态
     public Result getState(int infoCode);
 }
-
-*/

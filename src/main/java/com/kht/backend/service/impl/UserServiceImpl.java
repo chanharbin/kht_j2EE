@@ -1,4 +1,3 @@
-/*
 package com.kht.backend.service.impl;
 
 
@@ -55,11 +54,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getUserAccountInfo(int userCode) {
         CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
-        List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
+        if(custAcctDO==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户未开户");
+        }
+        List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
         List<DeptAcctDO> deptAcctDOList=capAcctDOList.stream()
-                .map(i->deptAcctDOMapper.selectByPrimaryKey(i.getDepCode()))
+                .map(i->deptAcctDOMapper.selectByCapCode(i.getCapCode()))
                 .collect(Collectors.toList());
-        List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(customerCode);
+        List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("capital_accounts",capAcctDOList);
         data.put("securities_accounts",trdAcctDOList);
@@ -75,26 +77,25 @@ public class UserServiceImpl implements UserService {
         if(!userDO.getPassword().equals(password)){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"密码错误");
         }
-        return Result.OK(userDO.getCustCode()).build();
+        return Result.OK(userDO.getUserCode()).build();
     }
     @Override
-    public Result getUserInfo(String customerCode) {
-        UserDO userDO=userDOMapper.selectByCustomerCode(customerCode);
+    public Result getUserInfo(int userCode) {
+        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
         if(userDO==null){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户不存在");
         }
-    */
-/*    Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("data",userDO);
-
+        /* Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("data",userDO);*/
         return Result.OK(userDO).build();
     }
     @Override
     public Result increaseAccountOpenInfo(Long telephone,AcctOpenInfoDO acctOpenInfoDO){
         //TODO 图片数据库
+        UserDO userDO=userDOMapper.selectByTelephone(telephone);
+        acctOpenInfoDO.setUserCode(userDO.getUserCode());
         int affectRow=acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
-        int affectRow1=userDOMapper.updateInfoCodeByTelephone(telephone,acctOpenInfoDO.getInfoCode());
-        if(affectRow==0||affectRow1==0){
+        if(affectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"添加开户资料失败");
         }
         return Result.OK("添加开户资料成功").build();
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
         CapAcctDO capAcctDO=new CapAcctDO();
         capAcctDO.setCapCode(idProvider.getId(custAcctDO.getOrgCode()));
         capAcctDO.setCustCode(customerCode);
-        capAcctDO.setDepCode(capAcctDO.getCapCode());
+        capAcctDO.setOrgCode(custAcctDO.getOrgCode());
         capAcctDO.setCapPwd(capitalAccountPassword);
         capAcctDO.setCurrency("0");
         capAcctDO.setMainFlag(capAcctDOList.size()==0);
@@ -116,15 +117,16 @@ public class UserServiceImpl implements UserService {
         capAcctDO.setCapStatus("0");
 
         DeptAcctDO deptAcctDO=new DeptAcctDO();
-        deptAcctDO.setDepCode(capAcctDO.getDepCode());
+        deptAcctDO.setDepCode(capAcctDO.getCapCode());
+        deptAcctDO.setCapCode(capAcctDO.getCapCode());
         deptAcctDO.setBankType(bankType);
         deptAcctDO.setBankCardCode(bankCardCode);
         deptAcctDO.setOpenTime(new Date().getTime());
         deptAcctDO.setCloseTime(0L);
         deptAcctDO.setDepStatus("0");
 
-        int deptAffectRow=deptAcctDOMapper.insertSelective(deptAcctDO);
         int capAffectRow=capAcctDOMapper.insertSelective(capAcctDO);
+        int deptAffectRow=deptAcctDOMapper.insertSelective(deptAcctDO);
         if(capAffectRow==0||deptAffectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"增加资金账户失败");
         }
@@ -163,4 +165,3 @@ public class UserServiceImpl implements UserService {
     }
 }
 
-*/

@@ -156,4 +156,11 @@
       DEP_STATUS = #{depStatus,jdbcType=CHAR}
     where DEP_CODE = #{depCode,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectByCapCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dep_acct
+    where CAP_CODE = #{capCode,jdbcType=VARCHAR}
+  </select>
 </mapper>

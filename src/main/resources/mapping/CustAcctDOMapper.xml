@@ -307,4 +307,10 @@
       CUST_STATUS = #{custStatus,jdbcType=CHAR}
     where CUST_CODE = #{custCode,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectByUserCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <include refid="Base_Column_List" />
+    from cust_acct
+    where USER_CODE = #{userCode,jdbcType=VARCHAR}
+  </select>
 </mapper>

@@ -53,4 +53,6 @@ public interface DeptAcctDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int updateByPrimaryKey(DeptAcctDO record);
+
+    DeptAcctDO selectByCapCode(String capCode);
 }
