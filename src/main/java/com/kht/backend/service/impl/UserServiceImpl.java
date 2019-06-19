@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service.impl;
 
 
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
         }
     */
 /*    Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("data",userDO);*//*
+        resultData.put("data",userDO);
 
         return Result.OK(userDO).build();
     }
@@ -162,3 +163,4 @@ public class UserServiceImpl implements UserService {
     }
 }
 
+*/

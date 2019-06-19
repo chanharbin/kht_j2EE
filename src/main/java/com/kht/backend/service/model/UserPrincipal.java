@@ -41,7 +41,7 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority>authorities=null;
         return new UserPrincipal(
                 employeeDO.getEmployeeCode(),
-                employeeDO.getEmployeePwd(),
+                "",
                 0,
                 authorities,
                 employeeDO.getEmployeeCode());
