@@ -95,6 +95,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Result getOrganizationUser(String orgCode,int pageNum) {
         List<UserFromOrg> userFromOrgs = acctOpenInfoDOMapper.selectByOrgCode(orgCode);
 
+        return null;
 
     }
 
