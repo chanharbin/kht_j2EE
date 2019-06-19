@@ -33,7 +33,4 @@ public interface UserService {
 
     //获取用户审核状态
     public Result getState(int infoCode);
-
-
-
 }
