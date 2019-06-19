@@ -60,6 +60,14 @@
     from acct_open_info
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
   </select>
+
+  <select id="selectByOrgCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+    select CUST_CODE,
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where ORG_CODE = #{orgCode,jdbcType=String}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbg.generated

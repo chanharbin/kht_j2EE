@@ -147,6 +147,12 @@
             <version>2.9.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version> <!--//版本号可以放在properties中作为属性, 这边用${jedis.version}来依赖-->
+        </dependency>
+
     </dependencies>
 
     <build>

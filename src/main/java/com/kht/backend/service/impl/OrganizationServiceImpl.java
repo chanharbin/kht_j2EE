@@ -3,6 +3,7 @@ package com.kht.backend.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.OrganizationDO;
@@ -11,6 +12,7 @@ import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.OrganizationService;
 import com.kht.backend.service.model.OrganizationModel;
+import com.kht.backend.service.model.UserFromOrg;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
+    @Autowired
+    private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
 
     @Transactional
     @Override
@@ -88,8 +92,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Result getOrganizationUser(int pageNum) {
-        return null;
+    public Result getOrganizationUser(String orgCode,int pageNum) {
+        List<UserFromOrg> userFromOrgs = acctOpenInfoDOMapper.selectByOrgCode(orgCode);
+
+
     }
 
 }

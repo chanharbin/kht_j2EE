@@ -1,7 +1,10 @@
 package com.kht.backend.dao;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
+import com.kht.backend.service.model.UserFromOrg;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface AcctOpenInfoDOMapper {
@@ -52,4 +55,7 @@ public interface AcctOpenInfoDOMapper {
      * @mbg.generated Sun Jun 16 10:25:53 CST 2019
      */
     int updateByPrimaryKey(AcctOpenInfoDO record);
+
+    List<UserFromOrg> selectByOrgCode(String orgCode);
+
 }
