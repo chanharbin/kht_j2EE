@@ -198,4 +198,6 @@ public class OperaLogDO {
     public void setDescription(String description) {
         this.description = description == null ? null : description.trim();
     }
+
+
 }

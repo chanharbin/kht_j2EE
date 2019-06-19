@@ -3,6 +3,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.OperaLogDO;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OperaLogDOMapper {
     /**
@@ -52,4 +54,12 @@ public interface OperaLogDOMapper {
      * @mbg.generated Sun Jun 16 10:25:53 CST 2019
      */
     int updateByPrimaryKey(OperaLogDO record);
+
+    List<OperaLogDO> listAll();
+
+    List<OperaLogDO> selectByOperator(String operator);
+
+    List<OperaLogDO> selectByTime(long startTime, long endTime);
+
+
 }

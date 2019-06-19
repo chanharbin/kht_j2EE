@@ -1,5 +1,7 @@
 package com.kht.backend.dataobject;
 
+import org.springframework.stereotype.Component;
+
 public class OrganizationDO {
     /**
      *

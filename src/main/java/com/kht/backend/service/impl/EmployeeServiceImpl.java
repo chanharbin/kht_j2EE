@@ -4,8 +4,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
+import com.kht.backend.dao.OperaLogDOMapper;
 import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
+import com.kht.backend.dataobject.OperaLogDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
@@ -31,6 +33,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private IdProvider idProvider;
     @Autowired
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
+    @Autowired
+    private OperaLogDOMapper operaLogDOMapper;
 
     @Transactional
     @Override
@@ -101,10 +105,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result listEmployee(int pageNum) {
         PageHelper.startPage(pageNum,10);
         List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
+        List<EmployeeDO> employeeDOListFilterd = employeeDOList.stream().filter(emplist->!emplist.getEmployeeCode().isEmpty()).collect(Collectors.toList());
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
         }
-        PageInfo<EmployeeDO> page = new PageInfo<>(employeeDOList);
+        PageInfo<EmployeeDO> page = new PageInfo<>(employeeDOListFilterd);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
@@ -125,84 +130,62 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return Result.OK(employeeDO).build();
     }
-/*    @Transactional
+
+    @Transactional
     @Override
-    public Result increaseEmployee(EmployeeModel employeeModel) throws ServiceException {
-        if(employeeModel == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"输入信息不完全");
+    public Result increaseOperationLog(OperaLogDO operaLogDO) {
+        if(operaLogDO == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"暂无操作记录");
         }
-        EmployeeDO employeeDO = new EmployeeDO();
-        BeanUtils.copyProperties(employeeModel,employeeDO);
-        int affectRow = employeeDOMapper.insertSelective(employeeDO);
+        int affectRow = operaLogDOMapper.insertSelective(operaLogDO);
         if(affectRow <= 0){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"插入信息失败");
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"插入记录失败");
         }
-        return Result.OK("添加员工信息成功").build();
-    }
-
-
-    @Override
-    public Result getEmployeeByName(String name) {
-        EmployeeDO employeeDO = employeeDOMapper.selectByName(name);
-        EmployeeModel employeeModel = new EmployeeModel();
-        if(employeeDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
-        }
-        BeanUtils.copyProperties(employeeDO,employeeModel);
-        return Result.OK(employeeModel).build();
+        return Result.OK("插入记录数据成功").build();
     }
 
     @Override
-    public Result getEmployee(int pageNum) {
+    public Result getOperationLogList(int pageNum) {
         PageHelper.startPage(pageNum,10);
-        List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
-        List<EmployeeModel> employeeModelList =employeeDOList.stream().map(employeeDO->{
-            EmployeeModel employeeModel = new EmployeeModel();
-            BeanUtils.copyProperties(employeeDO,employeeModel);
-            return employeeModel;
-        }).collect(Collectors.toList());
-        return Result.OK(employeeModelList).build();
-
-    }
-
-    @Transactional
-    @Override
-    public Result deleteEmployee(String id) {
-        int affectRow = employeeDOMapper.deleteByPrimaryKey(id);
-        if(affectRow <= 0){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"删除员工信息失败");
+        List<OperaLogDO> operaLogDOList = operaLogDOMapper.listAll();
+        List<OperaLogDO> operaLogDOListFiltered = operaLogDOList.stream().filter(operaLogDO->!operaLogDO.getEmployeeCode().isEmpty()).collect(Collectors.toList());
+        if(operaLogDOListFiltered == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"记录信息获取失败");
         }
-        return Result.OK("删除员工成功").build();
+        PageInfo<OperaLogDO> page = new PageInfo<>(operaLogDOListFiltered);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
     }
 
     @Override
-    public Result employeeLogin(String employeeId, String employeePwd) {
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeId);
-        if(employeeDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工用户名错误");
+    public Result getOperationLogByCode(String operator, int pageNum) {
+        PageHelper.startPage(pageNum,10);
+        List<OperaLogDO> operaLogDOList = operaLogDOMapper.selectByOperator(operator);
+        if(operaLogDOList == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"记录信息获取失败");
         }
-        EmployeeModel employeeModel = new EmployeeModel();
-        BeanUtils.copyProperties(employeeDO,employeeModel);
-        if(!StringUtils.equals(employeePwd,employeeModel.getEmplyeePwd())){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工密码错误");
-        }
-        return Result.OK(employeeModel).build();
+        PageInfo<OperaLogDO> page = new PageInfo<>(operaLogDOList);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
     }
 
-    @Transactional
     @Override
-    public Result modifyEmployee(EmployeeModel employeeModel) {
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeModel.getEmployeeId());
-        BeanUtils.copyProperties(employeeModel,employeeDO);
-        if(employeeModel == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工不存在");
+    public Result getOperationLogBetweenTime(long startTime, long endTime, int pageNum) {
+        PageHelper.startPage(pageNum,10);
+        List<OperaLogDO> operaLogDOList = operaLogDOMapper.selectByTime(startTime,endTime);
+        if(operaLogDOList == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"记录信息获取失败");
         }
-        int affectRow = employeeDOMapper.updateByPrimaryKey(employeeDO);
-        if(affectRow <= 0){
-            throw  new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改信息失败");
-        }
-        return Result.OK("修改成功").build();
+        PageInfo<OperaLogDO> page = new PageInfo<>(operaLogDOList);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
+
     }
 
-    */
 }

@@ -33,6 +33,27 @@
     from opera_log
     where LOG_CODE = #{logCode,jdbcType=INTEGER}
   </select>
+
+  <select id="selectByOperator" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from opera_log
+    where EMPLOYEE_CODE = #{operator,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByTime"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from opera_log
+    where LOG_TIME &lt; #{2} and LOG_TIME > #{1}
+  </select>
+
+
+  <select id="listAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from opera_log
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbg.generated

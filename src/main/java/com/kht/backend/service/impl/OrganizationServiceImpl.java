@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import com.kht.backend.dao.OrganizationDOMapper;
+import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
@@ -25,6 +26,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
 
+    @Transactional
     @Override
     public Result increaseOrganization(OrganizationDO organizationDO) {
         if(organizationDO == null){
@@ -37,6 +39,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return Result.OK("新增机构成功").build();
     }
 
+    @Transactional
     @Override
     public Result decreaseOrganization(String organizationId) {
         if (organizationId == null || organizationId.equals("")){
@@ -56,9 +59,21 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Result getOrganizationList(int pageNum) {
+        PageHelper.startPage(pageNum,10);
+        List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
+        List<OrganizationDO> organizationDOListFiltered = organizationDOList.stream().filter(organizationDO -> !organizationDO.getOrgCode().isEmpty()).collect(Collectors.toList());
+        if(organizationDOListFiltered == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，请等待机构添加");
+        }
+        PageInfo<OrganizationDO> page = new PageInfo<>(organizationDOListFiltered);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
 
     }
 
+    @Transactional
     @Override
     public Result modifyOrganizationInfo(OrganizationDO organizationDO) {
         OrganizationDO organizationDO1 = organizationDOMapper.selectByPrimaryKey(organizationDO.getOrgCode());
@@ -74,7 +89,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Result getOrganizationUser(int pageNum) {
-        r
+        return null;
     }
 
 }

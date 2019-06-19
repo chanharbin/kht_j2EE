@@ -1,6 +1,7 @@
 package com.kht.backend.service;
 
 import com.kht.backend.dataobject.EmployeeDO;
+import com.kht.backend.dataobject.OperaLogDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.model.EmployeeModel;
@@ -30,6 +31,16 @@ public interface EmployeeService {
     //根据员工编号获取员工
     public Result getEmployeeById(String id);
 
+    //增加操作记录
+    public Result increaseOperationLog(OperaLogDO operaLogDO);
 
+    //获取所有的操作记录列表
+    public Result getOperationLogList(int pageNum);
+
+    //获取指定人员的操作记录
+    public Result getOperationLogByCode(String operator,int pageNum);
+
+    //获取某个时间段之间的操作记录
+    public Result getOperationLogBetweenTime(long startTime,long endTime,int pageNum);
 
 }
