@@ -4,6 +4,8 @@ import com.kht.backend.dataobject.CapAcctDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface CapAcctDOMapper {
     /**
@@ -54,5 +56,6 @@ public interface CapAcctDOMapper {
      */
     int updateByPrimaryKey(CapAcctDO record);
 
+    List<CapAcctDO> selectByCustomerCode(String customerCode);
     int updatePasswordByPrimaryKey(@Param("capitalCode") String capitalCode, @Param("password") String password);
 }

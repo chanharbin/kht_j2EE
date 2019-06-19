@@ -4,6 +4,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.TrdAcctDO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface TrdAcctDOMapper {
     /**
@@ -53,4 +55,6 @@ public interface TrdAcctDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int updateByPrimaryKey(TrdAcctDO record);
+
+    List<TrdAcctDO> selectByCustomerCode(String customerCode);
 }
