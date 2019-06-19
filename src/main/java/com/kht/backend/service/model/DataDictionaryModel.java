@@ -16,4 +16,5 @@ public class DataDictionaryModel {
     private String valueCode;
 
     private String value;
+
 }

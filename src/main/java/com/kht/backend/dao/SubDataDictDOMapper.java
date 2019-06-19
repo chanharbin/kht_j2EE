@@ -1,6 +1,7 @@
 package com.kht.backend.dao;
 
 import com.kht.backend.dataobject.SubDataDictDO;
+import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
 import org.springframework.stereotype.Component;
 
@@ -57,5 +58,7 @@ public interface SubDataDictDOMapper {
     int updateByPrimaryKey(SubDataDictDO record);
 
     List<DataDictionaryModel> listAll();
+
+    List<ColumnValueModel> selectColumnValue(String colCode, String tabCode);
 
 }

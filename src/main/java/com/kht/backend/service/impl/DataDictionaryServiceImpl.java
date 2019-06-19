@@ -8,6 +8,7 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.DataDictionaryService;
+import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,14 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
         return Result.OK(resultData).build();
+    }
+
+    @Override
+    public Result getColumnValues(String colCode, String tabCode) {
+        List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValue(colCode, tabCode);
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("data", columnValueModelList);
+        return  Result.OK(resultData).build();
     }
 
     @Transactional
