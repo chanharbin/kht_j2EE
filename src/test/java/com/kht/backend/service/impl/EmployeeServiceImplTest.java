@@ -41,10 +41,10 @@ public class EmployeeServiceImplTest {
         employeeDO.setAddress("123");
         employeeDO.setEmail("12345");
         employeeDO.setEmployeeName("123");
-        employeeDO.setEmployeePwd("123");
+        //employeeDO.setEmployeePwd("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        employeeDO.setPosCode(12);
+        //employeeDO.setPosCode(12);
         long telephone = 12345213;
         employeeDO.setTelephone(telephone);
         employeeService.increaseEmployee(employeeDO,"org");
@@ -59,10 +59,10 @@ public class EmployeeServiceImplTest {
         employeeDO.setAddress("123");
         employeeDO.setEmail("12345");
         employeeDO.setEmployeeName("123");
-        employeeDO.setEmployeePwd("123");
+        //employeeDO.setEmployeePwd("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        employeeDO.setPosCode(12);
+        //employeeDO.setPosCode(12);
         long telephone = 1340000;
         employeeDO.setTelephone(telephone);
         Result result = employeeService.modifyEmployee(employeeDO);

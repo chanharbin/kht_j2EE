@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
@@ -37,3 +38,4 @@ public interface UserService {
 
 
 }
+*/

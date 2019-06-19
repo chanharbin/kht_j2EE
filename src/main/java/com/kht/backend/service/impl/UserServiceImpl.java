@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service.impl;
 
 
@@ -84,8 +85,10 @@ public class UserServiceImpl implements UserService {
         if(userDO==null){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户不存在");
         }
-    /*    Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("data",userDO);*/
+    */
+/*    Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("data",userDO);*//*
+
         return Result.OK(userDO).build();
     }
     @Override
@@ -161,3 +164,4 @@ public class UserServiceImpl implements UserService {
         return Result.OK("更新用户信息成功").build();
     }
 }
+*/
