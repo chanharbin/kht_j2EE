@@ -1,4 +1,3 @@
-/*
 package com.kht.backend.service.impl;
 
 
@@ -38,9 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result userRegister(Long telephone, String checkCode, String password) {
         if(checkCode==null);//TODO
-
         UserDO userDO=new UserDO();
-        userDO.setCustCode("0");
         userDO.setTelephone(telephone);
         userDO.setPassword(password);
         int affectRow=userDOMapper.insertSelective(userDO);
@@ -55,8 +52,8 @@ public class UserServiceImpl implements UserService {
         return null;
     }
     @Override
-    public Result getUserAccountInfo(String customerCode) {
-        CustAcctDO custAcctDO=custAcctDOMapper.selectByPrimaryKey(customerCode);
+    public Result getUserAccountInfo(int userCode) {
+        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
         List<DeptAcctDO> deptAcctDOList=capAcctDOList.stream()
                 .map(i->deptAcctDOMapper.selectByPrimaryKey(i.getDepCode()))
@@ -164,4 +161,4 @@ public class UserServiceImpl implements UserService {
         return Result.OK("更新用户信息成功").build();
     }
 }
-*/
+
