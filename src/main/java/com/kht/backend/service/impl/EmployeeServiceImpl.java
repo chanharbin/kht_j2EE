@@ -1,5 +1,7 @@
 package com.kht.backend.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.distributedlock.annotation.Lock;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -13,13 +15,16 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
+import com.kht.backend.service.RedisTempleService;
 import com.kht.backend.service.model.EmployeeModel;
 import com.kht.backend.util.IdProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.JedisCluster;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +41,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
+    @Autowired
+    private RedisTempleService redisTempleService;
+    //@Autowired
+    //private JedisCluster jedisCluster;
 
 
     @Transactional
@@ -124,13 +133,24 @@ public class EmployeeServiceImpl implements EmployeeService {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByPrimaryKey(1);
         return null;
     }
+
+
     @Override
     public Result getEmployeeById(String id) {
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id);
-        if(employeeDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
+        String employeeKey = "employeeCache";
+        EmployeeDO employeeDO2 = redisTempleService.get(employeeKey, EmployeeDO.class);
+        //String json = jedisCluster.get(employeeKey);
+        EmployeeDO employeeDO = new EmployeeDO();
+        if( employeeDO2 == null){
+        /*if(json == null || "".equals(json) || "null".equalsIgnoreCase(json)){*/
+            employeeDO = employeeDOMapper.selectByPrimaryKey(id);
+            if(employeeDO == null){
+                throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
+            }
+            redisTempleService.set(employeeKey,employeeDO);
+            return Result.OK(employeeDO).build();
         }
-        return Result.OK(employeeDO).build();
+        return  Result.OK(employeeDO2).build();
     }
 
     @Transactional
