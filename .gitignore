@@ -6,5 +6,4 @@ mvn*
 HELP.md
 log
 *.iml
-application.properties
-pom.xml
+
