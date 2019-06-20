@@ -14,9 +14,9 @@
         </commentGenerator>-->
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/kht"
+                        connectionURL="jdbc:mysql://47.107.136.90:3306/kht"
                         userId="root"
-                        password="123456">
+                        password="ABCabc123">
         </jdbcConnection>
 
       <!--  <javaTypeResolver>
@@ -38,7 +38,7 @@
 
 
 
-        <table tableName="acct_open_info" domainObjectName="AcctOpenInfoDO"
+        <!--<table tableName="acct_open_info" domainObjectName="AcctOpenInfoDO"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
@@ -91,6 +91,15 @@
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
         <table tableName="user" domainObjectName="UserDO"
+               enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
+               selectByExampleQueryId="false"></table>
+-->
+        <table tableName="operation" domainObjectName="OperationDO"
+               enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
+               selectByExampleQueryId="false"></table>
+        <table tableName="pos_opera_rel" domainObjectName="PosOperaRelDO"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
