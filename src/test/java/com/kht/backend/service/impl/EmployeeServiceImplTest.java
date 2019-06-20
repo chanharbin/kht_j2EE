@@ -38,13 +38,13 @@ public class EmployeeServiceImplTest {
     public void increaseEmployee() {
         EmployeeDO employeeDO = new EmployeeDO();
         employeeDO.setEmployeeCode("0");
+        employeeDO.setUserCode(1);
         employeeDO.setAddress("123");
         employeeDO.setEmail("12345");
         employeeDO.setEmployeeName("123");
-        //employeeDO.setEmployeePwd("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        //employeeDO.setPosCode(12);
+        employeeDO.setPosition("1");
         long telephone = 12345213;
         employeeDO.setTelephone(telephone);
         employeeService.increaseEmployee(employeeDO,"org");
@@ -55,14 +55,14 @@ public class EmployeeServiceImplTest {
     @Test
     public void modifyEmployee() {
         EmployeeDO employeeDO = new EmployeeDO();
-        employeeDO.setEmployeeCode("org00JEF6FQ");
+        employeeDO.setEmployeeCode("org0176H3AQ");
+        employeeDO.setUserCode(1);
         employeeDO.setAddress("123");
         employeeDO.setEmail("12345");
         employeeDO.setEmployeeName("123");
-        //employeeDO.setEmployeePwd("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        //employeeDO.setPosCode(12);
+        employeeDO.setPosition("1");
         long telephone = 1340000;
         employeeDO.setTelephone(telephone);
         Result result = employeeService.modifyEmployee(employeeDO);
@@ -71,7 +71,7 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void getEmployeeByName() {
-        String name = "12";
+        String name = "123";
         Result employeeByName = employeeService.getEmployeeByName(name);
         String s = JSONObject.toJSONString(employeeByName.getData());
         System.out.println(s);

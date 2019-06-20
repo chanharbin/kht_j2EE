@@ -56,5 +56,4 @@ public interface AcctOpenInfoDOMapper {
      */
     int updateByPrimaryKey(AcctOpenInfoDO record);
 
-    List<UserFromOrg> selectByOrgCode(String orgCode);
 }

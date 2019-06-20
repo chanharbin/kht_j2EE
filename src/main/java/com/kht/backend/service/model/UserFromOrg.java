@@ -1,26 +1,26 @@
 package com.kht.backend.service.model;
 
 public class UserFromOrg {
-    private String customerCode;
+    private String custCode;
 
     private String name;
 
-    private String IDType;
+    private String idType;
 
-    private String IDCode;
+    private String idCode;
 
-    private String Email;
+    private String email;
 
-    private String customerStatus;
+    private String custStatus;
 
     private String gender;
 
-    public String getCustomerCode() {
-        return customerCode;
+    public String getCustCode() {
+        return custCode;
     }
 
-    public void setCustomerCode(String customerCode) {
-        this.customerCode = customerCode;
+    public void setCustCode(String custCode) {
+        this.custCode = custCode;
     }
 
     public String getName() {
@@ -31,36 +31,36 @@ public class UserFromOrg {
         this.name = name;
     }
 
-    public String getIDType() {
-        return IDType;
+    public String getIdType() {
+        return idType;
     }
 
-    public void setIDType(String IDType) {
-        this.IDType = IDType;
+    public void setIdType(String idType) {
+        this.idType = idType;
     }
 
-    public String getIDCode() {
-        return IDCode;
+    public String getIdCode() {
+        return idCode;
     }
 
-    public void setIDCode(String IDCode) {
-        this.IDCode = IDCode;
+    public void setIdCode(String idCode) {
+        this.idCode = idCode;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
+        this.email = email;
     }
 
-    public String getCustomerStatus() {
-        return customerStatus;
+    public String getCustStatus() {
+        return custStatus;
     }
 
-    public void setCustomerStatus(String customerStatus) {
-        this.customerStatus = customerStatus;
+    public void setCustStatus(String custStatus) {
+        this.custStatus = custStatus;
     }
 
     public String getGender() {

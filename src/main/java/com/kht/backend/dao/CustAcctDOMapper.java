@@ -4,6 +4,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.CustAcctDO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface CustAcctDOMapper {
     /**
@@ -62,5 +64,5 @@ public interface CustAcctDOMapper {
      */
     int updateByPrimaryKey(CustAcctDO record);
 
-    CustAcctDO selectByUserCode(int userCode);
+    List<CustAcctDO> selectCustCodeByOrgCode(String orgCode);
 }

@@ -4,7 +4,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
+import com.kht.backend.dao.CustAcctDOMapper;
 import com.kht.backend.dao.OrganizationDOMapper;
+import com.kht.backend.dataobject.AcctOpenInfoDO;
+import com.kht.backend.dataobject.CustAcctDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.ErrorCode;
@@ -28,7 +31,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
     @Autowired
-    private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
+    private CustAcctDOMapper custAcctDOMapper;
 
     @Transactional
     @Override
@@ -93,10 +96,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Result getOrganizationUser(String orgCode,int pageNum) {
-        List<UserFromOrg> userFromOrgs = acctOpenInfoDOMapper.selectByOrgCode(orgCode);
+        List<CustAcctDO> custAcctDOList = custAcctDOMapper.selectCustCodeByOrgCode(orgCode);
+        List<UserFromOrg> userFromOrgList = custAcctDOList.stream().map(custAcctDO -> {
+            UserFromOrg userFromOrg = this.convertFromDataObject(custAcctDO);
+            return userFromOrg;
+        }).collect(Collectors.toList());
+        if(userFromOrgList == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"该机构编号下的用户不存在");
+        }
+        return Result.OK(userFromOrgList).build();
 
-        return null;
+    }
 
+    private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
+        if(custAcctDO == null){
+            return null;
+        }
+        UserFromOrg userFromOrg = new UserFromOrg();
+        BeanUtils.copyProperties(custAcctDO,userFromOrg);
+        return userFromOrg;
     }
 
 }
