@@ -65,4 +65,5 @@ public interface CustAcctDOMapper {
     int updateByPrimaryKey(CustAcctDO record);
 
     List<CustAcctDO> selectCustCodeByOrgCode(String orgCode);
+    CustAcctDO selectByUserCode(int userCode);
 }
