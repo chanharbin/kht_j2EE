@@ -108,4 +108,20 @@
       PARA_VALUE = #{paraValue,jdbcType=VARCHAR}
     where PARA_CODE = #{paraCode,jdbcType=INTEGER}
   </update>
+
+  <update id="updateParaValueByPrimaryKeySelective">
+    update sys_para
+    <set>
+      <if test="paraValue != null">
+        PARA_VALUE = #{paraValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PARA_CODE = #{paraCode,jdbcType=INTEGER}
+  </update>
+
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_para
+  </select>
 </mapper>

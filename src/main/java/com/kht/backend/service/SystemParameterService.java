@@ -5,7 +5,7 @@ import com.kht.backend.entity.ServiceException;
 
 public interface SystemParameterService {
 
-    public Result getAllSystemParameters();
+    public Result getAllSystemParameters(int pageNum);
 
     public Result modifySystemParameter(int paraCode, String paraValue);
 }

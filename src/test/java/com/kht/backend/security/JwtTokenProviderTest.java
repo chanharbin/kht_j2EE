@@ -31,7 +31,7 @@ public class JwtTokenProviderTest {
         authorities.add(new SimpleGrantedAuthority("ROLE_Admin"));
         authorities.add(new SimpleGrantedAuthority("ROLE_Admin2"));
         System.out.println(authorities);
-        UserPrincipal userPrincipal=new UserPrincipal(1,2L,"1",1,"1",authorities);
+        UserPrincipal userPrincipal=new UserPrincipal(1,2L,"1","1","1",authorities);
         System.out.println(userPrincipal.convertToMap());
         token=Jwts.builder()
                 .setClaims(userPrincipal.convertToMap())

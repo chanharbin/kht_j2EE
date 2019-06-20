@@ -59,4 +59,6 @@ public interface EmployeeDOMapper {
     List<EmployeeDO> selectByName(String name);
 
     List<EmployeeDO> listAll();
+
+    EmployeeDO selectByUserCode(Integer userCode);
 }

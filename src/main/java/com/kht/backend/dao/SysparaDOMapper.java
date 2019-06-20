@@ -4,6 +4,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.SysparaDO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface SysparaDOMapper {
     /**
@@ -53,4 +55,8 @@ public interface SysparaDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int updateByPrimaryKey(SysparaDO record);
+
+    int updateParaValueByPrimaryKeySelective(int paraCode,String paraValue);
+
+    List<SysparaDO> listAll();
 }

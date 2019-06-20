@@ -10,6 +10,7 @@
     <id column="USER_CODE" jdbcType="INTEGER" property="userCode" />
     <result column="TELEPHONE" jdbcType="BIGINT" property="telephone" />
     <result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+    <result column="USERTYPE" jdbcType="CHAR" property="userType"/>
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -55,7 +56,7 @@
     -->
     insert into user (USER_CODE, TELEPHONE, PASSWORD
       )
-    values (#{userCode,jdbcType=INTEGER}, #{telephone,jdbcType=BIGINT}, #{password,jdbcType=VARCHAR}
+    values (#{userCode,jdbcType=INTEGER}, #{telephone,jdbcType=BIGINT}, #{password,jdbcType=VARCHAR},#{userType,jdbcType=CHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.kht.backend.dataobject.UserDO">
@@ -75,6 +76,9 @@
       <if test="password != null">
         PASSWORD,
       </if>
+      <if test="userType != null">
+        USERTYPE,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="userCode != null">
@@ -85,6 +89,9 @@
       </if>
       <if test="password != null">
         #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userType != null">
+        #{userType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -102,6 +109,9 @@
       <if test="password != null">
         PASSWORD = #{password,jdbcType=VARCHAR},
       </if>
+      <if test="userType != null">
+        USERTYPE = #{userType,jdbcType=VARCHAR},
+      </if>
     </set>
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </update>
@@ -113,7 +123,8 @@
     -->
     update user
     set TELEPHONE = #{telephone,jdbcType=BIGINT},
-      PASSWORD = #{password,jdbcType=VARCHAR}
+      PASSWORD = #{password,jdbcType=VARCHAR},
+      USERTYPE=#{userType,jdbcType=CHAR}
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </update>
 </mapper>

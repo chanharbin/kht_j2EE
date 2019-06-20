@@ -202,4 +202,11 @@
       EMPLOYEE_STATUS = #{employeeStatus,jdbcType=CHAR}
     where EMPLOYEE_CODE = #{employeeCode,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectByUserCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from employee
+    where USER_CODE = #{userCode,jdbcType=INTEGER}
+  </select>
 </mapper>
