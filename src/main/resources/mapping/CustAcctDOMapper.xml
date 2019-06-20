@@ -320,7 +320,7 @@
     where CUST_CODE = #{custCode,jdbcType=VARCHAR}
   </update>
 
-  <select id="selectByUserCode" parameterType="java.lang.INTEGER" resultMap="BaseResultMap">
+  <select id="selectByUserCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from cust_acct

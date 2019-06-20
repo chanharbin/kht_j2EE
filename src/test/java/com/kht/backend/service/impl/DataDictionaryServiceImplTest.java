@@ -22,8 +22,8 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void getAllDataDictionariesTest() {
-        for (int i = 0; i < 3; i++) {
-            System.out.println(dataDictionaryService.getAllDataDictionaries(i));
+        for (int i = 1; i < 4; i++) {
+            System.out.println(dataDictionaryService.getAllDataDictionaries(i).getData());
         }
     }
 
