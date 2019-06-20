@@ -18,11 +18,13 @@ import java.util.List;
 public class DataDictionaryServiceImplTest {
 
     @Autowired
-    private SubDataDictDOMapper subDataDictDOMapper;
+    private DataDictionaryServiceImpl dataDictionaryService;
 
     @Test
     public void getAllDataDictionariesTest() {
-
+        for (int i = 0; i < 3; i++) {
+            System.out.println(dataDictionaryService.getAllDataDictionaries(i));
+        }
     }
 
     @Test
