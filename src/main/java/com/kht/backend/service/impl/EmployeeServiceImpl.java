@@ -1,5 +1,6 @@
 package com.kht.backend.service.impl;
 
+import com.distributedlock.annotation.Lock;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
@@ -35,6 +36,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
+
 
     @Transactional
     @Override
