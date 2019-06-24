@@ -51,13 +51,13 @@
     <include refid="Data_Dictionary_Column_List" />
     from sub_data_dict natural join main_data_dict
   </select>
-  <select id="getColumnValues" resultMap="ColumnValueResultMap">
+  <select id="selectColumnValues" resultMap="ColumnValueResultMap">
     select VALUE_CODE, VALUE
     from sub_data_dict
     where MAIN_CODE in (
       select MAIN_CODE
       from main_data_dict
-      where TAB_CODE == #{tabCode, jdbcType=VARCHAR} and COL_CODE = #{colCode, jdbcType=VARCHAR}
+      where TAB_CODE = #{tabCode, jdbcType=VARCHAR} and COL_CODE = #{colCode, jdbcType=VARCHAR}
     )
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
