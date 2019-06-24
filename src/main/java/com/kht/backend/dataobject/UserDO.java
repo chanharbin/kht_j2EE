@@ -130,6 +130,6 @@ public class UserDO {
     }
 
     public void setUserType(String userType) {
-        this.userType = userType;
+        this.userType = userType == null ? null : userType.trim();
     }
 }

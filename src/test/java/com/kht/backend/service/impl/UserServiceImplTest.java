@@ -28,7 +28,7 @@ public class UserServiceImplTest {
 
     @Test
     public void getOtp() {
-        UserDO userDO=userDOMapper.selectByTelephone(12345678910L);
+        UserDO userDO=userDOMapper.selectByTelephone(12345678912L);
         System.out.println(userDO.getUserType());
         System.out.println(userDO.toString());
     }
