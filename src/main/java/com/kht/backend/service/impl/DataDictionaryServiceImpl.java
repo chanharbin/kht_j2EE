@@ -37,7 +37,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     @Override
     public Result getColumnValues(String colCode, String tabCode) {
-        List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValue(colCode, tabCode);
+        List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValues(colCode, tabCode);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("data", columnValueModelList);
         return  Result.OK(resultData).build();

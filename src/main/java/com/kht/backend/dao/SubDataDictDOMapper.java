@@ -59,6 +59,6 @@ public interface SubDataDictDOMapper {
 
     List<DataDictionaryModel> listAll();
 
-    List<ColumnValueModel> selectColumnValue(String colCode, String tabCode);
+    List<ColumnValueModel> selectColumnValues(String colCode, String tabCode);
 
 }
