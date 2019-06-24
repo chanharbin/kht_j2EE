@@ -1,6 +1,6 @@
 package com.kht.backend.service.impl;
 
-import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dataobject.SubDataDictDO;
@@ -26,11 +26,15 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void getAllDataDictionariesTest() {
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i <= 1; i++) {
             Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getAllDataDictionaries(i).getData();
-            PageInfo<DataDictionaryModel> page = (PageInfo<DataDictionaryModel>) resultData.get("data");
-            List<DataDictionaryModel> dataDictionaryModelList = page.getList();
-            System.out.println(dataDictionaryModelList);
+            Page<DataDictionaryModel> page = (Page<DataDictionaryModel>) resultData.get("data");
+            List<DataDictionaryModel> dataDictionaryModelList = (List<DataDictionaryModel>) page.getResult();
+            int size = dataDictionaryModelList.size();
+            System.out.println(size);
+            for (int j = 0; j < size; j++) {
+                System.out.println(dataDictionaryModelList.get(j));
+            }
         }
     }
 
