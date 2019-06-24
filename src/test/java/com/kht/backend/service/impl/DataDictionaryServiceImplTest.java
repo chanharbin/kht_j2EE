@@ -83,10 +83,43 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void removeDataDictionaryTest() {
-
+        try {
+            Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getColumnValues("GENDER", "acct_open_info").getData();
+            List<ColumnValueModel> columnValueModelList1 = (List<ColumnValueModel>) resultData.get("data");
+            int subCode = (int) dataDictionaryService.addDataDictionary(1, "2", "变性人").getData();
+            dataDictionaryService.removeDataDictionary(subCode);
+            resultData = (Map<String, Object>) dataDictionaryService.getColumnValues("GENDER", "acct_open_info").getData();
+            List<ColumnValueModel> columnValueModelList2 = (List<ColumnValueModel>) resultData.get("data");
+            Assert.assertEquals(columnValueModelList1, columnValueModelList2);
+        }
+        catch (ServiceException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void modifyDataDictionaryTest() {
+        try {
+            int subCode = (int) dataDictionaryService.addDataDictionary(1, "2", "人妖").getData();
+            dataDictionaryService.modifyDataDictionary(subCode, "2", "变性人");
+            Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getColumnValues("GENDER", "acct_open_info").getData();
+            List<ColumnValueModel> columnValueModelList1 = (List<ColumnValueModel>) resultData.get("data");
+            List<ColumnValueModel> columnValueModelList2 = new ArrayList<>();
+            ColumnValueModel columnValueModel = new ColumnValueModel();
+            columnValueModel.setValueCode("0");
+            columnValueModel.setValue("男");
+            columnValueModelList2.add(columnValueModel.clone());
+            columnValueModel.setValueCode("1");
+            columnValueModel.setValue("女");
+            columnValueModelList2.add(columnValueModel.clone());
+            columnValueModel.setValueCode("2");
+            columnValueModel.setValue("变性人");
+            columnValueModelList2.add(columnValueModel.clone());
+            Assert.assertEquals(columnValueModelList2, columnValueModelList1);
+            dataDictionaryService.removeDataDictionary(subCode);
+        }
+        catch (ServiceException e) {
+            e.printStackTrace();
+        }
     }
 }
