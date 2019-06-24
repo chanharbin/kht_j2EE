@@ -59,7 +59,7 @@ public class DataDictionaryServiceImplTest {
     @Test
     public void addDataDictionaryTest() {
         try {
-            Assert.assertEquals("添加数据字典信息成功", dataDictionaryService.addDataDictionary(1, "2", "变性人"));
+            int subCode = (int) dataDictionaryService.addDataDictionary(1, "2", "变性人").getData();
             Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getColumnValues("GENDER", "acct_open_info").getData();
             List<ColumnValueModel> columnValueModelList1 = (List<ColumnValueModel>) resultData.get("data");
             List<ColumnValueModel> columnValueModelList2 = new ArrayList<>();
@@ -74,15 +74,16 @@ public class DataDictionaryServiceImplTest {
             columnValueModel.setValue("变性人");
             columnValueModelList2.add(columnValueModel.clone());
             Assert.assertEquals(columnValueModelList2, columnValueModelList1);
-            dataDictionaryService.removeDataDictionary();
+            dataDictionaryService.removeDataDictionary(subCode);
         }
         catch (ServiceException e) {
-
+            e.printStackTrace();
         }
     }
 
     @Test
     public void removeDataDictionaryTest() {
+
     }
 
     @Test

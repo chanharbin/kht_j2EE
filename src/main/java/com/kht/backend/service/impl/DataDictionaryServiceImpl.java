@@ -54,7 +54,8 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         if(affectedRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "添加数据字典信息失败");
         }
-        return Result.OK("添加数据字典信息成功").build();
+        int subCode = subDataDictDOMapper.selectSubCode(mainCode, valueCode);
+        return Result.OK(subCode).build();
     }
 
     @Transactional

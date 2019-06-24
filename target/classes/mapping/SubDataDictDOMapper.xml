@@ -60,6 +60,11 @@
       where TAB_CODE = #{tabCode, jdbcType=VARCHAR} and COL_CODE = #{colCode, jdbcType=VARCHAR}
     )
   </select>
+  <select id="selectSubCode" resultType="java.lang.Integer">
+    select SUB_CODE
+    from sub_data_dict
+    where MAIN_CODE = #{mainCode} and VALUE_CODE = #{valueCode}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbg.generated
