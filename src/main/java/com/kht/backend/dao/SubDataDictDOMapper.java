@@ -3,6 +3,7 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.SubDataDictDO;
 import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -60,5 +61,7 @@ public interface SubDataDictDOMapper {
     List<DataDictionaryModel> listAll();
 
     List<ColumnValueModel> selectColumnValues(String colCode, String tabCode);
+
+    Integer selectSubCode(@Param("mainCode") int mainCode, @Param("valueCode") String valueCode);
 
 }

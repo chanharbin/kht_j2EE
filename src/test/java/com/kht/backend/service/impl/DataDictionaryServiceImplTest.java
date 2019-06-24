@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dataobject.SubDataDictDO;
 
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
 import org.junit.Test;
@@ -57,7 +58,27 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void addDataDictionaryTest() {
+        try {
+            Assert.assertEquals("添加数据字典信息成功", dataDictionaryService.addDataDictionary(1, "2", "变性人"));
+            Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getColumnValues("GENDER", "acct_open_info").getData();
+            List<ColumnValueModel> columnValueModelList1 = (List<ColumnValueModel>) resultData.get("data");
+            List<ColumnValueModel> columnValueModelList2 = new ArrayList<>();
+            ColumnValueModel columnValueModel = new ColumnValueModel();
+            columnValueModel.setValueCode("0");
+            columnValueModel.setValue("男");
+            columnValueModelList2.add(columnValueModel.clone());
+            columnValueModel.setValueCode("1");
+            columnValueModel.setValue("女");
+            columnValueModelList2.add(columnValueModel.clone());
+            columnValueModel.setValueCode("2");
+            columnValueModel.setValue("变性人");
+            columnValueModelList2.add(columnValueModel.clone());
+            Assert.assertEquals(columnValueModelList2, columnValueModelList1);
+            dataDictionaryService.removeDataDictionary();
+        }
+        catch (ServiceException e) {
 
+        }
     }
 
     @Test

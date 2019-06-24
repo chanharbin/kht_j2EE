@@ -52,7 +52,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         subDataDictDO.setValue(value);
         int affectedRow = subDataDictDOMapper.insertSelective(subDataDictDO);
         if(affectedRow <= 0){
-            throw new ServiceException(ErrorCode. SERVER_EXCEPTION, "添加数据字典信息失败");
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "添加数据字典信息失败");
         }
         return Result.OK("添加数据字典信息成功").build();
     }
