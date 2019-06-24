@@ -2,7 +2,6 @@ package com.kht.backend.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.distributedlock.annotation.Lock;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;

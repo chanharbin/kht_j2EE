@@ -3,6 +3,7 @@ package com.kht.backend.service.impl;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dataobject.SubDataDictDO;
 
+import com.kht.backend.service.model.DataDictionaryModel;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -23,7 +25,9 @@ public class DataDictionaryServiceImplTest {
     @Test
     public void getAllDataDictionariesTest() {
         for (int i = 1; i < 4; i++) {
-            System.out.println(dataDictionaryService.getAllDataDictionaries(i).getData());
+            Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getAllDataDictionaries(i).getData();
+            List<DataDictionaryModel> dataDictionaryModelList = (List<DataDictionaryModel>) resultData.get("data");
+            System.out.println();
         }
     }
 
