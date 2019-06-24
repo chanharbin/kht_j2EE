@@ -2,7 +2,6 @@ package com.kht.backend.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.distributedlock.annotation.Lock;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
@@ -137,20 +136,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result getEmployeeById(String id) {
-        String employeeKey = "employeeCache";
-        EmployeeDO employeeDO2 = redisTempleService.get(employeeKey, EmployeeDO.class);
-        //String json = jedisCluster.get(employeeKey);
-        EmployeeDO employeeDO = new EmployeeDO();
-        if( employeeDO2 == null){
-        /*if(json == null || "".equals(json) || "null".equalsIgnoreCase(json)){*/
-            employeeDO = employeeDOMapper.selectByPrimaryKey(id);
-            if(employeeDO == null){
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id);
+        if(employeeDO == null){
                 throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
             }
-            redisTempleService.set(employeeKey,employeeDO);
-            return Result.OK(employeeDO).build();
-        }
-        return  Result.OK(employeeDO2).build();
+        return Result.OK(employeeDO).build();
     }
 
     @Transactional
@@ -207,7 +197,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
         return Result.OK(resultData).build();
-
     }
 
 }

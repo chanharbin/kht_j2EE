@@ -15,4 +15,7 @@ public interface OrganizationService {
     public Result modifyOrganizationInfo(OrganizationDO organizationDO);
     //获取机构下所有的用户列表
     public Result getOrganizationUser(String orgCode,int pageNum);
+
+    public Result getOrganizationById(String orgCode);
+
 }

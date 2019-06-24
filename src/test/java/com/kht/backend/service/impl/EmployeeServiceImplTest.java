@@ -44,7 +44,7 @@ public class EmployeeServiceImplTest {
         employeeDO.setEmployeeName("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        employeeDO.setPosition("1");
+        //employeeDO.setPosition("1");
         long telephone = 12345213;
         employeeDO.setTelephone(telephone);
         employeeService.increaseEmployee(employeeDO,"org");
@@ -62,7 +62,7 @@ public class EmployeeServiceImplTest {
         employeeDO.setEmployeeName("123");
         employeeDO.setEmployeeStatus("1");
         employeeDO.setIdCode("414");
-        employeeDO.setPosition("1");
+        //employeeDO.setPosition("1");
         long telephone = 1340000;
         employeeDO.setTelephone(telephone);
         Result result = employeeService.modifyEmployee(employeeDO);
