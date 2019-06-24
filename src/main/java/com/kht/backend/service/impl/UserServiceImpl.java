@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
         UserDO userDO=new UserDO();
         userDO.setTelephone(telephone);
         userDO.setPassword(password);
+        userDO.setUserType("1");
         int affectRow=userDOMapper.insertSelective(userDO);
         if(affectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"注册失败");
@@ -148,8 +149,8 @@ public class UserServiceImpl implements UserService {
         return Result.OK("更新资金账户密码成功").build();
     }
     @Override
-    public Result getState(int infoCode) {
-        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByPrimaryKey(infoCode);
+    public Result getState(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
         if(acctOpenInfoDO==null){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
         }

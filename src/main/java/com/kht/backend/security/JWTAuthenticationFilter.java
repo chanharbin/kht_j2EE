@@ -1,5 +1,9 @@
 package com.kht.backend.security;
 
+import com.kht.backend.filter.JwtAuthenticationFilter;
+import com.kht.backend.util.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -13,6 +17,8 @@ import java.io.IOException;
 public class JWTAuthenticationFilter extends OncePerRequestFilter{
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         try{
@@ -22,7 +28,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
                 //TODO
             }
         }catch (Exception ex){
-            //TODO
+            logger.error("Could not set user authentication in security context", ex);
         }
 
     }

@@ -436,4 +436,10 @@
       INFO_STATUS = #{infoStatus,jdbcType=CHAR}
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
   </update>
+  <select id="selectByUserCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where USER_CODE = #{USER_CODE,jdbcType=INTEGER}
+  </select>
 </mapper>

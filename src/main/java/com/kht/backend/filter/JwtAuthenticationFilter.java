@@ -1,7 +1,7 @@
 package com.kht.backend.filter;
 
-import com.kht.backend.security.JwtTokenProvider;
-import com.kht.backend.service.impl.UserPrincipalService;
+import com.kht.backend.util.JwtTokenProvider;
+import com.kht.backend.service.impl.UserPrincipalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,13 +20,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider tokenProvider;
     @Autowired
-    private UserPrincipalService userPrincipalService;
+    private UserPrincipalServiceImpl userPrincipalService;
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(httpServletRequest);
-
+            System.out.println("filter fuck"+jwt);
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                //TODO
                 UserDetails userDetails = tokenProvider.getUserPrincipalFromJWT(jwt);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));

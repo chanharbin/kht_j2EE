@@ -1,4 +1,4 @@
-package com.kht.backend.security;
+package com.kht.backend.util;
 
 
 import com.alibaba.fastjson.JSON;
@@ -9,17 +9,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import com.kht.backend.service.model.UserPrincipal;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+
     @Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationInMs}")
     private long jwtExpirationInMs;
+
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal=(UserPrincipal)authentication.getPrincipal();
+
         Date now=new Date();
         Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
 
@@ -35,7 +41,6 @@ public class JwtTokenProvider {
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        //UserPrincipal.create(claims.getSubject())
         return UserPrincipal.create(claims);
     }
     public  boolean validateToken(String authToken){
@@ -43,9 +48,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         }catch (SignatureException ex) {
-            //TODO 异常待改
-        }
-            /*("Invalid JWT signature");
+            logger.error("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
@@ -54,7 +57,7 @@ public class JwtTokenProvider {
             logger.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty.");
-        }*/
+        }
         return false;
     }
 }

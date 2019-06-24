@@ -56,4 +56,6 @@ public interface AcctOpenInfoDOMapper {
      */
     int updateByPrimaryKey(AcctOpenInfoDO record);
 
+    AcctOpenInfoDO selectByUserCode(Integer userCode);
+
 }

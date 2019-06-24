@@ -1,22 +1,17 @@
 package com.kht.backend.security;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kht.backend.util.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Test;
 import com.kht.backend.service.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class JwtTokenProviderTest {
     @Autowired

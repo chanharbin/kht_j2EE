@@ -22,17 +22,6 @@ public class App
 {
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
-    @RequestMapping("/")
-    public String home(){
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey("123");
-        if(employeeDO == null){
-            return "0";
-        }
-        else{
-            return employeeDO.getEmployeeName();
-        }
-
-    }
     public static void main( String[] args )
     {
         System.out.println( "Hello World!" );

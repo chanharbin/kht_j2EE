@@ -120,6 +120,18 @@ public class UserPrincipal implements UserDetails {
     public String getCode() {
         return code;
     }
+
+    @Override
+    public String toString() {
+        return "UserPrincipal{" +
+                "userCode=" + userCode +
+                ", telephone=" + telephone +
+                ", password='" + password + '\'' +
+                ", userType='" + userType + '\'' +
+                ", code='" + code + '\'' +
+                ", authorities=" + authorities +
+                '}';
+    }
 }
 
 /**
