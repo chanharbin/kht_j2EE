@@ -26,7 +26,7 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void getAllDataDictionariesTest() {
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 5; i++) {
             Map<String, Object> resultData = (Map<String, Object>) dataDictionaryService.getAllDataDictionaries(i).getData();
             Page<DataDictionaryModel> page = (Page<DataDictionaryModel>) resultData.get("data");
             List<DataDictionaryModel> dataDictionaryModelList = (List<DataDictionaryModel>) page.getResult();
@@ -40,6 +40,7 @@ public class DataDictionaryServiceImplTest {
 
     @Test
     public void addDataDictionaryTest() {
+
     }
 
     @Test
