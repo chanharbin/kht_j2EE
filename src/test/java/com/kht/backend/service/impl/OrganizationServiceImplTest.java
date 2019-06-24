@@ -5,6 +5,7 @@ import com.kht.backend.App;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OrganizationService;
+import com.kht.backend.service.RedisTempleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
 public class OrganizationServiceImplTest {
     @Autowired
     private OrganizationService organizationService;
+
 
     @Test
     public void increaseOrganization() {
@@ -62,5 +64,12 @@ public class OrganizationServiceImplTest {
         String s = JSONObject.toJSONString(organizationUser.getData());
         System.out.println(s);
 
+    }
+
+    @Test
+    public void getOrganizationById() {
+        Result re = organizationService.getOrganizationById("1");
+        String s = JSONObject.toJSONString(re.getData());
+        System.out.println(s);
     }
 }

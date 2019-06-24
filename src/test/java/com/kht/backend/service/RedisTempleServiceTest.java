@@ -1,5 +1,6 @@
 package com.kht.backend.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kht.backend.App;
 import com.kht.backend.service.model.MenuModel;
 import org.junit.Test;
@@ -26,7 +27,8 @@ public class RedisTempleServiceTest {
 
         MenuModel menuModel1 = redisTempleService.get("key",MenuModel.class);
 
-        System.out.println(menuModel.getId());
+        System.out.println(JSONObject.toJSONString(menuModel1));
+        
 
     }
 
