@@ -62,7 +62,7 @@
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
-        <table tableName="main_data_dict" domainObjectName="MainDateDict"
+        <table tableName="main_data_dict" domainObjectName="MainDataDict"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
