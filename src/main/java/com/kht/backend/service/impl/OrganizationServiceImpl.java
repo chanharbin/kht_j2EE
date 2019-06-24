@@ -15,7 +15,6 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.OrganizationService;
-import com.kht.backend.service.RedisTempleService;
 import com.kht.backend.service.model.OrganizationModel;
 import com.kht.backend.service.model.UserFromOrg;
 import org.springframework.beans.BeanUtils;
@@ -34,8 +33,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     private OrganizationDOMapper organizationDOMapper;
     @Autowired
     private CustAcctDOMapper custAcctDOMapper;
-    @Autowired
-    private RedisTempleService redisTempleService;
     @Transactional
     @Override
     public Result increaseOrganization(OrganizationDO organizationDO) {
@@ -111,14 +108,17 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
+    //TODO
     @Override
     public Result getOrganizationById(String orgCode) {
+       /* @Override
+   public Result getOrganizationById(String orgCode) {
         String orgKey = "organization";
         OrganizationDO organizationDO = redisTempleService.get(orgKey, OrganizationDO.class);
         //String json = jedisCluster.get(employeeKey);
         OrganizationDO organizationDO1 = new OrganizationDO();
         if( organizationDO == null){
-            /*if(json == null || "".equals(json) || "null".equalsIgnoreCase(json)){*/
+            *//*if(json == null || "".equals(json) || "null".equalsIgnoreCase(json)){*//*
             organizationDO1 = organizationDOMapper.selectByPrimaryKey(orgCode);
             if(organizationDO1 == null){
                 throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
@@ -128,7 +128,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             return Result.OK(organizationDO1).build();
         }
         return  Result.OK(organizationDO).build();
+    }*/
+        return null;
     }
+
+
 
 
     private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
