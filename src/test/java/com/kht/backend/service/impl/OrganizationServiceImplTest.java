@@ -5,14 +5,11 @@ import com.kht.backend.App;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OrganizationService;
-import com.kht.backend.service.RedisTempleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.junit.Assert.*;
 
 
 @SpringBootTest(classes = App.class)

@@ -8,6 +8,9 @@ public class PositionDO {
      *
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
+
+    public  static final String Table = "positon";
+
     private Integer posCode;
 
     /**

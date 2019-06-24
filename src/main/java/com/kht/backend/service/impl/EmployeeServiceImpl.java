@@ -1,7 +1,5 @@
 package com.kht.backend.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
@@ -14,16 +12,11 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
-import com.kht.backend.service.RedisTempleService;
-import com.kht.backend.service.model.EmployeeModel;
 import com.kht.backend.util.IdProvider;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import redis.clients.jedis.JedisCluster;
+
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,10 +33,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
-    @Autowired
-    private RedisTempleService redisTempleService;
-    //@Autowired
-    //private JedisCluster jedisCluster;
 
 
     @Transactional
