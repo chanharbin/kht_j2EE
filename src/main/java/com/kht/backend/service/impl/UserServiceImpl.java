@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private CustAcctDOMapper custAcctDOMapper;
     @Autowired
-    private DeptAcctDOMapper deptAcctDOMapper;
+    private DepAcctDOMapper depAcctDOMapper;
     @Autowired
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
 
@@ -58,14 +58,14 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户未开户");
         }
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
-        List<DeptAcctDO> deptAcctDOList=capAcctDOList.stream()
-                .map(i->deptAcctDOMapper.selectByCapCode(i.getCapCode()))
+        List<DepAcctDO> depAcctDOList =capAcctDOList.stream()
+                .map(i-> depAcctDOMapper.selectByCapCode(i.getCapCode()))
                 .collect(Collectors.toList());
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("capital_accounts",capAcctDOList);
         data.put("securities_accounts",trdAcctDOList);
-        data.put("depository_accounts",deptAcctDOList);
+        data.put("depository_accounts", depAcctDOList);
         return new Result(200,"OK",data);
     }
     @Override
@@ -116,17 +116,17 @@ public class UserServiceImpl implements UserService {
         capAcctDO.setCloseTime(0L);
         capAcctDO.setCapStatus("0");
 
-        DeptAcctDO deptAcctDO=new DeptAcctDO();
-        deptAcctDO.setDepCode(capAcctDO.getCapCode());
-        deptAcctDO.setCapCode(capAcctDO.getCapCode());
-        deptAcctDO.setBankType(bankType);
-        deptAcctDO.setBankCardCode(bankCardCode);
-        deptAcctDO.setOpenTime(new Date().getTime());
-        deptAcctDO.setCloseTime(0L);
-        deptAcctDO.setDepStatus("0");
+        DepAcctDO depAcctDO =new DepAcctDO();
+        depAcctDO.setDepCode(capAcctDO.getCapCode());
+        depAcctDO.setCapCode(capAcctDO.getCapCode());
+        depAcctDO.setBankType(bankType);
+        depAcctDO.setBankCardCode(bankCardCode);
+        depAcctDO.setOpenTime(new Date().getTime());
+        depAcctDO.setCloseTime(0L);
+        depAcctDO.setDepStatus("0");
 
         int capAffectRow=capAcctDOMapper.insertSelective(capAcctDO);
-        int deptAffectRow=deptAcctDOMapper.insertSelective(deptAcctDO);
+        int deptAffectRow= depAcctDOMapper.insertSelective(depAcctDO);
         if(capAffectRow==0||deptAffectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"增加资金账户失败");
         }

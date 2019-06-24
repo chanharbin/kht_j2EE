@@ -50,7 +50,7 @@
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
-        <table tableName="dep_acct" domainObjectName="DeptAcctDO"
+        <table tableName="dep_acct" domainObjectName="DepAcctDO"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
@@ -82,7 +82,7 @@
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
-        <table tableName="sys_para" domainObjectName="SysparaDO"
+        <table tableName="sys_para" domainObjectName="SysParaDO"
                enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false"  enableSelectByExample="false"
                selectByExampleQueryId="false"></table>

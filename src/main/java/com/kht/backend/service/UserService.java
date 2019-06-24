@@ -1,9 +1,6 @@
 package com.kht.backend.service;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
-import com.kht.backend.dataobject.CapAcctDO;
-import com.kht.backend.dataobject.DeptAcctDO;
-import com.kht.backend.dataobject.UserDO;
 import com.kht.backend.entity.Result;
 
 public interface UserService {
