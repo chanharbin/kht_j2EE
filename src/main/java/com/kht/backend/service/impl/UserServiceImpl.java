@@ -123,6 +123,19 @@ public class UserServiceImpl implements UserService {
         return new Result(200,"OK",data);
     }
     @Override
+    public Result modifyUserPassword(int userCode,String oldPassword,String password) {
+        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
+        if(userDO==null||!userDO.getPassword().equals(oldPassword)){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
+        }
+        userDO.setPassword(password);
+        int affectRow=userDOMapper.updateByPrimaryKeySelective(userDO);
+        if(affectRow==0){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
+        }
+        return Result.OK("更新用户信息成功").build();
+    }
+    @Override
     public Result getUserInfo(int userCode) {
         UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
         if(userDO==null){
@@ -186,20 +199,6 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
         }
         return Result.OK(acctOpenInfoDO.getInfoStatus()).build();
-    }
-
-    @Override
-    public Result modifyUserPassword(int userCode,String oldPassword,String password) {
-        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
-        if(userDO==null||!userDO.getPassword().equals(oldPassword)){
-                throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
-        }
-        userDO.setPassword(password);
-        int affectRow=userDOMapper.updateByPrimaryKeySelective(userDO);
-        if(affectRow==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
-        }
-        return Result.OK("更新用户信息成功").build();
     }
      /*@Override
     public Result userLogin(Long telephone, String password) {
