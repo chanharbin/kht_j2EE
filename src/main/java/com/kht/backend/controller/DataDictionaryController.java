@@ -18,6 +18,11 @@ public class DataDictionaryController {
         return dataDictionaryService.getAllDataDictionaries(pageNum);
     }
 
+    @RequestMapping(value = "/data_dict/by_column", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
+        return dataDictionaryService.getDataDictionariesByColName(colName, pageNum);
+    }
+
     @RequestMapping(value = "/data_dict/column", method = GET, produces = "application/json;charset=UTF-8")
     public Result getColumnValues(@RequestParam("colCode") String colCode, @RequestParam("tabCode") String tabCode) {
         return dataDictionaryService.getColumnValues(colCode, tabCode);

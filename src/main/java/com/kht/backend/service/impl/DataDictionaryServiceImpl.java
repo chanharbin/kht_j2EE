@@ -36,6 +36,17 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     }
 
     @Override
+    public Result getDataDictionariesByColName(String colName, int pageNum) {
+        PageHelper.startPage(pageNum,10);
+        List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName);
+        PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
+    }
+
+    @Override
     public Result getColumnValues(String colCode, String tabCode) {
         List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValues(colCode, tabCode);
         Map<String, Object> resultData = new LinkedHashMap<>();

@@ -13,6 +13,8 @@ public class DataDictionaryModel {
 
     private String colCode;
 
+    private String tabCode;
+
     private String valueCode;
 
     private String value;
