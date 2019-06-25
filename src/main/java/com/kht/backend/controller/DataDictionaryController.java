@@ -14,7 +14,7 @@ public class DataDictionaryController {
     private DataDictionaryService dataDictionaryService;
 
     @RequestMapping(value = "/data_dict", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getAllDataDictionaries(@RequestParam("paraNum") int pageNum) {
+    public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
         return dataDictionaryService.getAllDataDictionaries(pageNum);
     }
 
