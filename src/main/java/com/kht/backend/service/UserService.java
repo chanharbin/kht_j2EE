@@ -5,7 +5,7 @@ import com.kht.backend.entity.Result;
 
 public interface UserService {
     //用户注册
-    public Result userRegister(Long telephone,String checkCode,String password);
+    public boolean userRegister(Long telephone,String checkCode,String password);
 
     //查看账户信息
     public Result getUserAccountInfo(int userCode);

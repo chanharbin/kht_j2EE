@@ -43,8 +43,7 @@ public class JwtTokenProviderTest {
     public void getUserPrincipalFromJWT() {
         Claims claims=Jwts.parser()
                 .setSigningKey("KHT_Backend")
-                .parseClaimsJws("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicGFzc3dvcmQiOiIxIiwiY29kZSI6IjEiLCJ0ZWxlcGhvbmUiOjIsInVzZXJUeXBlIjoxLCJleHAiOjM2MTU2MDk5ODM3OSwiaWF0IjoxNTYwOTk4Mzc5LCJ1c2VyQ29kZSI6MSwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfQWRtaW4ifSx7ImF1dGhvcml0eSI6IlJPTEVfQWRtaW4yIn1dfQ.6UccRkialAUZRwSyuGNfAElIT2SNgmIH-73DUfFRyyb-siixpPRdd1gDWdLVfcQ12LOUOIP-CS9vxkHrV5uCAQ")
-                        .getBody();
+                .parseClaimsJws("eyJhbGciOiJIUzUxMiJ9.eyJwYXNzd29yZCI6ImUxMGFkYzM5NDliYTU5YWJiZTU2ZTA1N2YyMGY4ODNlIiwiY29kZSI6bnVsbCwidGVsZXBob25lIjoxMjM0NTY3ODkxMiwidXNlclR5cGUiOiIwIiwiZXhwIjoxNTYxMzczNzg2LCJpYXQiOjE1NjEzNzAxODYsInVzZXJDb2RlIjoxLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.0-Ebgl9Jjco9WI3ntHEsbT72KvghNaftRw6pq9kSyYEChDj7vOqeYU0Psi5XzXCAjsOwH-Hu4EjwefQsahePEw")                .getBody();
         System.out.println(claims);
         UserPrincipal userPrincipal=UserPrincipal.create(claims);
         System.out.println(userPrincipal.getUsername());

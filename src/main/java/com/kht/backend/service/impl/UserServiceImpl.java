@@ -35,17 +35,17 @@ public class UserServiceImpl implements UserService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
 
     @Override
-    public Result userRegister(Long telephone, String checkCode, String password) {
+    public boolean userRegister(Long telephone, String checkCode, String password) {
         if(checkCode==null);//TODO
         UserDO userDO=new UserDO();
         userDO.setTelephone(telephone);
         userDO.setPassword(password);
-        userDO.setUserType("1");
+        userDO.setUserType("0");
         int affectRow=userDOMapper.insertSelective(userDO);
         if(affectRow==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"注册失败");
+            return false;
         }
-        return Result.OK("注册成功").build();
+        return true;
     }
     @Override
     public Result getOtp(String telephone) {
@@ -157,7 +157,12 @@ public class UserServiceImpl implements UserService {
         return Result.OK(acctOpenInfoDO.getInfoStatus()).build();
     }
 
-    public Result modifyUserInfo(UserDO userDO) {
+    public Result modifyUserInfo(int userCode,String password) {
+        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
+        if(userDO==null){
+                throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
+        }
+        userDO.setPassword(password);
         int affectRow=userDOMapper.updateByPrimaryKeySelective(userDO);
         if(affectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");

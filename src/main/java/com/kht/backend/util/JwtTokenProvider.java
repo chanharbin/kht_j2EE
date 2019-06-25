@@ -11,6 +11,9 @@ import com.kht.backend.service.model.UserPrincipal;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Component
@@ -35,6 +38,13 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512,jwtSecret)
                 .compact();
+    }
+    public UserPrincipal getUserPrincipalFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return getUserPrincipalFromJWT(bearerToken.substring(7, bearerToken.length()));
+        }
+        return null;
     }
     public UserPrincipal getUserPrincipalFromJWT(String token) {
         Claims claims=Jwts.parser()
