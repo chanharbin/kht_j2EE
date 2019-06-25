@@ -25,11 +25,12 @@
     <result column="MAIN_CODE" jdbcType="INTEGER" property="mainCode" />
     <result column="COL_NAME" jdbcType="VARCHAR" property="colName" />
     <result column="COL_CODE" jdbcType="VARCHAR" property="colCode" />
+    <result column="TAB_CODE" jdbcType="VARCHAR" property="tabCode" />
     <result column="VALUE_CODE" jdbcType="VARCHAR" property="valueCode" />
     <result column="VALUE" jdbcType="VARCHAR" property="value" />
   </resultMap>
   <sql id="Data_Dictionary_Column_List">
-    MAIN_CODE, SUB_CODE, COL_NAME, COL_CODE, VALUE_CODE, VALUE
+    MAIN_CODE, SUB_CODE, COL_NAME, COL_CODE, TAB_CODE, VALUE_CODE, VALUE
   </sql>
   <resultMap id="ColumnValueResultMap" type="com.kht.backend.service.model.ColumnValueModel">
     <result column="VALUE_CODE" jdbcType="VARCHAR" property="valueCode" />
@@ -50,6 +51,15 @@
     select
     <include refid="Data_Dictionary_Column_List" />
     from sub_data_dict natural join main_data_dict
+  </select>
+  <select id="selectByColName" parameterType="java.lang.String" resultMap="DataDictionaryResultMap">
+    select
+    <include refid="Data_Dictionary_Column_List" />
+    from sub_data_dict natural join (
+        select *
+        from main_data_dict
+        where COL_NAME = #{colName}
+    ) as temp
   </select>
   <select id="selectColumnValues" resultMap="ColumnValueResultMap">
     select VALUE_CODE, VALUE
