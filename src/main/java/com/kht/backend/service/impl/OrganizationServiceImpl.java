@@ -65,7 +65,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Result getOrganizationList(int pageNum) {
+    public Map<String, Object> getOrganizationList(int pageNum) {
         PageHelper.startPage(pageNum,10);
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
         List<OrganizationDO> organizationDOListFiltered = organizationDOList.stream().filter(organizationDO -> !organizationDO.getOrgCode().isEmpty()).collect(Collectors.toList());
@@ -74,10 +74,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         PageInfo<OrganizationDO> page = new PageInfo<>(organizationDOListFiltered);
         Map<String,Object> resultData = new LinkedHashMap<>();
-        resultData.put("totalNum",page.getTotal());
-        resultData.put("data",page.getList());
-        return Result.OK(resultData).build();
-
+        resultData.put("organization_num",page.getTotal());
+        resultData.put("organizations",page.getList());
+        return resultData;
     }
 
     @Transactional

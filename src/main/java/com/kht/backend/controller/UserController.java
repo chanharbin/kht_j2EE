@@ -38,7 +38,7 @@ public class UserController {
     private HttpServletRequest httpServletRequest;
 
     private final String prefix="Bearer ";
-    @PostMapping("/login")
+    @PostMapping(value = {"/user/login","/employee/login"})
     public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password){
         try {
             Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(telephone, password));
