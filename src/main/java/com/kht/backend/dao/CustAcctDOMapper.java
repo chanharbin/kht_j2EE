@@ -24,12 +24,6 @@ public interface CustAcctDOMapper {
      */
     int insert(CustAcctDO record);
 
-    //TODO
-    /**
-     *
-     * @param customerCode
-     * @return
-     */
 
 
     /**

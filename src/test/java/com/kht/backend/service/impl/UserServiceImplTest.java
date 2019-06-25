@@ -22,8 +22,7 @@ public class UserServiceImplTest {
     private UserDOMapper userDOMapper;
     @Test
     public void userRegister() {
-        Result result=userService.userRegister(12345678912L,"1234","123456");
-        System.out.println(result.getData());
+
     }
 
     @Test
@@ -34,8 +33,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void getUserAccountInfo() {
-        Result result=userService.userRegister(12345678910L,"0","654321");
+    public void getUserAccountInfo(){
     }
 
     @Test
@@ -73,7 +71,7 @@ public class UserServiceImplTest {
         userDO.setUserCode(2);
         userDO.setTelephone(12345678912L);
         userDO.setPassword("654321");
-        Result result=userService.modifyUserInfo(userDO);
-        System.out.println(result.getData());
+        //Result result=userService.modifyUserInfo(userDO);
+        //System.out.println(result.getData());
     }
 }

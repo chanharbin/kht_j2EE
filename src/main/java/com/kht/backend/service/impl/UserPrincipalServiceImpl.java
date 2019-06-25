@@ -30,37 +30,34 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-            Long telephone=Long.parseLong(username);
-            UserDO userDO=userDOMapper.selectByTelephone(telephone);
-            if(userDO==null){
-                throw new UsernameNotFoundException("User not found with username or email : " + userDO.getUserCode());
-            }
-        System.out.println("username is : " + userDO.getTelephone() + ", password is :" + userDO.getPassword());
+        Long telephone=Long.parseLong(username);
+        UserDO userDO=userDOMapper.selectByTelephone(telephone);
+        if(userDO==null){
+            throw new UsernameNotFoundException("User not found with username or email : " + userDO.getUserCode());
+        }
         List<GrantedAuthority> authorities=new ArrayList<>();
-        System.out.println("userType :"+userDO.getUserType());
+        String code=null;
         switch (userDO.getUserType()) {
             case "0": {
                 CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userDO.getUserCode());
-                if (custAcctDO == null) {
-                    throw new UsernameNotFoundException("User not found with userCode : " + userDO.getUserCode());
+                if (custAcctDO != null) {
+                    code=custAcctDO.getCustCode();
                 }
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                UserPrincipal userPrincipal= UserPrincipal.create(userDO, custAcctDO.getCustCode(), authorities);
-                System.out.println(userPrincipal.toString());
-                return userPrincipal;
+                break;
             }
             case "1": {
                 EmployeeDO employeeDO = employeeDOMapper.selectByUserCode(userDO.getUserCode());
-                if (employeeDO == null) {
-                    throw new UsernameNotFoundException("User not found with userCode : " + userDO.getUserCode());
+                if (employeeDO != null) {
+                    code=employeeDO.getEmployeeCode();
                 }
                 //TODO 权限待改
-                UserPrincipal userPrincipal=UserPrincipal.create(userDO, employeeDO.getEmployeeCode(), authorities);
-                System.out.println(userPrincipal.toString());
-                return userPrincipal;
+                break;
             }
             default:
-                throw new UsernameNotFoundException("UserType Error");
-        }
+                throw new UsernameNotFoundException("UserType Error");}
+        UserPrincipal userPrincipal=UserPrincipal.create(userDO, code, authorities);
+        System.out.println(userPrincipal.toString());
+        return userPrincipal;
     }
 }
