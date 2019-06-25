@@ -6,13 +6,11 @@ import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dao.OperaLogDOMapper;
 import com.kht.backend.dao.UserDOMapper;
-import com.kht.backend.dataobject.AcctOpenInfoDO;
-import com.kht.backend.dataobject.EmployeeDO;
-import com.kht.backend.dataobject.OperaLogDO;
-import com.kht.backend.dataobject.UserDO;
+import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
+import com.kht.backend.service.AccountService;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.UserService;
 import com.kht.backend.util.IdProvider;
@@ -38,6 +36,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private OperaLogDOMapper operaLogDOMapper;
     @Autowired
     private UserDOMapper userDOMapper;
+    @Autowired
+    private AccountService accountService;
 
 
     @Transactional
@@ -129,8 +129,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     //TODO
     @Override
-    public Result getUserValidationInfo(String customerCode) {
-        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByPrimaryKey(1);
+    public Result getUserValidationInfo(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO = new CustAcctDO();
+        CapAcctDO capAcctDO = new CapAcctDO();
+        DepAcctDO depAcctDO = new DepAcctDO();
+        TrdAcctDO trdAcctDO = new TrdAcctDO();
+
+
+
         return null;
     }
 

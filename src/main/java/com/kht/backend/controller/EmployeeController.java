@@ -56,6 +56,7 @@ public class EmployeeController {
     public Result deleteEmployee(@RequestParam("EMPLOYEE_CODE")String employeeCode){
         return employeeService.deleteEmployee(employeeCode);
     }
+    //ToTest
     //修改员工信息
     @RequestMapping(value = "/employee",method = PUT)
     public Result modifyEmployee(@RequestParam("POS_CODE") int posCode,
