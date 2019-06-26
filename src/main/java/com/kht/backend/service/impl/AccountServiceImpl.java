@@ -16,6 +16,7 @@ import com.kht.backend.util.IdProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -32,71 +33,124 @@ public class AccountServiceImpl implements AccountService {
     private IdProvider idProvider;
     //新增客户账户
     @Override
-    public Result increaseCustomerAccount(CustAcctDO custAcctDO) {
+    public String increaseCustomerAccount(CustAcctDO custAcctDO) {
         custAcctDO.setCustCode(idProvider.getId(custAcctDO.getOrgCode()));
         int affectRow = custAcctDOMapper.insertSelective(custAcctDO);
         if(affectRow <= 0 ){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"开启客户账户失败");
         }
-        return Result.OK("开启客户账户成功").build();
+        return custAcctDO.getCustCode();
     }
 
     @Override
-    public Result getCustomerAccount(String customerCode) {
+    public CustAcctDO getCustomerAccount(String customerCode) {
         CustAcctDO custAcctDO=custAcctDOMapper.selectByPrimaryKey(customerCode);
-        return Result.OK(custAcctDO).build();
+        if(custAcctDO==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"客户账户不存在");
+        }
+        return custAcctDO;
+       // increaseCapitalAccount(1,)
     }
 
     //新增资金账户
     @Override
-    public Result increaseCapitalAccount(CapAcctDO capAcctDO) {
-        capAcctDO.setCapCode(idProvider.getId(capAcctDO.getOrgCode()));
+    public String increaseCapitalAccount(String customerCode,String capitalAccountPassword) {
+        CustAcctDO custAcctDO=getCustomerAccount(customerCode);
+        List<CapAcctDO> capAcctDOList=getCapitalAccount(customerCode);
+        CapAcctDO capAcctDO=new CapAcctDO();
+        capAcctDO.setCapCode(idProvider.getId(custAcctDO.getOrgCode()));
+        capAcctDO.setCustCode(customerCode);
+        capAcctDO.setOrgCode(custAcctDO.getOrgCode());
+        capAcctDO.setCapPwd(capitalAccountPassword);
+        capAcctDO.setCurrency("0");
+        capAcctDO.setAttr("0");
+        capAcctDO.setOpenTime(new Date().getTime());
+        capAcctDO.setCloseTime(-1L);
+        capAcctDO.setCapStatus("0");
+        if(capAcctDOList==null){
+            capAcctDO.setMainFlag(true);
+        }
         int affectRow = capAcctDOMapper.insertSelective(capAcctDO);
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"增加资金账户失败");
         }
-        return Result.OK("开启资金账户成功").build();
+        return capAcctDO.getCapCode();
     }
 
     @Override
-    public Result getCapitalAccount(String customerCode) {
+    public List<CapAcctDO> getCapitalAccount(String customerCode) {
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
-        return Result.OK(capAcctDOList).build();
+        if(capAcctDOList==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
+        }
+        return capAcctDOList;
     }
 
     //新增存管账户
     @Override
-    public Result increaseDepositoryAccount(DepAcctDO depAcctDO) {
+    public String increaseDepositoryAccount(String capitalCode,String bankType,String bankCardCode) {
+        CapAcctDO capAcctDO=capAcctDOMapper.selectByPrimaryKey(capitalCode);
+        if(capAcctDO==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
+        }
+        DepAcctDO depAcctDO=new DepAcctDO();
         depAcctDO.setDepCode(depAcctDO.getCapCode());
+        depAcctDO.setCapCode(capitalCode);
+        depAcctDO.setBankType(bankType);
+        depAcctDO.setBankCardCode(bankCardCode);
         int affectRow = depAcctDOMapper.insertSelective(depAcctDO);
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"开启存管账户失败");
         }
-        return Result.OK("开启存管账户成功").build();
+        return depAcctDO.getDepCode();
     }
 
     @Override
-    public Result getDepositoryAccount(String customerCode) {
+    public List<DepAcctDO> getDepositoryAccount(String customerCode) {
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
+        if(capAcctDOList==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
+        }
         List<DepAcctDO> depAcctDOList =capAcctDOList.stream()
                 .map(i-> depAcctDOMapper.selectByCapCode(i.getCapCode()))
                 .collect(Collectors.toList());
-        return Result.OK(depAcctDOList).build();
+        if(depAcctDOList==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"存管账户不存在");
+        }
+        return depAcctDOList;
     }
 
     @Override
-    public Result increaseTradeAccount(TrdAcctDO trdAcctDO) {
-        return null;
+    public String increaseTradeAccount(String customerCode,String stkEx,String stkBd,
+                                     String custType,String trdUnit) {
+        TrdAcctDO trdAcctDO=new TrdAcctDO();
+        trdAcctDO.setTrdCode(idProvider.getId(stkBd));
+        trdAcctDO.setCustCode(customerCode);
+        trdAcctDO.setCustType(custType);
+        trdAcctDO.setStkBd(stkBd);
+        trdAcctDO.setStkEx(stkEx);
+        trdAcctDO.setTrdUnit(trdUnit);
+        trdAcctDO.setOpenTime(new Date().getTime());
+        trdAcctDO.setCloseTime(-1L);
+        trdAcctDO.setTdrStatus("0");
+        int affectRow=trdAcctDOMapper.insertSelective(trdAcctDO);
+        if(affectRow>=0){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"证券账户插入");
+        }
+        return trdAcctDO.getTrdCode();
     }
 
     @Override
-    public Result getTradeAccount(String customerCode) {
+    public List<TrdAcctDO> getTradeAccount(String customerCode) {
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(customerCode);
-        return Result.OK(trdAcctDOList).build();
+        if(trdAcctDOList==null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"证券账户不存在");
+        }
+        return trdAcctDOList;
     }
 
     @Override
-    public Result modifyCapitalAccount(String capCode, String oldPassword, String newPassword) {
+    public void modifyCapitalAccount(String capCode, String oldPassword, String newPassword) {
         CapAcctDO capAcctDO=capAcctDOMapper.selectByPrimaryKey(capCode);
         if(capAcctDO==null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
@@ -109,6 +163,5 @@ public class AccountServiceImpl implements AccountService {
         if(affectRow==0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改密码失败");
         }
-        return Result.OK("修改密码成功").build();
     }
 }

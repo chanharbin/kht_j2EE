@@ -1,9 +1,6 @@
 package com.kht.backend.controller;
 
-import com.kht.backend.dataobject.AcctOpenInfoDO;
-import com.kht.backend.dataobject.CapAcctDO;
-import com.kht.backend.dataobject.ImageDO;
-import com.kht.backend.dataobject.UserDO;
+import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
@@ -29,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -92,27 +90,31 @@ public class UserController {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return userService.getUserInfo(currentUser.getUserCode());
     }
-    //TODO 下面api待测
     @GetMapping("/user/customerAccount")
     public Result getUserCustomerAccount(@RequestParam("custCode")String customerCode){
-        return accountService.getCustomerAccount(customerCode);
+        CustAcctDO custAcctDO=accountService.getCustomerAccount(customerCode);
+        return Result.OK(custAcctDO).build();
     }
     @GetMapping("/user/depositoryAccount")
     public Result getUserDepositoryAccount(@RequestParam("custCode")String customerCode){
-        return accountService.getDepositoryAccount(customerCode);
+        List<DepAcctDO>depAcctDOList= accountService.getDepositoryAccount(customerCode);
+        return Result.OK(depAcctDOList).build();
     }
     @GetMapping("/user/tradeAccount")
     public Result getUserTradeAccount(@RequestParam("custCode")String customerCode){
-        return accountService.getTradeAccount(customerCode);
+        List<TrdAcctDO>  trdAcctDOList=accountService.getTradeAccount(customerCode);
+        return Result.OK(trdAcctDOList).build();
     }
     @GetMapping("/user/capitalAccount")
     public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
-        return accountService.getCapitalAccount(customerCode);
+        List<CapAcctDO> capAcctDOList= accountService.getCapitalAccount(customerCode);
+        return Result.OK(capAcctDOList).build();
     }
     @PutMapping("/user/capitalAccount")
     public Result modifyUserCapitalAccountPassword(@RequestParam("capCode")String capCode,@RequestParam("oldPassword")String oldPassword,
                                                    @RequestParam("newPassword")String newPassword){
-        return accountService.modifyCapitalAccount(capCode,oldPassword,newPassword);
+        accountService.modifyCapitalAccount(capCode,oldPassword,newPassword);
+        return  Result.OK("修改资金密码成功").build();
     }
 
     @GetMapping("/checkCode")
@@ -124,9 +126,11 @@ public class UserController {
         return userService.getState(userCode);
     }
     @PostMapping("/user/capitalAccount")
-    public Result addUserCapitalAccount(CapAcctDO capAcctDO){
-        //return accountService.in
-        return null;
+    public Result addUserCapitalAccount(@RequestParam("capPwd")String capPwd,@RequestParam("bankCardCode")String bankCardCode,
+                                        @RequestParam("bankType")String bankType,@RequestParam("custCode")String custCode){
+        String capCode=accountService.increaseCapitalAccount(custCode,capPwd);
+        accountService.increaseDepositoryAccount(capCode,bankType,bankCardCode);
+        return Result.OK("增加资金账户和客户账户成功").build();
     }
 
 }
