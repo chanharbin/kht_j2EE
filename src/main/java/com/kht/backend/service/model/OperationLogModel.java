@@ -1,10 +1,21 @@
 package com.kht.backend.service.model;
 
+
+import lombok.Data;
+
+@Data
 public class OperationLogModel {
 
     private int logCode;
 
-    private long time;
+    private long logTime;
 
-    private String employeeId;
+    private String employeeCode;
+
+    private String operaName;
+
+    private String url;
+
+    private String operaType;
+
 }
