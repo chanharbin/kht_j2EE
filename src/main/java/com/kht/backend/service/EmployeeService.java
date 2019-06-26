@@ -26,8 +26,8 @@ public interface EmployeeService {
     //获取员工列表
     public Result listEmployee(int pageNum);
 
-    //获取用户审核资料
-    public Result getUserValidationInfo(int userCode);
+    //获取用户审核资料结果并增加四个账户
+    public Result getUserValidationInfo(int info);
 
     //根据员工编号获取员工
     public Result getEmployeeById(String id);

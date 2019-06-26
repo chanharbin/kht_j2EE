@@ -13,6 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +66,13 @@ public class RedisConfigTest {
         PositionDO positionDO = new PositionDO();
         positionDO.setPosCode(1);
         positionDO.setPosName("123");
-        valueOperations.set("test",positionDO);
+        PositionDO positionDO1 = new PositionDO();
+        positionDO1.setPosCode(1);
+        positionDO1.setPosName("123");
+        List polist = new LinkedList();
+        polist.add(positionDO);
+        polist.add(positionDO1);
+        valueOperations.set("test",polist);
         String s = JSON.toJSONString(valueOperations.get("test"));
         System.out.println(s);
     }
@@ -96,6 +105,10 @@ public class RedisConfigTest {
         PositionDO positionDO = new PositionDO();
         positionDO.setPosCode(1);
         positionDO.setPosName("123");
+        listOperations.leftPush("list:user",positionDO);
+        PositionDO positionDO1 = new PositionDO();
+        positionDO1.setPosCode(2);
+        positionDO1.setPosName("321");
         listOperations.leftPush("list:user",positionDO);
         System.out.println(listOperations.leftPop("list:user"));
         // pop之后 值会消失

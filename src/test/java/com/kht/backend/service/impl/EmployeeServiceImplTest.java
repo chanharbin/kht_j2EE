@@ -83,4 +83,9 @@ public class EmployeeServiceImplTest {
         String s = JSONObject.toJSONString(result.getData());
         System.out.println(s);
     }
+
+    @Test
+    public void getUserValidationInfo() {
+        employeeService.getUserValidationInfo(1);
+    }
 }

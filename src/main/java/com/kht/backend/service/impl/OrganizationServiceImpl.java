@@ -19,9 +19,14 @@ import com.kht.backend.service.model.OrganizationModel;
 import com.kht.backend.service.model.UserFromOrg;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +38,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     private OrganizationDOMapper organizationDOMapper;
     @Autowired
     private CustAcctDOMapper custAcctDOMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Resource
+    private ValueOperations<String,Object> valueOperations;
+    @Autowired
+    private ListOperations<String, Object> listOperations;
+
+    @Autowired
+    private SetOperations<String, Object> setOperations;
+
     @Transactional
     @Override
     public Result increaseOrganization(OrganizationDO organizationDO) {
@@ -67,12 +82,23 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
         PageHelper.startPage(pageNum,10);
-        List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
-        List<OrganizationDO> organizationDOListFiltered = organizationDOList.stream().filter(organizationDO -> !organizationDO.getOrgCode().isEmpty()).collect(Collectors.toList());
-        if(organizationDOListFiltered == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，请等待机构添加");
+        String key = "OrganizationList";
+        List orgList = (List) valueOperations.get(key);
+        if(orgList == null || orgList.isEmpty()){
+            List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
+            List<OrganizationDO> organizationDOListFiltered = organizationDOList.stream().filter(organizationDO -> !organizationDO.getOrgCode().isEmpty()).collect(Collectors.toList());
+            valueOperations.set(key,organizationDOListFiltered);
+            if(organizationDOListFiltered == null){
+                throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，请等待机构添加");
+            }
+            PageInfo<OrganizationDO> page = new PageInfo<>(organizationDOListFiltered);
+            Map<String,Object> resultData = new LinkedHashMap<>();
+            resultData.put("organization_num",page.getTotal());
+            resultData.put("organizations",page.getList());
+            return resultData;
         }
-        PageInfo<OrganizationDO> page = new PageInfo<>(organizationDOListFiltered);
+        System.out.println("redis_有");
+        PageInfo<OrganizationDO> page = new PageInfo<>(orgList);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("organization_num",page.getTotal());
         resultData.put("organizations",page.getList());

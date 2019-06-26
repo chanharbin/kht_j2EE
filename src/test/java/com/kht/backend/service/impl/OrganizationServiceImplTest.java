@@ -43,8 +43,10 @@ public class OrganizationServiceImplTest {
     @Test
     public void getOrganizationList() {
         Map organizationList = organizationService.getOrganizationList(10);
-        //String s = JSONObject.toJSONString(organizationList.getData());
-        //System.out.println(s);
+        String s = JSONObject.toJSONString(organizationList);
+        System.out.println(s);
+
+
     }
 
     @Test

@@ -13,7 +13,9 @@ import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.AccountService;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.UserService;
+import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +40,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private UserDOMapper userDOMapper;
     @Autowired
     private AccountService accountService;
-
-
     @Transactional
     @Override
     public Result deleteEmployee(String employeeCode) {
@@ -129,18 +129,36 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     //TODO
     @Override
-    public Result getUserValidationInfo(int userCode) {
-        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+    public Result getUserValidationInfo(int infoCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByPrimaryKey(infoCode);
         CustAcctDO custAcctDO = new CustAcctDO();
-        CapAcctDO capAcctDO = new CapAcctDO();
+        BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(acctOpenInfoDO.getAnsOne());
+        stringBuffer.append(acctOpenInfoDO.getAnsTwo());
+        stringBuffer.append(acctOpenInfoDO.getAnsThree());
+        stringBuffer.append(acctOpenInfoDO.getAnsFour());
+        stringBuffer.append(acctOpenInfoDO.getAnsFive());
+        stringBuffer.append(acctOpenInfoDO.getAnsSix());
+        stringBuffer.append(acctOpenInfoDO.getAnsSeven());
+        stringBuffer.append(acctOpenInfoDO.getAnsEight());
+        stringBuffer.append(acctOpenInfoDO.getAnsNine());
+        stringBuffer.append(acctOpenInfoDO.getAnsTen());
+        char[] s = stringBuffer.toString().toCharArray();
+        GetPoint getPoint = new GetPoint(s);
+        String investorType = getPoint.getInvestorType();
+        custAcctDO.setInvestorType(investorType);
+        custAcctDO.setCloseTime(-1L);
+        String customerCode = accountService.increaseCustomerAccount(custAcctDO);
+        accountService.increaseCapitalAccount(customerCode,"000000");
+        //accountService.increaseTradeAccount(customerCode)
+        /*CapAcctDO capAcctDO = new CapAcctDO();
         DepAcctDO depAcctDO = new DepAcctDO();
-        TrdAcctDO trdAcctDO = new TrdAcctDO();
-
-
+        TrdAcctDO trdAcctDO = new TrdAcctDO();*/
+        //accountService.increaseCustomerAccount()
 
         return null;
     }
-
 
     @Override
     public Result getEmployeeById(String id) {
