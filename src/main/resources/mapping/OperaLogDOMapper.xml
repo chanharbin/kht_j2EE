@@ -43,7 +43,7 @@
     select
     <include refid="Base_Column_List" />
     from opera_log
-    where LOG_TIME &lt; #{2} and LOG_TIME &gt; #{1}
+    where LOG_TIME &gt;= #{startTime} and LOG_TIME &lt;= #{endTime}
   </select>
 
 

@@ -3,6 +3,7 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.OperaLogDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -61,5 +62,5 @@ public interface OperaLogDOMapper {
 
     List<OperaLogDO> selectByOperator(String operator);
 
-    List<OperaLogDO> selectByTime(long startTime, long endTime);
+    List<OperaLogDO> selectByTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }
