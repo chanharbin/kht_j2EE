@@ -5,9 +5,12 @@ import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.OperaLogDOMapper;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OperationLogService;
+import com.kht.backend.service.model.OperationLogModel;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+/*
 @Service
 public class OperationLogServiceImpl implements OperationLogService {
 
@@ -20,7 +23,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Override
     public Result getOperationLogsByTime(int pageNum, Long startTime, Long endTime) {
         PageHelper.startPage(pageNum,pageSize);
-        List<> dataDictionaryModelList = subDataDictDOMapper.listAll();
+        List<OperationLogModel> operationLogModelList = operaLogDOMapper.listAll();
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
@@ -28,3 +31,5 @@ public class OperationLogServiceImpl implements OperationLogService {
         return Result.OK(resultData).build();
     }
 }
+
+ */
