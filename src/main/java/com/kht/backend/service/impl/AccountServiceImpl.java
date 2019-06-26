@@ -94,10 +94,12 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
         }
         DepAcctDO depAcctDO=new DepAcctDO();
-        depAcctDO.setDepCode(depAcctDO.getCapCode());
+        depAcctDO.setDepCode(capAcctDO.getCapCode());
         depAcctDO.setCapCode(capitalCode);
         depAcctDO.setBankType(bankType);
         depAcctDO.setBankCardCode(bankCardCode);
+        depAcctDO.setOpenTime(new Date().getTime());
+        depAcctDO.setCloseTime(-1L);
         int affectRow = depAcctDOMapper.insertSelective(depAcctDO);
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"开启存管账户失败");

@@ -1,14 +1,20 @@
 package com.kht.backend.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.*;
 import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.UserService;
+import com.kht.backend.service.model.CapitalAccountInfoResponse;
+import com.kht.backend.service.model.UserListResponse;
 import com.kht.backend.util.IdProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +42,14 @@ public class UserServiceImpl implements UserService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private ImageDOMapper imageDOMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AccountServiceImpl accountService;
+    @Autowired
+    private OrganizationDOMapper organizationDOMapper;
+    @Value("${app.pageSize}")
+    private int pageSize;
     @Override
     public Result userRegister(Long telephone, String checkCode, String password) {
         if(checkCode==null);//TODO
@@ -52,6 +66,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Result increaseAccountOpenInfo(int userCode,AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
+        AcctOpenInfoDO acctOpenInfoDO1=acctOpenInfoDOMapper.selectByUserCode(userCode);
+        if(acctOpenInfoDO1!=null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"已存在开户资料");
+        }
         int affectRow1=imageDOMapper.insertSelective(imageDO);
         if(affectRow1==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"添加影像资料失败");
@@ -99,7 +117,6 @@ public class UserServiceImpl implements UserService {
         data.put("face",imageDO.getFace());
         return new Result(200,"ok",data);
     }
-
     @Override
     public Result getOtp(String telephone) {
         //TODO redis
@@ -125,10 +142,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result modifyUserPassword(int userCode,String oldPassword,String password) {
         UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
-        if(userDO==null||!userDO.getPassword().equals(oldPassword)){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
+        if(userDO==null||!userDO.getPassword().equals(passwordEncoder.encode(oldPassword))){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"密码错误");
         }
-        userDO.setPassword(password);
+        userDO.setPassword(passwordEncoder.encode(password));
         int affectRow=userDOMapper.updateByPrimaryKeySelective(userDO);
         if(affectRow==0){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
@@ -193,12 +210,51 @@ public class UserServiceImpl implements UserService {
         return Result.OK("更新资金账户密码成功").build();
     }
     @Override
-    public Result getState(int userCode) {
+    public Map<String,Object> getUserAndState(int userCode) {
         AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
         if(acctOpenInfoDO==null){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
         }
-        return Result.OK(acctOpenInfoDO.getInfoStatus()).build();
+        Map<String,Object>data=new LinkedHashMap<>();
+        data.put("infoStatus",acctOpenInfoDO.getInfoStatus());
+        if(custAcctDO==null) {
+            data.put("custCode", null);
+        }
+        else{
+            data.put("custCode",custAcctDO.getCustCode());
+        }
+        return data;
+    }
+
+    public List<CapitalAccountInfoResponse> getCapitalAccountInfo(String customerCode){
+        List<CapAcctDO> capAcctDOList= accountService.getCapitalAccount(customerCode);
+        if(capAcctDOList==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
+        }
+        List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =capAcctDOList.stream()
+                .map(i->new CapitalAccountInfoResponse(i.getCapCode(),depAcctDOMapper.selectByCapCode(i.getCapCode()).getDepCode(),
+                        i.getCurrency(),i.getMainFlag(),i.getAttr(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),
+                        i.getOpenTime(),i.getCloseTime(),i.getCapStatus()))
+                .collect(Collectors.toList());
+        return capitalAccountInfoResponseList;
+    }
+    public Map<String, Object> getUserInfoList(int pageNum){
+        PageHelper.startPage(pageNum,pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.listAll();
+        if(acctOpenInfoDOList==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        List<UserListResponse> userListResponseList=page.getList().stream()
+                .map(i->new UserListResponse(i.getInfoCode(),i.getName(),i.getIdType(),i.getIdCode(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String,Object> data = new LinkedHashMap<>();
+        data.put("totalNum",page.getTotal());
+        data.put("userList",userListResponseList);
+        return data;
     }
      /*@Override
     public Result userLogin(Long telephone, String password) {

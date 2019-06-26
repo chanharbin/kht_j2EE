@@ -69,4 +69,29 @@ public class JwtTokenProvider {
         }
         return false;
     }
+    public String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7, bearerToken.length());
+        }
+        return null;
+    }
+    public String refreshToken(String token) {
+        if(validateToken(token)){
+        Date now=new Date();
+        Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
+        final Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512,jwtSecret)
+                .compact();
+        }
+        return null;
+    }
 }

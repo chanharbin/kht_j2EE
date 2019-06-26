@@ -37,15 +37,15 @@ public class UserPrincipal implements UserDetails {
                 authorities);
     }
     public static UserPrincipal create(Claims claims){
-        Collection<GrantedAuthority> tmp=(Collection<GrantedAuthority>)claims.get("authorities");
-        System.out.println(tmp);
+        Collection<? extends GrantedAuthority> tmp=(Collection<? extends GrantedAuthority>)claims.get("authorities");
+        //System.out.println(tmp);
         return new UserPrincipal(
                 (int)claims.get("userCode"),
                 Long.valueOf(((Number)claims.get("telephone")).longValue()),
                 (String)claims.get("password"),
                 (String)claims.get("userType"),
                 (String)claims.get("code"),
-                (Collection<GrantedAuthority>)claims.get("authorities")
+                (Collection<? extends GrantedAuthority>)claims.get("authorities")
         );
     }
     public static UserPrincipal create(Map<String,Object> claims){
@@ -55,7 +55,7 @@ public class UserPrincipal implements UserDetails {
                 (String)claims.get("password"),
                 (String)claims.get("userType"),
                 (String)claims.get("code"),
-                (Collection<GrantedAuthority>)claims.get("authorities")
+                (Collection<? extends GrantedAuthority>)claims.get("authorities")
         );
     }
     public Map<String,Object> convertToMap(){
@@ -131,5 +131,18 @@ public class UserPrincipal implements UserDetails {
                 ", code='" + code + '\'' +
                 ", authorities=" + authorities +
                 '}';
+    }
+
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        this.authorities = authorities;
     }
 }

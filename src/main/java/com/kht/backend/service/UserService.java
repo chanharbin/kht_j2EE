@@ -4,6 +4,8 @@ import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.ImageDO;
 import com.kht.backend.entity.Result;
 
+import java.util.Map;
+
 public interface UserService {
     //用户注册
     public Result userRegister(Long telephone,String checkCode,String password);
@@ -28,7 +30,7 @@ public interface UserService {
     public Result increaseCapitalAccount(String customerCode,String capitalAccountPassword,String bankType,String bankCardCode);
 
     //获取用户审核状态
-    public Result getState(int infoCode);
+    public Map<String,Object> getUserAndState(int userCode);
 
     //修改用户密码
     public Result modifyUserPassword(int userCode,String oldPassword,String password);

@@ -442,4 +442,9 @@
     from acct_open_info
     where USER_CODE = #{USER_CODE,jdbcType=INTEGER}
   </select>
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+  </select>
 </mapper>
