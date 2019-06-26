@@ -10,7 +10,7 @@ import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.DataDictionaryService;
 import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,12 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Autowired
     private SubDataDictDOMapper subDataDictDOMapper;
 
+    @Value("${app.pageSize}")
+    private int pageSize;
+
     @Override
     public Result getAllDataDictionaries(int pageNum) {
-        PageHelper.startPage(pageNum,10);
+        PageHelper.startPage(pageNum,pageSize);
         List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.listAll();
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
@@ -37,7 +40,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     @Override
     public Result getDataDictionariesByColName(String colName, int pageNum) {
-        PageHelper.startPage(pageNum,10);
+        PageHelper.startPage(pageNum,pageSize);
         List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName);
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
