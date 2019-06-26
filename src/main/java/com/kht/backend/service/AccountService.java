@@ -6,16 +6,23 @@ import com.kht.backend.dataobject.DepAcctDO;
 import com.kht.backend.dataobject.TrdAcctDO;
 import com.kht.backend.entity.Result;
 
-public interface AccountService {
-    public Result increaseCustomerAccount(CustAcctDO custAcctDO);
-    public Result getCustomerAccount(String customerCode);
-    public Result increaseCapitalAccount(CapAcctDO capAcctDO);
-    public Result getCapitalAccount(String customerCode);
-    //public Result deleteCapitalAccount(String capitalAccount);
-    public Result increaseDepositoryAccount(DepAcctDO depAcctDO);
-    public Result getDepositoryAccount(String customerCode);
-    public Result increaseTradeAccount(TrdAcctDO trdAcctDO);
-    public Result getTradeAccount(String customerCode);
+import java.util.List;
 
-    public Result modifyCapitalAccount(String caprCode,String oldPassword,String newPassword);
+public interface AccountService {
+    public String increaseCustomerAccount(CustAcctDO custAcctDO);
+
+    public CustAcctDO getCustomerAccount(String customerCode);
+
+    public String increaseCapitalAccount(String customerCode,String capitalAccountPassword) ;
+
+    public List<CapAcctDO> getCapitalAccount(String customerCode);
+
+    public String increaseDepositoryAccount(String capitalCode,String bankType,String bankCardCode);
+
+    public List<DepAcctDO> getDepositoryAccount(String customerCode);
+
+    public String increaseTradeAccount(String customerCode,String stkEx,String stkBd, String custType,String trdUnit);
+    public List<TrdAcctDO> getTradeAccount(String customerCode);
+
+    public void modifyCapitalAccount(String caprCode,String oldPassword,String newPassword);
 }
