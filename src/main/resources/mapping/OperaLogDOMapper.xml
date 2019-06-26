@@ -20,6 +20,17 @@
     -->
     LOG_CODE, EMPLOYEE_CODE, OPERA_CODE, LOG_TIME
   </sql>
+  <resultMap id="OperationLogResultMap" type="com.kht.backend.service.model.OperationLogModel">
+    <id column="LOG_CODE" jdbcType="INTEGER" property="logCode" />
+    <result column="LOG_TIME" jdbcType="BIGINT" property="logTime" />
+    <result column="EMPLOYEE_CODE" jdbcType="VARCHAR" property="employeeCode" />
+    <result column="OPERA_NAME" jdbcType="VARCHAR" property="operaName" />
+    <result column="URL" jdbcType="VARCHAR" property="url" />
+    <result column="OPERA_TYPE" jdbcType="VARCHAR" property="operaType" />
+  </resultMap>
+  <sql id="Operation_Log_Column_List">
+    LOG_CODE, LOG_TIME, EMPLOYEE_CODE, OPERA_NAME, URL, OPERA_TYPE
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--
       WARNING - @mbg.generated
@@ -32,25 +43,34 @@
     where LOG_CODE = #{logCode,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByOperator" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByEmployeeCode" parameterType="java.lang.String" resultMap="OperationLogResultMap">
     select
-    <include refid="Base_Column_List" />
+    <include refid="Operation_Log_Column_List" />
+    from (
+    select *
     from opera_log
-    where EMPLOYEE_CODE = #{operator,jdbcType=VARCHAR}
+    where EMPLOYEE_CODE = #{employeeCode,jdbcType=VARCHAR}
+    ) as temp natural join operation
+    order by LOG_TIME desc
   </select>
 
-  <select id="selectByTime"  resultMap="BaseResultMap">
+  <select id="selectByLogTime"  resultMap="OperationLogResultMap">
     select
-    <include refid="Base_Column_List" />
+    <include refid="Operation_Log_Column_List" />
+    from (
+    select *
     from opera_log
     where LOG_TIME &gt;= #{startTime} and LOG_TIME &lt;= #{endTime}
+    ) as temp natural join operation
+    order by LOG_TIME desc
   </select>
 
 
-  <select id="listAll"  resultMap="BaseResultMap">
+  <select id="listAll"  resultMap="OperationLogResultMap">
     select
-    <include refid="Base_Column_List" />
-    from opera_log
+    <include refid="Operation_Log_Column_List" />
+    from opera_log natural join operation
+    order by LOG_TIME desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--

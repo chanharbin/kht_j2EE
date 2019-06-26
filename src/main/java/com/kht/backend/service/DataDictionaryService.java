@@ -2,10 +2,13 @@ package com.kht.backend.service;
 
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
+import com.kht.backend.service.model.DataDictionaryModel;
+
+import java.util.List;
 
 public interface DataDictionaryService {
 
-    public Result getAllDataDictionaries(int pageNum);
+    public List<DataDictionaryModel> getAllDataDictionaries();
 
     public Result getDataDictionariesByColName(String colName, int pageNum);
 

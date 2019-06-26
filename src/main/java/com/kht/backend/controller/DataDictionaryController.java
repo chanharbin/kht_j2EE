@@ -1,9 +1,16 @@
 package com.kht.backend.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kht.backend.entity.*;
 import com.kht.backend.service.DataDictionaryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kht.backend.service.model.DataDictionaryModel;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -13,13 +20,22 @@ public class DataDictionaryController {
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
+    @Value("${app.pageSize}")
+    private int pageSize;
+
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
-        return dataDictionaryService.getAllDataDictionaries(pageNum);
+        PageHelper.startPage(pageNum, pageSize);
+        List<DataDictionaryModel> dataDictionaryModelList = dataDictionaryService.getAllDataDictionaries();
+        PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("totalNum",page.getTotal());
+        resultData.put("data",page.getList());
+        return Result.OK(resultData).build();
     }
 
     @RequestMapping(value = "/data-dictionary/{colName}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
+    public Result getDataDictionariesByColName(@PathVariable("colName") String colName, @RequestParam("pageNum") int pageNum) {
         return dataDictionaryService.getDataDictionariesByColName(colName, pageNum);
     }
 

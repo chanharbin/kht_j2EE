@@ -3,6 +3,7 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.OperaLogDO;
+import com.kht.backend.service.model.OperationLogModel;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -58,9 +59,9 @@ public interface OperaLogDOMapper {
      */
     int updateByPrimaryKey(OperaLogDO record);
 
-    List<OperaLogDO> listAll();
+    List<OperationLogModel> listAll();
 
-    List<OperaLogDO> selectByOperator(String operator);
+    List<OperationLogModel> selectByEmployeeCode(String employeeCode);
 
-    List<OperaLogDO> selectByTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
+    List<OperationLogModel> selectByLogTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }

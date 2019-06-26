@@ -28,14 +28,8 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     private int pageSize;
 
     @Override
-    public Result getAllDataDictionaries(int pageNum) {
-        PageHelper.startPage(pageNum,pageSize);
-        List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.listAll();
-        PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
-        Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("totalNum",page.getTotal());
-        resultData.put("data",page.getList());
-        return Result.OK(resultData).build();
+    public List<DataDictionaryModel> getAllDataDictionaries() {
+        return subDataDictDOMapper.listAll();
     }
 
     @Override
