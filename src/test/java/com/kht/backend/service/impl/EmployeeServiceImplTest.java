@@ -47,7 +47,7 @@ public class EmployeeServiceImplTest {
         //employeeDO.setPosition("1");
         long telephone = 12345213;
         employeeDO.setTelephone(telephone);
-        employeeService.increaseEmployee(employeeDO,"org");
+        //employeeService.increaseEmployee(employeeDO,"org");
         System.out.println(employeeDO.getEmployeeCode());
     }
 
@@ -65,8 +65,8 @@ public class EmployeeServiceImplTest {
         //employeeDO.setPosition("1");
         long telephone = 1340000;
         employeeDO.setTelephone(telephone);
-        Result result = employeeService.modifyEmployee(employeeDO);
-        System.out.println(result.getMsg());
+        //Result result = employeeService.modifyEmployee(employeeDO);
+        //System.out.println(result.getMsg());
     }
 
     @Test

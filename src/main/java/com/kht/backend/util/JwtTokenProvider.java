@@ -31,7 +31,6 @@ public class JwtTokenProvider {
 
         Date now=new Date();
         Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
-
         return Jwts.builder()
                 .setClaims(userPrincipal.convertToMap())
                 .setIssuedAt(now)

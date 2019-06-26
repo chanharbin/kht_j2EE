@@ -132,4 +132,14 @@ public class ImageDO {
     public void setFace(String face) {
         this.face = face == null ? null : face.trim();
     }
+
+    @Override
+    public String toString() {
+        return "ImageDO{" +
+                "imgCode=" + imgCode +
+                ", idFront='" + idFront + '\'' +
+                ", idBack='" + idBack + '\'' +
+                ", face='" + face + '\'' +
+                '}';
+    }
 }

@@ -5,13 +5,14 @@ import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dao.OperaLogDOMapper;
-import com.kht.backend.dataobject.AcctOpenInfoDO;
-import com.kht.backend.dataobject.EmployeeDO;
-import com.kht.backend.dataobject.OperaLogDO;
+import com.kht.backend.dao.UserDOMapper;
+import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
+import com.kht.backend.service.AccountService;
 import com.kht.backend.service.EmployeeService;
+import com.kht.backend.service.UserService;
 import com.kht.backend.util.IdProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
+    @Autowired
+    private UserDOMapper userDOMapper;
+    @Autowired
+    private AccountService accountService;
 
 
     @Transactional
@@ -45,8 +50,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(employeeDO == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工不存在");
         }
+        Integer userCode = employeeDO.getUserCode();
         int affectRow = employeeDOMapper.deleteByPrimaryKey(employeeCode);
-        if(affectRow <= 0){
+        int affectRow1 = userDOMapper.deleteByPrimaryKey(userCode);
+        if(affectRow <= 0 || affectRow1 <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"删除员工信息失败");
         }
         return Result.OK("删除员工成功").build();
@@ -54,14 +61,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public Result increaseEmployee(EmployeeDO employeeDO,String orgCode ) {
+    public Result increaseEmployee(EmployeeDO employeeDO,String orgCode,UserDO userDO) {
         String employeeId = idProvider.getId(orgCode);
         employeeDO.setEmployeeCode(employeeId);
+        int affectRow1 = userDOMapper.insertSelective(userDO);
+        Integer userCode = userDO.getUserCode();
+        employeeDO.setUserCode(userCode);
         if(employeeDO == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"输入信息不完全");
         }
         int affectRow = employeeDOMapper.insertSelective(employeeDO);
-        if(affectRow <= 0){
+        if(affectRow <= 0 || affectRow1 <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"插入信息失败");
         }
         return Result.OK("添加员工信息成功").build();
@@ -74,13 +84,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public Result modifyEmployee(EmployeeDO employeeDO) {
+    public Result modifyEmployee(EmployeeDO employeeDO,UserDO userDO) {
         EmployeeDO employeeDOVer = employeeDOMapper.selectByPrimaryKey(employeeDO.getEmployeeCode());
         if(employeeDOVer == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工编号不存在");
         }
+        employeeDO.setEmployeeStatus(employeeDOVer.getEmployeeStatus());
         int affectRow = employeeDOMapper.updateByPrimaryKey(employeeDO);
-        if(affectRow <= 0){
+        int affectRow1 = userDOMapper.updateByPrimaryKey(userDO);
+        if(affectRow <= 0 || affectRow1 <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改员工信息失败");
         }
         else{
@@ -110,15 +122,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         PageInfo<EmployeeDO> page = new PageInfo<>(employeeDOListFilterd);
         Map<String,Object> resultData = new LinkedHashMap<>();
-        resultData.put("totalNum",page.getTotal());
-        resultData.put("data",page.getList());
+        resultData.put("employee_num",page.getTotal());
+        resultData.put("employees",page.getList());
         return Result.OK(resultData).build();
     }
 
     //TODO
     @Override
-    public Result getUserValidationInfo(String customerCode) {
-        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByPrimaryKey(1);
+    public Result getUserValidationInfo(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO = new CustAcctDO();
+        CapAcctDO capAcctDO = new CapAcctDO();
+        DepAcctDO depAcctDO = new DepAcctDO();
+        TrdAcctDO trdAcctDO = new TrdAcctDO();
+
+
+
         return null;
     }
 

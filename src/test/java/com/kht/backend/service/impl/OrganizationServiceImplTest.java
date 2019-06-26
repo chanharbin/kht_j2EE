@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
 
 @SpringBootTest(classes = App.class)
 // 让 JUnit 运行 Spring 的测试环境， 获得 Spring 环境的上下文的支持
@@ -34,15 +36,15 @@ public class OrganizationServiceImplTest {
 
     @Test
     public void decreaseOrganization() {
-        Result result = organizationService.decreaseOrganization("1");
+        Result result = organizationService.decreaseOrganization("123");
         System.out.println(result.getData());
     }
 
     @Test
     public void getOrganizationList() {
-        Result organizationList = organizationService.getOrganizationList(10);
-        String s = JSONObject.toJSONString(organizationList.getData());
-        System.out.println(s);
+        Map organizationList = organizationService.getOrganizationList(10);
+        //String s = JSONObject.toJSONString(organizationList.getData());
+        //System.out.println(s);
     }
 
     @Test

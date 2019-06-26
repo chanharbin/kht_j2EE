@@ -133,13 +133,3 @@ public class UserPrincipal implements UserDetails {
                 '}';
     }
 }
-
-/**
- * 图片数据库
- * 操作日志 AOP
- * redis
- *
- * 鉴权  token
- *
- * control
- */

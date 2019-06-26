@@ -38,8 +38,6 @@ public class UserServiceImplTest {
 
     @Test
     public void userLogin() {
-        Result result=userService.userLogin(12345678912L,"654321");
-        System.out.println(result.getData());
     }
 
     @Test
