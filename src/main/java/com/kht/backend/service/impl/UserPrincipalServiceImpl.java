@@ -51,13 +51,14 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                 if (employeeDO != null) {
                     code=employeeDO.getEmployeeCode();
                 }
+                authorities.add(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
                 //TODO 权限待改
                 break;
             }
             default:
                 throw new UsernameNotFoundException("UserType Error");}
         UserPrincipal userPrincipal=UserPrincipal.create(userDO, code, authorities);
-        System.out.println(userPrincipal.toString());
+        //System.out.println(userPrincipal.toString());
         return userPrincipal;
     }
 }

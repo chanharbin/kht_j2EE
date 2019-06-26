@@ -10,6 +10,7 @@ import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.SystemParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,12 +19,14 @@ import java.util.Map;
 public class SystemParameterServiceImpl implements SystemParameterService {
     @Autowired
     SysParaDOMapper sysparaDOMapper;
+    @Value("${app.pageSize}")
+    private int pageSize;
     @Override
     public Result getAllSystemParameters(int pageNum) {
-        PageHelper.startPage(pageNum,10);
+        PageHelper.startPage(pageNum,pageSize);
         List<SysParaDO> sysParaDOList =sysparaDOMapper.listAll();
         if(sysParaDOList ==null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取参数失败");
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取系统参数失败");
         }
         PageInfo<SysParaDO> page = new PageInfo<>(sysParaDOList);
         Map<String,Object> resultData = new LinkedHashMap<>();
