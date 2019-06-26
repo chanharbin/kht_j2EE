@@ -19,8 +19,8 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     @Override
     public Result getOperationLogsByTime(int pageNum, Long startTime, Long endTime) {
-        PageHelper.startPage(pageNum,10);
-        List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.listAll();
+        PageHelper.startPage(pageNum,pageSize);
+        List<> dataDictionaryModelList = subDataDictDOMapper.listAll();
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
