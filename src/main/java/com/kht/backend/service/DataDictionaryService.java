@@ -14,6 +14,8 @@ public interface DataDictionaryService {
 
     public Result getColumnValues(String colCode, String tabCode);
 
+    public Result getAllColumns();
+
     public Result addDataDictionary(int mainCode, String valueCode, String value) throws ServiceException;
 
     public Result removeDataDictionary(int subCode);

@@ -2,14 +2,18 @@ package com.kht.backend.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.kht.backend.dao.MainDataDictDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
+import com.kht.backend.dataobject.MainDataDictDO;
 import com.kht.backend.dataobject.SubDataDictDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.DataDictionaryService;
+import com.kht.backend.service.model.ColumnModel;
 import com.kht.backend.service.model.ColumnValueModel;
 import com.kht.backend.service.model.DataDictionaryModel;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     @Autowired
     private SubDataDictDOMapper subDataDictDOMapper;
+
+    @Autowired
+    private MainDataDictDOMapper mainDataDictDOMapper;
 
     @Value("${app.pageSize}")
     private int pageSize;
@@ -48,6 +56,19 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValues(colCode, tabCode);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("data", columnValueModelList);
+        return  Result.OK(resultData).build();
+    }
+
+    @Override
+    public Result getAllColumns() {
+        List<MainDataDictDO> mainDataDictDOList = mainDataDictDOMapper.listAll();
+        List<ColumnModel> columnModelList = mainDataDictDOList.stream().map(mainDataDictDO -> {
+            ColumnModel columnModel = new ColumnModel();
+            BeanUtils.copyProperties(mainDataDictDO, columnModel);
+            return columnModel;
+        }).collect(Collectors.toList());
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("data", columnModelList);
         return  Result.OK(resultData).build();
     }
 

@@ -19,12 +19,12 @@ public class OperationLogController {
     }
 
     @RequestMapping(value = "/operation-log/{employeeCode}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getOperationLogsByEmployeeCode(@RequestParam("pageNum") int pageNum, @RequestParam("employeeCode") String employeeCode) {
+    public Result getOperationLogsByEmployeeCode(@RequestParam("pageNum") int pageNum, @PathVariable("employeeCode") String employeeCode) {
         return operationLogService.getOperationLogsByEmployeeCode(pageNum, employeeCode);
     }
 
-    @RequestMapping(value = "/operation-log/{logTime}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getOperationLogsByLogTime(@RequestParam("pageNum") int pageNum, @RequestParam("startTime") Long startTime, @RequestParam("endTime") Long endTime) {
+    @RequestMapping(value = "/operation-log/{startTime}/{endTime}", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getOperationLogsByLogTime(@RequestParam("pageNum") int pageNum, @PathVariable("startTime") Long startTime, @PathVariable("endTime") Long endTime) {
         return operationLogService.getOperationLogsByLogTime(pageNum, startTime, endTime);
     }
 }

@@ -4,6 +4,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.MainDataDictDO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface MainDataDictDOMapper {
     /**
@@ -54,5 +56,6 @@ public interface MainDataDictDOMapper {
      */
     int updateByPrimaryKey(MainDataDictDO record);
 
+    List<MainDataDictDO> listAll();
 
 }

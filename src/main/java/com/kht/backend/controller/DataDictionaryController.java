@@ -34,14 +34,21 @@ public class DataDictionaryController {
         return Result.OK(resultData).build();
     }
 
-    @RequestMapping(value = "/data-dictionary/{colName}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getDataDictionariesByColName(@PathVariable("colName") String colName, @RequestParam("pageNum") int pageNum) {
+    @RequestMapping(value = "/data-dictionary/search", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
+        if (colName == null || colName.trim().isEmpty())
+            return this.getAllDataDictionaries(1);
         return dataDictionaryService.getDataDictionariesByColName(colName, pageNum);
     }
 
-    @RequestMapping(value = "/data-dictionary/column", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getColumnValues(@RequestParam("colCode") String colCode, @RequestParam("tabCode") String tabCode) {
+    @RequestMapping(value = "/data-dictionary/{tabCode}/{colCode}", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getColumnValues(@PathVariable("colCode") String colCode, @PathVariable("tabCode") String tabCode) {
         return dataDictionaryService.getColumnValues(colCode, tabCode);
+    }
+
+    @RequestMapping(value = "/data-dictionary/columns", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getAllColumns() {
+        return dataDictionaryService.getAllColumns();
     }
 
     @RequestMapping(value = "/data-dictionary", method = POST, produces = "application/json;charset=UTF-8")
