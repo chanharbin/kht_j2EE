@@ -62,7 +62,7 @@ public interface SubDataDictDOMapper {
 
     List<DataDictionaryModel> selectByColName(String colName);
 
-    List<ColumnValueModel> selectColumnValues(String colCode, String tabCode);
+    List<ColumnValueModel> selectColumnValues(@Param("colCode") String colCode,@Param("tabCode") String tabCode);
 
     List<SubDataDictDO> selectByMainCode(Integer mainCode);
 

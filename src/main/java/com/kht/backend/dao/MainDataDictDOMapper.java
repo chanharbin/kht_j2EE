@@ -2,6 +2,7 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.MainDataDictDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -58,5 +59,5 @@ public interface MainDataDictDOMapper {
 
     List<MainDataDictDO> listAll();
 
-    MainDataDictDO selectByColCodeAndTabCode(String colCode,String tabCode);
+    MainDataDictDO selectByColCodeAndTabCode(@Param("colCode") String colCode,@Param("tabCode") String tabCode);
 }
