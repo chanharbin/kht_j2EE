@@ -39,7 +39,7 @@ public class DataDictionaryController {
     public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
         if (colName == null || colName.trim().isEmpty())
             return this.getAllDataDictionaries(1);
-        return dataDictionaryService.getDataDictionariesByColName(colName, pageNum);
+        return dataDictionaryService.getDataDictionariesByColName(colName.trim(), pageNum);
     }
 
     @RequestMapping(value = "/data-dictionary/{tabCode}/{colCode}", method = GET, produces = "application/json;charset=UTF-8")
