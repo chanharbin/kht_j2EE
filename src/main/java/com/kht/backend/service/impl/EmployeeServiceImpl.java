@@ -17,10 +17,13 @@ import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.annotation.Resource;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private UserDOMapper userDOMapper;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Resource
+    private ValueOperations<String,Object> valueOperations;
     @Transactional
     @Override
     public Result deleteEmployee(String employeeCode) {
@@ -151,6 +158,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         custAcctDO.setCloseTime(-1L);
         String customerCode = accountService.increaseCustomerAccount(custAcctDO);
         accountService.increaseCapitalAccount(customerCode,"000000");
+        String stkEx; //交易所
+        String stkBD; //交易板块
+        String custType; //客户类型
+        String trdUnit; // 交易单元
+        //accountService.increaseTradeAccount()
         //accountService.increaseTradeAccount(customerCode)
         /*CapAcctDO capAcctDO = new CapAcctDO();
         DepAcctDO depAcctDO = new DepAcctDO();

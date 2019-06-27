@@ -45,6 +45,12 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         String datadictKey = "DataDictList";
         List<DataDictionaryModel> allDataDictionaries = dataDictionaryService.getAllDataDictionaries();
         valueOperations.set(datadictKey,allDataDictionaries);
-
+        //System.out.println(valueOperations.get(datadictKey));
+        /*List<DataDictionaryModel> o = (List)valueOperations.get(datadictKey);
+        for(int i =0;i<o.size();i++){
+            if(o.get(i).getMainCode() == 19){
+                String sktEx = o.get(i).getValueCode()
+            }
+        }*/
     }
 }
