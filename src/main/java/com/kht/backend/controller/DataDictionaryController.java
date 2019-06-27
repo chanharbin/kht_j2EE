@@ -24,6 +24,7 @@ public class DataDictionaryController {
     @Value("${app.pageSize}")
     private int pageSize;
 
+    @MethodLog(17)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
         PageHelper.startPage(pageNum, pageSize);

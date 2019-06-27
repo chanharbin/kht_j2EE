@@ -42,7 +42,8 @@ public class OperationLogAspect {
 
         operaLogDO.setLogCode(0);
         operaLogDO.setLogTime(System.currentTimeMillis());
-        operaLogDO.setEmployeeCode(jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest).getCode());
+        operaLogDO.setEmployeeCode("1000zxc00001");
+        //operaLogDO.setEmployeeCode(jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest).getCode());
 
         operationLogService.addOperationLog(operaLogDO);
     }
