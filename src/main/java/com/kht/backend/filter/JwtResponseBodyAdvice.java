@@ -33,9 +33,8 @@ public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
         //System.out.println(bearerToken);
         if(bearerToken!=null&&bearerToken.size()==1&& StringUtils.hasText(bearerToken.get(0))&&bearerToken.get(0).startsWith("Bearer ")){
             token=bearerToken.get(0).substring(7, bearerToken.get(0).length());
+            newToken=jwtTokenProvider.refreshToken(token);
         }
-        newToken=jwtTokenProvider.refreshToken(token);
-
         servletServerResponse.getHeaders().add("Authorization","Bearer "+newToken);
         return o;
     }
