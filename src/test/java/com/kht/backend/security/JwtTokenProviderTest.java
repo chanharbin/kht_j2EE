@@ -1,4 +1,3 @@
-/*
 package com.kht.backend.security;
 
 import com.kht.backend.util.JwtTokenProvider;
@@ -13,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JwtTokenProviderTest {
     @Autowired
@@ -44,11 +44,14 @@ public class JwtTokenProviderTest {
     public void getUserPrincipalFromJWT() {
         Claims claims=Jwts.parser()
                 .setSigningKey("KHT_Backend")
-                .parseClaimsJws("eyJhbGciOiJIUzUxMiJ9.eyJwYXNzd29yZCI6ImUxMGFkYzM5NDliYTU5YWJiZTU2ZTA1N2YyMGY4ODNlIiwiY29kZSI6bnVsbCwidGVsZXBob25lIjoxMjM0NTY3ODkxMiwidXNlclR5cGUiOiIwIiwiZXhwIjoxNTYxMzczNzg2LCJpYXQiOjE1NjEzNzAxODYsInVzZXJDb2RlIjoxLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.0-Ebgl9Jjco9WI3ntHEsbT72KvghNaftRw6pq9kSyYEChDj7vOqeYU0Psi5XzXCAjsOwH-Hu4EjwefQsahePEw")                .getBody();
+                .parseClaimsJws("eyJhbGciOiJIUzUxMiJ9.eyJwYXNzd29yZCI6ImUxMGFkYzM5NDliYTU5YWJiZTU2ZTA1N2YyMGY4ODNlIiwiY29kZSI6bnVsbCwidGVsZXBob25lIjoxMjM0NTY3ODkxMSwidXNlclR5cGUiOiIwIiwiZXhwIjo1MTYxNjAwMDY1LCJpYXQiOjE1NjE2MDAwNjUsInVzZXJDb2RlIjoxLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.4MMVGPY6Qpyz3y0NdbqEq5t5dxmbtLupNdg204pK1RGRpo0NUJjsgZavulB7OKhmSpEpHNgPI9ZYi4cURsDr_w")
+                .getBody();
         System.out.println(claims);
         UserPrincipal userPrincipal=UserPrincipal.create(claims);
         System.out.println(userPrincipal.getUsername());
         System.out.println(userPrincipal.getPassword());
+        System.out.println(userPrincipal.getAuthorities());
+        System.out.println(userPrincipal.getAuthorities().getClass());
 
     }
 
@@ -56,4 +59,4 @@ public class JwtTokenProviderTest {
     public void validateToken() {
         System.out.println();
     }
-}*/
+}

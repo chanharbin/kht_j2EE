@@ -1,5 +1,6 @@
 package com.kht.backend.config;
 
+import com.kht.backend.filter.JwtResponseBodyAdvice;
 import com.kht.backend.filter.ResponseInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +24,10 @@ public class CorsConfig implements WebMvcConfigurer {
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(responseInterceptor())
+        /*registry.addInterceptor(responseInterceptor())
                 .addPathPatterns("/**")
-                .order(1);//指定执行顺序，数值越小越优先
-        /*registry.addInterceptor(new SecondInterceptor())
+                .order(1);//指定执行顺序，数值越小越优先*/
+       /* registry.addInterceptor(new JwtResponseBodyAdvice())
                 .addPathPatterns("/hello")
                 .order(2);//指定执行顺序，数值越小越优先*/
     }

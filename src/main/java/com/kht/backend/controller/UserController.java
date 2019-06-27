@@ -43,15 +43,16 @@ public class UserController {
 
     private final String prefix="Bearer ";
     @PostMapping("/user/login")
-    public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password){
+    public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,HttpServletResponse httpServletResponse){
         try {
             Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(telephone, password));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt=jwtTokenProvider.generateToken(authentication);
             UserPrincipal userPrincipal=jwtTokenProvider.getUserPrincipalFromJWT(jwt);
             Map<String,Object>data=new LinkedHashMap<>();
-            data.put("Authorization",prefix+jwt);
+            //data.put("Authorization",prefix+jwt);
             data.put("userCode",userPrincipal.getUserCode());
+            httpServletResponse.setHeader("Authorization",prefix+jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {
             throw new AuthenticationException("User is disabled!", e);

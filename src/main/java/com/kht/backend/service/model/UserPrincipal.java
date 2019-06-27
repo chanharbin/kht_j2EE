@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
 import io.jsonwebtoken.Claims;
+import javafx.util.Pair;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
     //等同于userDO内的属性
@@ -37,25 +40,19 @@ public class UserPrincipal implements UserDetails {
                 authorities);
     }
     public static UserPrincipal create(Claims claims){
-        Collection<? extends GrantedAuthority> tmp=(Collection<? extends GrantedAuthority>)claims.get("authorities");
-        //System.out.println(tmp);
+
+        List<GrantedAuthority> authoritiesList=((List<Map<String,String>>)claims.get("authorities")).stream()
+                .map(i->new SimpleGrantedAuthority((String)i.values().toArray()[0]))
+                .collect(Collectors.toList());
+        //System.out.println(authoritiesList);
+        //System.out.println(authes.get(0).getClass());
         return new UserPrincipal(
                 (int)claims.get("userCode"),
                 Long.valueOf(((Number)claims.get("telephone")).longValue()),
                 (String)claims.get("password"),
                 (String)claims.get("userType"),
                 (String)claims.get("code"),
-                (Collection<? extends GrantedAuthority>)claims.get("authorities")
-        );
-    }
-    public static UserPrincipal create(Map<String,Object> claims){
-        return new UserPrincipal(
-                (int)claims.get("userCode"),
-                Long.valueOf(((Number)claims.get("telephone")).longValue()),
-                (String)claims.get("password"),
-                (String)claims.get("userType"),
-                (String)claims.get("code"),
-                (Collection<? extends GrantedAuthority>)claims.get("authorities")
+                authoritiesList
         );
     }
     public Map<String,Object> convertToMap(){

@@ -44,6 +44,10 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                     code=custAcctDO.getCustCode();
                 }
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER1"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER3"));
+
                 break;
             }
             case "1": {
@@ -52,11 +56,14 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                     code=employeeDO.getEmployeeCode();
                 }
                 authorities.add(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_USER3"));
                 //TODO 权限待改
                 break;
             }
             default:
-                throw new UsernameNotFoundException("UserType Error");}
+                throw new UsernameNotFoundException("UserType Error");
+        }
         UserPrincipal userPrincipal=UserPrincipal.create(userDO, code, authorities);
         //System.out.println(userPrincipal.toString());
         return userPrincipal;
