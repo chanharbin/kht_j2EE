@@ -59,7 +59,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             StringBuffer datadictkey = new StringBuffer();
             datadictkey.append(allDataDictionaries.get(i).getColCode()).append(allDataDictionaries.get(i).getTabCode()).append(allDataDictionaries.get(i).getValueCode());
             String datadictkeyStr = datadictkey.toString();
-            System.out.println(datadictkeyStr);
             String value = allDataDictionaries.get(i).getValue();
             valueOperations.set(datadictkeyStr,value);
         }

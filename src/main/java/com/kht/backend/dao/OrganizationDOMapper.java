@@ -57,4 +57,6 @@ public interface OrganizationDOMapper {
     int updateByPrimaryKey(OrganizationDO record);
 
     List<OrganizationDO> selectAll();
+
+    List<OrganizationDO> selectByName(String orgName);
 }
