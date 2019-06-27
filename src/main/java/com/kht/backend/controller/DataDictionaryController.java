@@ -2,7 +2,7 @@ package com.kht.backend.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.kht.backend.aop.annotation.MethodLog;
+import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.entity.*;
 import com.kht.backend.service.DataDictionaryService;
 import com.kht.backend.service.model.DataDictionaryModel;
@@ -24,7 +24,7 @@ public class DataDictionaryController {
     @Value("${app.pageSize}")
     private int pageSize;
 
-    @MethodLog(17)
+    @MethodLog(12)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
         PageHelper.startPage(pageNum, pageSize);
@@ -36,6 +36,7 @@ public class DataDictionaryController {
         return Result.OK(resultData).build();
     }
 
+    @MethodLog(13)
     @RequestMapping(value = "/data-dictionary/search", method = GET, produces = "application/json;charset=UTF-8")
     public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
         if (colName == null || colName.trim().isEmpty())
@@ -53,16 +54,19 @@ public class DataDictionaryController {
         return dataDictionaryService.getAllColumns();
     }
 
+    @MethodLog(14)
     @RequestMapping(value = "/data-dictionary", method = POST, produces = "application/json;charset=UTF-8")
     public Result addDataDictionary(@RequestParam("mainCode") int mainCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
         return dataDictionaryService.addDataDictionary(mainCode, valueCode, value);
     }
 
+    @MethodLog(16)
     @RequestMapping(value = "/data-dictionary", method = DELETE, produces = "application/json;charset=UTF-8")
     public Result removeDataDictionary(@RequestParam("subCode") int subCode) {
         return dataDictionaryService.removeDataDictionary(subCode);
     }
 
+    @MethodLog(15)
     @RequestMapping(value = "/data-dictionary", method = PUT, produces = "application/json;charset=UTF-8")
     public Result modifyDataDictionary(@RequestParam("subCode") int subCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
         return dataDictionaryService.modifyDataDictionary(subCode, valueCode, value);

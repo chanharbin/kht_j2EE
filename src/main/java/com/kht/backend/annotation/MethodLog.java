@@ -1,4 +1,4 @@
-package com.kht.backend.aop.annotation;
+package com.kht.backend.annotation;
 
 import java.lang.annotation.*;
 
