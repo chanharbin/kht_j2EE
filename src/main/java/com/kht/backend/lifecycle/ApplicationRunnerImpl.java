@@ -2,6 +2,7 @@ package com.kht.backend.lifecycle;
 import com.alibaba.fastjson.JSONObject;
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
+import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.service.DataDictionaryService;
 import com.kht.backend.service.OrganizationService;
@@ -33,11 +34,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
+    @Autowired
+    private SysParaDOMapper sysParaDOMapper;
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String sysKey = "SystemPara";
-        List allSystemParameters = systemParameterService.getAllSystemParameters();
+        List allSystemParameters = sysParaDOMapper.listAll();
         valueOperations.set(sysKey,allSystemParameters);
         String orgKey = "OrganizationList";
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
