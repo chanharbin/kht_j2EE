@@ -1,5 +1,6 @@
 package com.kht.backend.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OrganizationService;
@@ -81,6 +82,19 @@ public class OrganizationController {
         Result result = organizationService.decreaseOrganization(orgCode);
         return result;
     }
+
+    //根据机构姓名获取机构列表
+    @RequestMapping(value = "/organizationByName",method = GET)
+    public Result getOrgFromName(@RequestParam("organizationName")String orgName){
+        List orgByName = organizationService.getOrgByName(orgName);
+        int orgNum = orgByName.size();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("organizations",orgByName);
+        jsonObject.put("organizationNum",orgNum);
+        return Result.OK(jsonObject).build();
+    }
+
+
 
     private OrgListModel converFromOrgDO(OrganizationDO organizationDO){
         OrgListModel orgListModel = new OrgListModel();

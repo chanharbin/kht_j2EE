@@ -41,7 +41,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return custAcctDO.getCustCode();
     }
-
     @Override
     public CustAcctDO getCustomerAccount(String customerCode) {
         CustAcctDO custAcctDO=custAcctDOMapper.selectByPrimaryKey(customerCode);

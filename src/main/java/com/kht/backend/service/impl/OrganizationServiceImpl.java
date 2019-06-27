@@ -157,9 +157,17 @@ public class OrganizationServiceImpl implements OrganizationService {
         return null;
     }
 
-
-
-
+    @Override
+    public List getOrgByName(String orgName) {
+        if(orgName == null || orgName.isEmpty()){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"输入关键字为空");
+        }
+        List<OrganizationDO> organizationDOList = organizationDOMapper.selectByName(orgName);
+        if(organizationDOList == null || organizationDOList.isEmpty()){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"暂无此机构列表");
+        }
+        return organizationDOList;
+    }
     private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
         if(custAcctDO == null){
             return null;

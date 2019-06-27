@@ -134,10 +134,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return Result.OK(resultData).build();
     }
 
-    //TODO
+
     @Override
-    public Result getUserValidationInfo(int infoCode) {
-        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByPrimaryKey(infoCode);
+    public void getUserValidationInfo(int infoCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
+        if(acctOpenInfoDO == null){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资料编号错误");
+        }
         CustAcctDO custAcctDO = new CustAcctDO();
         BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);
         StringBuffer stringBuffer = new StringBuffer();
@@ -157,19 +160,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         custAcctDO.setInvestorType(investorType);
         custAcctDO.setCloseTime(-1L);
         String customerCode = accountService.increaseCustomerAccount(custAcctDO);
-        accountService.increaseCapitalAccount(customerCode,"000000");
-        String stkEx; //交易所
-        String stkBD; //交易板块
-        String custType; //客户类型
-        String trdUnit; // 交易单元
-        //accountService.increaseTradeAccount()
-        //accountService.increaseTradeAccount(customerCode)
-        /*CapAcctDO capAcctDO = new CapAcctDO();
-        DepAcctDO depAcctDO = new DepAcctDO();
-        TrdAcctDO trdAcctDO = new TrdAcctDO();*/
-        //accountService.increaseCustomerAccount()
-
-        return null;
+        String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
+        accountService.increaseTradeAccount(customerCode,"0","00","0","0");
+        accountService.increaseDepositoryAccount(capitalCode,"00",acctOpenInfoDO.getBankCardCode());
     }
 
     @Override
