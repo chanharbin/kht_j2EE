@@ -43,7 +43,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Override
     public Result getDataDictionariesByColName(String colName, int pageNum) {
         PageHelper.startPage(pageNum,pageSize);
-        List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName);
+        List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName == null ? null : colName.trim());
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
