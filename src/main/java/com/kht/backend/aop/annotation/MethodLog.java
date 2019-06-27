@@ -1,4 +1,4 @@
-package com.kht.backend.aop;
+package com.kht.backend.aop.annotation;
 
 import java.lang.annotation.*;
 
@@ -7,4 +7,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface MethodLog {
 
+    int value() default 0;
 }
