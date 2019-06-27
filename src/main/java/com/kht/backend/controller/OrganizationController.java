@@ -50,10 +50,10 @@ public class OrganizationController {
 
     //新增机构
     @RequestMapping(value = "/organization", method = POST)
-    public Result increaseOrg(@RequestParam("ORG_NAME") String orgName,
-                              @RequestParam("ORG_CODE") String orgCode,
-                              @RequestParam("ORG_TEL") Long orgtel,
-                              @RequestParam("ORG_ADDR") String orgAddr){
+    public Result increaseOrg(@RequestParam("orgName") String orgName,
+                              @RequestParam("orgCode") String orgCode,
+                              @RequestParam("orgTel") Long orgtel,
+                              @RequestParam("orgAddr") String orgAddr){
         OrganizationDO organizationDO = new OrganizationDO();
         organizationDO.setOrgTel(orgtel);
         organizationDO.setOrgAddr(orgAddr);
@@ -64,10 +64,10 @@ public class OrganizationController {
     }
     //修改机构
     @RequestMapping(value = "/organization",method = PUT)
-    public Result modifyOrg(@RequestParam("ORG_NAME") String orgName,
-                            @RequestParam("ORG_CODE") String orgCode,
-                            @RequestParam("ORG_TEL") Long orgtel,
-                            @RequestParam("ORG_ADDR") String orgAddr){
+    public Result modifyOrg(@RequestParam("orgName") String orgName,
+                            @RequestParam("orgCode") String orgCode,
+                            @RequestParam("orgTel") Long orgtel,
+                            @RequestParam("orgAddr") String orgAddr){
         OrganizationDO organizationDO = new OrganizationDO();
         organizationDO.setOrgTel(orgtel);
         organizationDO.setOrgAddr(orgAddr);
@@ -78,7 +78,7 @@ public class OrganizationController {
     }
     //删除机构
     @RequestMapping(value = "/organization",method = DELETE)
-    public Result deleteOrg(@RequestParam("ORG_CODE")String orgCode){
+    public Result deleteOrg(@RequestParam("orgCode")String orgCode){
         Result result = organizationService.decreaseOrganization(orgCode);
         return result;
     }
@@ -93,9 +93,6 @@ public class OrganizationController {
         jsonObject.put("organizationNum",orgNum);
         return Result.OK(jsonObject).build();
     }
-
-
-
     private OrgListModel converFromOrgDO(OrganizationDO organizationDO){
         OrgListModel orgListModel = new OrgListModel();
         BeanUtils.copyProperties(organizationDO,orgListModel);

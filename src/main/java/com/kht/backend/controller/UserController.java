@@ -4,6 +4,7 @@ import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.Result;
 import com.kht.backend.exception.AuthenticationException;
 import com.kht.backend.service.impl.AccountServiceImpl;
+import com.kht.backend.service.impl.SystemParameterServiceImpl;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.service.model.UserListResponse;
 import com.kht.backend.service.model.UserPrincipal;
@@ -37,7 +38,7 @@ public class UserController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
-    private AccountServiceImpl accountService;
+    private SystemParameterServiceImpl systemParameterService;
     @Autowired
     private HttpServletRequest httpServletRequest;
 
@@ -110,7 +111,16 @@ public class UserController {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return userService.getUserInfo(currentUser.getUserCode());
     }
-
+    @GetMapping("/system-parameter")
+    public Result getAllSystemParameter(@RequestParam("pageNum")int pageNum){
+        Map<String,Object> map=systemParameterService.getAllSystemParameters(pageNum);
+        return Result.OK(map).build();
+    }
+    @PutMapping("/system-parameter")
+    public Result modifySystemParameter(@RequestParam("paraCode")int paraCode,@RequestParam("paraValue")String paraValue){
+        systemParameterService.modifySystemParameter(paraCode,paraValue);
+        return Result.OK("修改参数成功").build();
+    }
     //bankType list
     //xueli list
 }

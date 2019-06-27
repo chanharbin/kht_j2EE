@@ -3,6 +3,8 @@ package com.kht.backend.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kht.backend.App;
+import com.kht.backend.dao.CustAcctDOMapper;
+import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.EmployeeService;
@@ -20,6 +22,8 @@ import static org.junit.Assert.*;
 public class EmployeeServiceImplTest {
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private CustAcctDOMapper custAcctDOMapper;
 
     @Test
     public void getEmployeeById() {
@@ -86,7 +90,13 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void getUserValidationInfo() {
-        employeeService.getUserValidationInfo(1);
+        employeeService.getUserValidationInfo(3);
     }
+    @Test
+    public void getCount(){
+        int userCountByOrgCode = custAcctDOMapper.getUserCountByOrgCode("1000");
+        System.out.println(userCountByOrgCode);
+    }
+
 
 }

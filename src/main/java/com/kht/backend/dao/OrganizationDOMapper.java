@@ -3,6 +3,7 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.OrganizationDO;
+import com.kht.backend.service.model.OrganizationModel;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -58,7 +58,7 @@
     from sub_data_dict natural join (
         select *
         from main_data_dict
-        where COL_NAME = #{colName}
+        where COL_NAME like '%${value}%'
     ) as temp
   </select>
   <select id="selectColumnValues" resultMap="ColumnValueResultMap">

@@ -167,6 +167,69 @@ public class UserServiceImpl implements UserService {
         resultData.put("data",userDO);*/
         return Result.OK(userDO).build();
     }
+
+    @Override
+    public Map<String,Object> getUserAndState(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
+        if(acctOpenInfoDO==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
+        }
+        Map<String,Object>data=new LinkedHashMap<>();
+        data.put("infoStatus",acctOpenInfoDO.getInfoStatus());
+        if(custAcctDO==null) {
+            data.put("custCode", null);
+        }
+        else{
+            data.put("custCode",custAcctDO.getCustCode());
+        }
+        return data;
+    }
+
+    public Map<String, Object> getUserInfoList(int pageNum){
+        PageHelper.startPage(pageNum,pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.listAll();
+        if(acctOpenInfoDOList==null||acctOpenInfoDOList.isEmpty()){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        List<UserListResponse> userListResponseList=page.getList().stream()
+                .map(i->new UserListResponse(i.getInfoCode(),i.getName(),i.getIdType(),i.getIdCode(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String,Object> data = new LinkedHashMap<>();
+        data.put("totalNum",page.getTotal());
+        data.put("userList",userListResponseList);
+        return data;
+    }
+    public List<DictionaryModel> getAllDataInfoList(String colCode,String tabCode){
+        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode(colCode,tabCode);
+        if(mainDataDictDO==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在该类型");
+        }
+        List<SubDataDictDO> subDataDictDOList=subDataDictDOMapper.selectByMainCode(mainDataDictDO.getMainCode());
+        if(subDataDictDOList==null||subDataDictDOList.isEmpty()){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在信息");
+        }
+        List<DictionaryModel> dictionaryModelList =subDataDictDOList.stream()
+                .map(i->new DictionaryModel(i.getValue(),i.getValueCode()))
+                .collect(Collectors.toList());
+        return dictionaryModelList;
+    }
+    //废弃不确定是否要用
+    //public List<>
+     /*@Override
+    public Result userLogin(Long telephone, String password) {
+        UserDO userDO=userDOMapper.selectByTelephone(telephone);
+        if(userDO==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户名不存在");
+        }
+        if(!userDO.getPassword().equals(password)){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"密码错误");
+        }
+        return Result.OK(userDO.getUserCode()).build();
+    }*/
+         /*
     @Override
     public Result increaseCapitalAccount(String customerCode,String capitalAccountPassword,String bankType,String bankCardCode){
         CustAcctDO custAcctDO=custAcctDOMapper.selectByPrimaryKey(customerCode);
@@ -198,8 +261,8 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"增加资金账户失败");
         }
         return Result.OK("更新用户信息成功").build();
-    }
-    @Override
+    }*/
+    /*@Override
     public Result modifyCapitalAccountPassword(String oldPassword, String newPassword, String capitalCode) {
         CapAcctDO capAcctDO=capAcctDOMapper.selectByPrimaryKey(capitalCode);
         if(!capAcctDO.getCapPwd().equals(oldPassword)){
@@ -213,66 +276,6 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
         }
         return Result.OK("更新资金账户密码成功").build();
-    }
-    @Override
-    public Map<String,Object> getUserAndState(int userCode) {
-        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
-        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
-        if(acctOpenInfoDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
-        }
-        Map<String,Object>data=new LinkedHashMap<>();
-        data.put("infoStatus",acctOpenInfoDO.getInfoStatus());
-        if(custAcctDO==null) {
-            data.put("custCode", null);
-        }
-        else{
-            data.put("custCode",custAcctDO.getCustCode());
-        }
-        return data;
-    }
-
-    public Map<String, Object> getUserInfoList(int pageNum){
-        PageHelper.startPage(pageNum,pageSize);
-        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.listAll();
-        if(acctOpenInfoDOList==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户列表不存在");
-        }
-        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
-        List<UserListResponse> userListResponseList=page.getList().stream()
-                .map(i->new UserListResponse(i.getInfoCode(),i.getName(),i.getIdType(),i.getIdCode(),
-                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),i.getEmail()))
-                .collect(Collectors.toList());
-        Map<String,Object> data = new LinkedHashMap<>();
-        data.put("totalNum",page.getTotal());
-        data.put("userList",userListResponseList);
-        return data;
-    }
-    public List<DictionaryModel> getAllDataInfoList(String colCode,String tabCode){
-        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode(colCode,tabCode);
-        if(mainDataDictDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在该类型");
-        }
-        List<SubDataDictDO> subDataDictDOList=subDataDictDOMapper.selectByMainCode(mainDataDictDO.getMainCode());
-        if(subDataDictDOList==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在信息");
-        }
-        List<DictionaryModel> dictionaryModelList =subDataDictDOList.stream()
-                .map(i->new DictionaryModel(i.getValue(),i.getValueCode()))
-                .collect(Collectors.toList());
-        return dictionaryModelList;
-    }
-    //public List<>
-     /*@Override
-    public Result userLogin(Long telephone, String password) {
-        UserDO userDO=userDOMapper.selectByTelephone(telephone);
-        if(userDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户名不存在");
-        }
-        if(!userDO.getPassword().equals(password)){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"密码错误");
-        }
-        return Result.OK(userDO.getUserCode()).build();
     }*/
 }
 

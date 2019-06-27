@@ -17,7 +17,7 @@ public interface UserService {
     public Result getOtp(String telephone);
 
     //修改密码
-    public Result modifyCapitalAccountPassword(String oldPassword,String newPassword,String capitalCode);
+    //public Result modifyCapitalAccountPassword(String oldPassword,String newPassword,String capitalCode);
 
 
     //获取客户信息
@@ -27,7 +27,7 @@ public interface UserService {
     public Result increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO);
 
     //增加资金账户
-    public Result increaseCapitalAccount(String customerCode,String capitalAccountPassword,String bankType,String bankCardCode);
+    //public Result increaseCapitalAccount(String customerCode,String capitalAccountPassword,String bankType,String bankCardCode);
 
     //获取用户审核状态
     public Map<String,Object> getUserAndState(int userCode);
