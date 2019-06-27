@@ -41,16 +41,29 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         valueOperations.set(sysKey,allSystemParameters);
         String orgKey = "OrganizationList";
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
+        //键值存储organization  key- org+主码，value-OrganizationDO
+        for(int i = 0;i<organizationDOList.size();i++){
+            String orgCode = organizationDOList.get(i).getOrgCode();
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append("org");
+            stringBuffer.append(orgCode);
+            orgCode = stringBuffer.toString();
+            valueOperations.set(orgCode,organizationDOList.get(i));
+        }
+        //键值对存储organizationList key-OrganizationList value-List
         valueOperations.set(orgKey,organizationDOList);
         String datadictKey = "DataDictList";
+        //键值对存储dataDictionary key-ColCode+TabCode+ValueCode  value-Value;
         List<DataDictionaryModel> allDataDictionaries = dataDictionaryService.getAllDataDictionaries();
+        for(int i =0;i<allDataDictionaries.size();i++){
+            StringBuffer datadictkey = new StringBuffer();
+            datadictkey.append(allDataDictionaries.get(i).getColCode()).append(allDataDictionaries.get(i).getTabCode()).append(allDataDictionaries.get(i).getValueCode());
+            String datadictkeyStr = datadictkey.toString();
+            System.out.println(datadictkeyStr);
+            String value = allDataDictionaries.get(i).getValue();
+            valueOperations.set(datadictkeyStr,value);
+        }
+        //键值对存储全部dictionary key-DataDictList  value-DataDictionaryList
         valueOperations.set(datadictKey,allDataDictionaries);
-        //System.out.println(valueOperations.get(datadictKey));
-        /*List<DataDictionaryModel> o = (List)valueOperations.get(datadictKey);
-        for(int i =0;i<o.size();i++){
-            if(o.get(i).getMainCode() == 19){
-                String sktEx = o.get(i).getValueCode()
-            }
-        }*/
     }
 }
