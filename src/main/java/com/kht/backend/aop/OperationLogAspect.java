@@ -3,19 +3,15 @@ package com.kht.backend.aop;
 import com.kht.backend.aop.annotation.MethodLog;
 import com.kht.backend.dataobject.OperaLogDO;
 import com.kht.backend.service.OperationLogService;
+import com.kht.backend.util.JwtTokenProvider;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.hibernate.validator.internal.util.logging.LoggerFactory;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Date;
 
 @Aspect
 @Component
@@ -23,6 +19,12 @@ public class OperationLogAspect {
 
     @Autowired
     private OperationLogService operationLogService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     @Pointcut("@annotation(com.kht.backend.aop.annotation.MethodLog)")
     public void logPointCut() {}
@@ -38,7 +40,10 @@ public class OperationLogAspect {
             operaLogDO.setOperaCode(methodLog.value());
         }
 
+        operaLogDO.setLogCode(0);
         operaLogDO.setLogTime(System.currentTimeMillis());
-        operaLogDO.setEmployeeCode("");
+        operaLogDO.setEmployeeCode(jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest).getCode());
+
+        operationLogService.addOperationLog(operaLogDO);
     }
 }

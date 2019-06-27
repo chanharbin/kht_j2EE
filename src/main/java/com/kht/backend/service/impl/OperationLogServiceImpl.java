@@ -58,6 +58,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     @Override
     public boolean addOperationLog(OperaLogDO operaLogDO) {
-        return false;
+        int affectedRow = operaLogDOMapper.insert(operaLogDO);
+        return affectedRow > 0;
     }
 }
