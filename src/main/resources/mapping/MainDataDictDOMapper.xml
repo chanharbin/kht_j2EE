@@ -124,4 +124,10 @@
       TAB_CODE = #{tabCode,jdbcType=VARCHAR}
     where MAIN_CODE = #{mainCode,jdbcType=INTEGER}
   </update>
+  <select id="selectByColCodeAndTabCode"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from main_data_dict
+    where COL_CODE = #{colCode,jdbcType=VARCHAR} and TAB_CODE =#{tabCode,jdbcType=VARCHAR}
+  </select>
 </mapper>

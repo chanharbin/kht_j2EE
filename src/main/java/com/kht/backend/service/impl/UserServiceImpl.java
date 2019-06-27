@@ -9,6 +9,7 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.UserService;
+import com.kht.backend.service.model.DictionaryModel;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.service.model.UserListResponse;
 import com.kht.backend.util.IdProvider;
@@ -48,6 +49,10 @@ public class UserServiceImpl implements UserService {
     private AccountServiceImpl accountService;
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
+    @Autowired
+    private MainDataDictDOMapper mainDataDictDOMapper;
+    @Autowired
+    private SubDataDictDOMapper subDataDictDOMapper;
     @Value("${app.pageSize}")
     private int pageSize;
     @Override
@@ -256,6 +261,21 @@ public class UserServiceImpl implements UserService {
         data.put("userList",userListResponseList);
         return data;
     }
+    public List<DictionaryModel> getAllDataInfoList(String colCode,String tabCode){
+        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode("colCode","tabCode");
+        if(mainDataDictDO==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在该类型");
+        }
+        List<SubDataDictDO> subDataDictDOList=subDataDictDOMapper.selectByMainCode(mainDataDictDO.getMainCode());
+        if(subDataDictDOList==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在信息");
+        }
+        List<DictionaryModel> dictionaryModelList =subDataDictDOList.stream()
+                .map(i->new DictionaryModel(i.getValue(),i.getValueCode()))
+                .collect(Collectors.toList());
+        return dictionaryModelList;
+    }
+    //public List<>
      /*@Override
     public Result userLogin(Long telephone, String password) {
         UserDO userDO=userDOMapper.selectByTelephone(telephone);

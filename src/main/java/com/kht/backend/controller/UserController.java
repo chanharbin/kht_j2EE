@@ -70,67 +70,66 @@ public class UserController {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return userService.modifyUserPassword(currentUser.getUserCode(),oldPassowrd,newPassword);
     }
-    @GetMapping("/user/accountOpeningInfo")
+    @GetMapping("/user/account-opening-info")
     public Result getUserAccountOpeningInfo(@RequestParam("userCode")int userCode){
         //UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return userService.getAccountOpeningInfo(userCode);
     }
-    @PostMapping("/user/accountOpeningInfo")
+    @PostMapping("/user/account-opening-info")
     public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         //System.out.println(acctOpenInfoDO.toString()+imageDO.toString());
         return userService.increaseAccountOpenInfo(currentUser.getUserCode(),acctOpenInfoDO,imageDO);
     }
-
-    @GetMapping("/user/info")
-    public Result getUserInfo()
-    {
-        UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        return userService.getUserInfo(currentUser.getUserCode());
+    @GetMapping("/user/account-opening-info/status")
+    public Result getUserAccountOpeningInfoStatus(@RequestParam("userCode")int userCode, HttpServletResponse response){
+        //response.setHeader("fuck","fuck");
+        return Result.OK(userService.getUserAndState(userCode)).build();
     }
-    @GetMapping("/user/customerAccount")
+    @GetMapping("/user/customer-account")
     public Result getUserCustomerAccount(@RequestParam("custCode")String customerCode){
         CustAcctDO custAcctDO=accountService.getCustomerAccount(customerCode);
         return Result.OK(custAcctDO).build();
     }
-    @GetMapping("/user/depositoryAccount")
+    @GetMapping("/user/depository-account")
     public Result getUserDepositoryAccount(@RequestParam("custCode")String customerCode){
         List<DepAcctDO>depAcctDOList= accountService.getDepositoryAccount(customerCode);
         return Result.OK(depAcctDOList).build();
     }
-    @GetMapping("/user/tradeAccount")
+    @GetMapping("/user/trade-account")
     public Result getUserTradeAccount(@RequestParam("custCode")String customerCode){
         List<TrdAcctDO>  trdAcctDOList=accountService.getTradeAccount(customerCode);
         return Result.OK(trdAcctDOList).build();
     }
-    @GetMapping("/user/capitalAccount")
+
+    @GetMapping("/user/capital-account")
     public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
         List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =userService.getCapitalAccountInfo(customerCode);
         return Result.OK(capitalAccountInfoResponseList).build();
     }
-    @PostMapping("/user/capitalAccount")
+    @PostMapping("/user/capital-account")
     public Result addUserCapitalAccount(@RequestParam("capPwd")String capPwd,@RequestParam("bankCardCode")String bankCardCode,
                                         @RequestParam("bankType")String bankType,@RequestParam("custCode")String custCode){
         String capCode=accountService.increaseCapitalAccount(custCode,capPwd);
         accountService.increaseDepositoryAccount(capCode,bankType,bankCardCode);
         return Result.OK("增加资金账户和客户账户成功").build();
     }
-    @PutMapping("/user/capitalAccount")
+    @PutMapping("/user/capital-account")
     public Result modifyUserCapitalAccountPassword(@RequestParam("capCode")String capCode,@RequestParam("oldPassword")String oldPassword,
                                                    @RequestParam("newPassword")String newPassword){
         accountService.modifyCapitalAccount(capCode,oldPassword,newPassword);
         return  Result.OK("修改资金密码成功").build();
     }
 
-    @GetMapping("/checkCode")
+    @GetMapping("/user/check-code")
     public Result getCheckCode(@RequestParam("telephone")String telephone){
         return userService.getOtp(telephone);
     }
-
-    @GetMapping("/user/accountOpeningInfo/status")
-    public Result getUserAccountOpeningInfoStatus(@RequestParam("userCode")int userCode, HttpServletResponse response){
-        //response.setHeader("fuck","fuck");
-        return Result.OK(userService.getUserAndState(userCode)).build();
+    @GetMapping("/user/info")
+    public Result getUserInfo()
+    {
+        UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        return userService.getUserInfo(currentUser.getUserCode());
     }
 
     @GetMapping("/user/list")
@@ -138,4 +137,8 @@ public class UserController {
         Map<String,Object> data=userService.getUserInfoList(pageNum);
         return Result.OK(data).build();
     }
+
+    //@GetMapping("")
+    //bankType list
+    //xueli list
 }

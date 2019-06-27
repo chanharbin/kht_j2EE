@@ -58,4 +58,5 @@ public interface MainDataDictDOMapper {
 
     List<MainDataDictDO> listAll();
 
+    MainDataDictDO selectByColCodeAndTabCode(String colCode,String tabCode);
 }

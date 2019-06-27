@@ -163,4 +163,10 @@
       VALUE = #{value,jdbcType=VARCHAR}
     where SUB_CODE = #{subCode,jdbcType=INTEGER}
   </update>
+  <select id="selectByMainCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sub_data_dict
+    where MAIN_CODE = #{mainCode,jdbcType=INTEGER}
+  </select>
 </mapper>
