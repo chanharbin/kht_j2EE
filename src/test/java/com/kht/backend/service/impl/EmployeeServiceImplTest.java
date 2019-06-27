@@ -86,7 +86,7 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void getUserValidationInfo() {
-        employeeService.getUserValidationInfo(1);
+        employeeService.getUserValidationInfo(3);
     }
 
 }

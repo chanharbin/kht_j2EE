@@ -65,7 +65,7 @@ public class EmployeeController {
                                  @RequestParam("EMAIL")String email,
                                  @RequestParam("ADDRESS")String address,
                                  @RequestParam("EMPLOYEE_PWD")String pwd,
-                                 @RequestParam("TELPHONE")long telphone){
+                                 @RequestParam("TELEPHONE")long telphone){
         UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         EmployeeDO employeeDO = new EmployeeDO();
         UserDO userDO = new UserDO();
@@ -98,4 +98,16 @@ public class EmployeeController {
         return result;
     }
 
+    //用户审核
+    @RequestMapping(value = "/user-validate",method = POST)
+    public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
+                               @RequestParam("INFO_STATUS")String infoStatus){
+        if(infoStatus.equals("success")){
+            employeeService.getUserValidationInfo(infoCode);
+            return Result.OK("审核结果已提交").build();
+        }
+        else{
+            return Result.OK("审核结果已提交").build();
+        }
+    }
 }
