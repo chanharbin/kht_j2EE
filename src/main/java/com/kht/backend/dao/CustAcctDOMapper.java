@@ -60,4 +60,5 @@ public interface CustAcctDOMapper {
 
     List<CustAcctDO> selectCustCodeByOrgCode(String orgCode);
     CustAcctDO selectByUserCode(int userCode);
+    int getUserCountByOrgCode(String orgCode);
 }

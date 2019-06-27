@@ -82,23 +82,30 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
         PageHelper.startPage(pageNum,10);
-        String key = "OrganizationList";
+        String key = "OrganizationList1";
         List orgList = (List) valueOperations.get(key);
         if(orgList == null || orgList.isEmpty()){
             List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
-            List<OrganizationDO> organizationDOListFiltered = organizationDOList.stream().filter(organizationDO -> !organizationDO.getOrgCode().isEmpty()).collect(Collectors.toList());
-            valueOperations.set(key,organizationDOListFiltered);
-            if(organizationDOListFiltered == null){
+            List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
+                OrganizationModel organizationModel = new OrganizationModel();
+                BeanUtils.copyProperties(organizationDO,organizationModel);
+                int userNum;
+                userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
+                organizationModel.setUserNum(userNum);
+                return organizationModel;
+            }).collect(Collectors.toList());
+            valueOperations.set(key,organizationModelList);
+            if(organizationModelList == null){
                 throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，请等待机构添加");
             }
-            PageInfo<OrganizationDO> page = new PageInfo<>(organizationDOListFiltered);
+            PageInfo<OrganizationModel> page = new PageInfo<>(organizationModelList);
             Map<String,Object> resultData = new LinkedHashMap<>();
             resultData.put("organization_num",page.getTotal());
             resultData.put("organizations",page.getList());
             return resultData;
         }
         System.out.println("redis_有");
-        PageInfo<OrganizationDO> page = new PageInfo<>(orgList);
+        PageInfo<OrganizationModel> page = new PageInfo<>(orgList);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("organization_num",page.getTotal());
         resultData.put("organizations",page.getList());

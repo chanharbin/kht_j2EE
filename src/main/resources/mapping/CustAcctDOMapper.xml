@@ -326,4 +326,10 @@
     from cust_acct
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </select>
+
+  <select id="getUserCountByOrgCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select  count(USER_CODE)
+    from cust_acct
+    where ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+  </select>
 </mapper>
