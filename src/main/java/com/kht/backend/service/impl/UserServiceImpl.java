@@ -232,19 +232,6 @@ public class UserServiceImpl implements UserService {
         return data;
     }
 
-    public List<CapitalAccountInfoResponse> getCapitalAccountInfo(String customerCode){
-        List<CapAcctDO> capAcctDOList= accountService.getCapitalAccount(customerCode);
-        if(capAcctDOList==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
-        }
-        List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =capAcctDOList.stream()
-                .map(i->new CapitalAccountInfoResponse(i.getCapCode(),depAcctDOMapper.selectByCapCode(i.getCapCode()).getDepCode(),
-                        i.getCurrency(),i.getMainFlag(),i.getAttr(),
-                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),
-                        i.getOpenTime(),i.getCloseTime(),i.getCapStatus()))
-                .collect(Collectors.toList());
-        return capitalAccountInfoResponseList;
-    }
     public Map<String, Object> getUserInfoList(int pageNum){
         PageHelper.startPage(pageNum,pageSize);
         List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.listAll();
@@ -262,7 +249,7 @@ public class UserServiceImpl implements UserService {
         return data;
     }
     public List<DictionaryModel> getAllDataInfoList(String colCode,String tabCode){
-        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode("colCode","tabCode");
+        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode(colCode,tabCode);
         if(mainDataDictDO==null){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在该类型");
         }

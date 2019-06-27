@@ -1,9 +1,6 @@
 package com.kht.backend.service.impl;
 
-import com.kht.backend.dao.CapAcctDOMapper;
-import com.kht.backend.dao.CustAcctDOMapper;
-import com.kht.backend.dao.DepAcctDOMapper;
-import com.kht.backend.dao.TrdAcctDOMapper;
+import com.kht.backend.dao.*;
 import com.kht.backend.dataobject.CapAcctDO;
 import com.kht.backend.dataobject.CustAcctDO;
 import com.kht.backend.dataobject.DepAcctDO;
@@ -12,6 +9,7 @@ import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.AccountService;
+import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.util.IdProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
     private TrdAcctDOMapper trdAcctDOMapper;
     @Autowired
     private IdProvider idProvider;
+    @Autowired
+    private OrganizationDOMapper organizationDOMapper;
     //新增客户账户
     @Override
     public String increaseCustomerAccount(CustAcctDO custAcctDO) {
@@ -165,5 +165,18 @@ public class AccountServiceImpl implements AccountService {
         if(affectRow==0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改密码失败");
         }
+    }
+    public List<CapitalAccountInfoResponse> getCapitalAccountInfo(String customerCode){
+        List<CapAcctDO> capAcctDOList= getCapitalAccount(customerCode);
+        if(capAcctDOList==null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
+        }
+        List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =capAcctDOList.stream()
+                .map(i->new CapitalAccountInfoResponse(i.getCapCode(),depAcctDOMapper.selectByCapCode(i.getCapCode()).getDepCode(),
+                        i.getCurrency(),i.getMainFlag(),i.getAttr(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),
+                        i.getOpenTime(),i.getCloseTime(),i.getCapStatus()))
+                .collect(Collectors.toList());
+        return capitalAccountInfoResponseList;
     }
 }

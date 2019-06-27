@@ -86,44 +86,23 @@ public class UserController {
         //response.setHeader("fuck","fuck");
         return Result.OK(userService.getUserAndState(userCode)).build();
     }
-    @GetMapping("/user/customer-account")
-    public Result getUserCustomerAccount(@RequestParam("custCode")String customerCode){
-        CustAcctDO custAcctDO=accountService.getCustomerAccount(customerCode);
-        return Result.OK(custAcctDO).build();
-    }
-    @GetMapping("/user/depository-account")
-    public Result getUserDepositoryAccount(@RequestParam("custCode")String customerCode){
-        List<DepAcctDO>depAcctDOList= accountService.getDepositoryAccount(customerCode);
-        return Result.OK(depAcctDOList).build();
-    }
-    @GetMapping("/user/trade-account")
-    public Result getUserTradeAccount(@RequestParam("custCode")String customerCode){
-        List<TrdAcctDO>  trdAcctDOList=accountService.getTradeAccount(customerCode);
-        return Result.OK(trdAcctDOList).build();
-    }
-
-    @GetMapping("/user/capital-account")
-    public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
-        List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =userService.getCapitalAccountInfo(customerCode);
-        return Result.OK(capitalAccountInfoResponseList).build();
-    }
-    @PostMapping("/user/capital-account")
-    public Result addUserCapitalAccount(@RequestParam("capPwd")String capPwd,@RequestParam("bankCardCode")String bankCardCode,
-                                        @RequestParam("bankType")String bankType,@RequestParam("custCode")String custCode){
-        String capCode=accountService.increaseCapitalAccount(custCode,capPwd);
-        accountService.increaseDepositoryAccount(capCode,bankType,bankCardCode);
-        return Result.OK("增加资金账户和客户账户成功").build();
-    }
-    @PutMapping("/user/capital-account")
-    public Result modifyUserCapitalAccountPassword(@RequestParam("capCode")String capCode,@RequestParam("oldPassword")String oldPassword,
-                                                   @RequestParam("newPassword")String newPassword){
-        accountService.modifyCapitalAccount(capCode,oldPassword,newPassword);
-        return  Result.OK("修改资金密码成功").build();
-    }
 
     @GetMapping("/user/check-code")
     public Result getCheckCode(@RequestParam("telephone")String telephone){
         return userService.getOtp(telephone);
+    }
+    @GetMapping("/bank")
+    public Result getBankList(){
+        return Result.OK(userService.getAllDataInfoList("BANK_TYPE","acct_open_info")).build();
+    }
+    @GetMapping("/education")
+    public Result getEducationList(){
+        return Result.OK(userService.getAllDataInfoList("EDUCATION","acct_open_info")).build();
+    }
+    @GetMapping("/user/list")
+    public Result getUserList(@RequestParam("pageNum")int pageNum){
+        Map<String,Object> data=userService.getUserInfoList(pageNum);
+        return Result.OK(data).build();
     }
     @GetMapping("/user/info")
     public Result getUserInfo()
@@ -132,13 +111,6 @@ public class UserController {
         return userService.getUserInfo(currentUser.getUserCode());
     }
 
-    @GetMapping("/user/list")
-    public Result getUserList(@RequestParam("pageNum")int pageNum){
-        Map<String,Object> data=userService.getUserInfoList(pageNum);
-        return Result.OK(data).build();
-    }
-
-    //@GetMapping("")
     //bankType list
     //xueli list
 }

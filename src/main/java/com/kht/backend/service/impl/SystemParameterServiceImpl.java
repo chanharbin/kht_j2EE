@@ -23,8 +23,7 @@ public class SystemParameterServiceImpl implements SystemParameterService {
     @Value("${app.pageSize}")
     private int pageSize;
     @Override
-    public List getAllSystemParameters() {
-
+    public List getAllSystemParameters(){
         List<SysParaDO> sysParaDOList =sysparaDOMapper.listAll();
         return sysParaDOList;
     }
