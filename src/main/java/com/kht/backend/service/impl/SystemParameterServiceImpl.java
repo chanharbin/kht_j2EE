@@ -27,6 +27,9 @@ public class SystemParameterServiceImpl implements SystemParameterService {
     public Map<String,Object>  getAllSystemParameters(int pageNum){
         PageHelper.startPage(pageNum,pageSize);
         List<SysParaDO> sysParaDOList =sysparaDOMapper.listAll();
+        if(sysParaDOList==null||sysParaDOList.isEmpty()){
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"无系统参数");
+        }
         PageInfo<SysParaDO> page = new PageInfo<>(sysParaDOList);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("parameterNum",page.getTotal());

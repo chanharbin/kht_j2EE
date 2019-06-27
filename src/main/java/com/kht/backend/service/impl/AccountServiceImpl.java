@@ -8,6 +8,7 @@ import com.kht.backend.dataobject.TrdAcctDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
+import com.kht.backend.security.MD5PasswordEncoder;
 import com.kht.backend.service.AccountService;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.util.IdProvider;
@@ -31,6 +32,8 @@ public class AccountServiceImpl implements AccountService {
     private IdProvider idProvider;
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
+    @Autowired
+    private MD5PasswordEncoder md5PasswordEncoder;
     //新增客户账户
     @Override
     public String increaseCustomerAccount(CustAcctDO custAcctDO) {
@@ -60,13 +63,13 @@ public class AccountServiceImpl implements AccountService {
         capAcctDO.setCapCode(idProvider.getId(custAcctDO.getOrgCode()));
         capAcctDO.setCustCode(customerCode);
         capAcctDO.setOrgCode(custAcctDO.getOrgCode());
-        capAcctDO.setCapPwd(capitalAccountPassword);
+        capAcctDO.setCapPwd(md5PasswordEncoder.encode(capitalAccountPassword));
         capAcctDO.setCurrency("0");
         capAcctDO.setAttr("0");
         capAcctDO.setOpenTime(new Date().getTime());
         capAcctDO.setCloseTime(-1L);
         capAcctDO.setCapStatus("0");
-        if(capAcctDOList==null){
+        if(capAcctDOList==null||capAcctDOList.isEmpty()){
             capAcctDO.setMainFlag(true);
         }
         int affectRow = capAcctDOMapper.insertSelective(capAcctDO);
@@ -79,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<CapAcctDO> getCapitalAccount(String customerCode) {
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
-        if(capAcctDOList==null){
+        if(capAcctDOList==null||capAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
         }
         return capAcctDOList;
@@ -109,13 +112,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<DepAcctDO> getDepositoryAccount(String customerCode) {
         List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(customerCode);
-        if(capAcctDOList==null){
+        if(capAcctDOList==null||capAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
         }
         List<DepAcctDO> depAcctDOList =capAcctDOList.stream()
                 .map(i-> depAcctDOMapper.selectByCapCode(i.getCapCode()))
                 .collect(Collectors.toList());
-        if(depAcctDOList==null){
+        if(depAcctDOList==null||depAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"存管账户不存在");
         }
         return depAcctDOList;
@@ -135,7 +138,7 @@ public class AccountServiceImpl implements AccountService {
         trdAcctDO.setCloseTime(-1L);
         trdAcctDO.setTdrStatus("0");
         int affectRow=trdAcctDOMapper.insertSelective(trdAcctDO);
-        if(affectRow>=0){
+        if(affectRow<=0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"证券账户插入");
         }
         return trdAcctDO.getTrdCode();
@@ -144,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<TrdAcctDO> getTradeAccount(String customerCode) {
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(customerCode);
-        if(trdAcctDOList==null){
+        if(trdAcctDOList==null||trdAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"证券账户不存在");
         }
         return trdAcctDOList;
@@ -156,7 +159,7 @@ public class AccountServiceImpl implements AccountService {
         if(capAcctDO==null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资金账户不存在");
         }
-        if(!capAcctDO.getCapPwd().equals(oldPassword)){
+        if(!md5PasswordEncoder.matches(oldPassword,capAcctDO.getCapPwd())){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"密码错误");
         }
         capAcctDO.setCapPwd(newPassword);
@@ -167,7 +170,7 @@ public class AccountServiceImpl implements AccountService {
     }
     public List<CapitalAccountInfoResponse> getCapitalAccountInfo(String customerCode){
         List<CapAcctDO> capAcctDOList= getCapitalAccount(customerCode);
-        if(capAcctDOList==null){
+        if(capAcctDOList==null||capAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
         }
         List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =capAcctDOList.stream()
