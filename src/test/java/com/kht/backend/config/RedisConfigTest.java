@@ -1,5 +1,5 @@
 package com.kht.backend.config;
-
+/*
 import com.alibaba.fastjson.JSON;
 import com.kht.backend.dataobject.PositionDO;
 import com.kht.backend.service.RedisService;
@@ -114,4 +114,4 @@ public class RedisConfigTest {
         // pop之后 值会消失
         System.out.println(listOperations.leftPop("list:user"));
     }
-}
+}*/

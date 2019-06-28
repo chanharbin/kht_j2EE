@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -59,11 +60,27 @@ public class UserServiceImpl implements UserService {
     private SubDataDictDOMapper subDataDictDOMapper;
     @Autowired
     private RedisServiceImpl redisService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Resource
+    private ValueOperations<String, Object> valueOperations;
     @Value("${app.pageSize}")
     private int pageSize;
+    private final String otpKey="otp";
+    //验证码过期时间 单位秒
+    private  long otpExpirationInSecond=900;
     @Override
-    public Result userRegister(Long telephone, String checkCode, String password) {
-        if (checkCode == null) ;//TODO
+    public Result userRegister(Long telephone, int checkCode, String password) {
+        int realOtp;
+        if (redisTemplate.hasKey(otpKey+telephone.toString())) {
+            realOtp=(int)valueOperations.get(otpKey+telephone.toString());
+        }
+        else{
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "无验证码或验证码过期");
+        }
+        if(realOtp!=checkCode){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "验证码错误");
+        }
         UserDO userDO = new UserDO();
         userDO.setTelephone(telephone);
         userDO.setPassword(password);
@@ -140,9 +157,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getOtp(String telephone) {
-        //TODO redis
-        return null;
+    public void getOtp(Long telephone) {
+        int otpValue=(int)(Math.random()*10000);
+        valueOperations.set(otpKey+telephone,otpValue,otpExpirationInSecond, TimeUnit.SECONDS);
+        logger.info("telephone get checkCode :"+otpValue);
     }
 
     @Override

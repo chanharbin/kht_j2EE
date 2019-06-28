@@ -14,6 +14,6 @@ public class MD5PasswordEncoderTest {
 
     @Test
     public void matches() {
-        System.out.println(md5PasswordEncoder.matches("123456","e10adc3949ba59abbe56e057f20f883e"));
+        System.out.println(md5PasswordEncoder.matches("1","c4ca4238a0b923820dcc509a6f75849b"));
     }
 }

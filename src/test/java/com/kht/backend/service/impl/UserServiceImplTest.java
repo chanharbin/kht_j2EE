@@ -32,8 +32,6 @@ public class UserServiceImplTest {
     private UserDOMapper userDOMapper;
     @Autowired
     private RedisTemplate redisTemplate;
-    @Resource
-    private RedisService redisService;
     @Autowired
     private SysParaDOMapper sysParaDOMapper;
     @Test
@@ -43,9 +41,6 @@ public class UserServiceImplTest {
 
     @Test
     public void getOtp() {
-        String otp="fuck";
-        ValueOperations<String,Object> operations = redisTemplate.opsForValue();
-        redisService.expireKey(otp,20, TimeUnit.SECONDS);
     }
 
     @Test

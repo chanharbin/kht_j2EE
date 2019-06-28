@@ -8,13 +8,13 @@ import java.util.Map;
 
 public interface UserService {
     //用户注册
-    public Result userRegister(Long telephone,String checkCode,String password);
+    public Result userRegister(Long telephone,int checkCode,String password);
 
     //查看账户信息
     public Result getUserAccountInfo(int userCode);
 
     //获取验证码
-    public Result getOtp(String telephone);
+    public void getOtp(Long telephone);
 
     //修改密码
     //public Result modifyCapitalAccountPassword(String oldPassword,String newPassword,String capitalCode);

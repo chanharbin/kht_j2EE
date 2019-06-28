@@ -65,7 +65,6 @@ public class AccountServiceImpl implements AccountService {
         custAcctMap.put("investorType",redisService.getDataDictionary("INVESTOR_TYPE",tabCode,(String)custAcctMap.get("investorType")));
         custAcctMap.put("custStatus",redisService.getDataDictionary("CUST_STATUS",tabCode,(String)custAcctMap.get("custStatus")));
         return custAcctMap;
-       // increaseCapitalAccount(1,)
     }
     //新增资金账户
     @Override
@@ -114,10 +113,14 @@ public class AccountServiceImpl implements AccountService {
                     if(depAcctDO!=null){
                         depCode=depAcctDO.getDepCode();
                     }
+                    capAccMap.put("orgCode",redisService.getOrganizationName((String)capAccMap.get("orgCode")));
+                    capAccMap.put("closeTime",(Long)capAccMap.get("closeTime")<=0?"-":(Long)capAccMap.get("closeTime"));
+                    capAccMap.put("mainFlag",(boolean)capAccMap.get("mainFlag")?"是":"否");
                     capAccMap.put("depCode",depCode);
                     capAccMap.put("currency",redisService.getDataDictionary("CURRENCY",tabCode,(String)capAccMap.get("currency")));
                     capAccMap.put("attr",redisService.getDataDictionary("ATTR",tabCode,(String)capAccMap.get("attr")));
                     capAccMap.put("capStatus",redisService.getDataDictionary("CAP_STATUS",tabCode,(String)capAccMap.get("capStatus")));
+                    capAccMap.remove("capPwd");
                     return capAccMap;
                 })
                 .collect(Collectors.toList());

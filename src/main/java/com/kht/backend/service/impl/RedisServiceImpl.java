@@ -2,7 +2,6 @@ package com.kht.backend.service.impl;
 
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
-import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.dataobject.SysParaDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,12 @@ public class RedisServiceImpl {
     private OrganizationDOMapper organizationDOMapper;
     @Resource
     private ValueOperations<String, Object> valueOperations;
-    @Autowired
-    private SysParaDOMapper sysParaDOMapper;
 
+    /**
+     *
+     * @param orgCode
+     * @return 机构名称
+     */
     public String getOrganizationName(String orgCode) {
         if (orgCode == null) {
             return null;
@@ -42,6 +44,13 @@ public class RedisServiceImpl {
         return null;
     }
 
+    /**
+     *
+     * @param colCode
+     * @param tabCode
+     * @param valueCode
+     * @return 数据字典对应值
+     */
     public String getDataDictionary(String colCode, String tabCode, String valueCode) {
         if (colCode == null || tabCode == null || valueCode == null) {
             return null;
@@ -52,6 +61,10 @@ public class RedisServiceImpl {
         }
         return subDataDictDOMapper.selectByColCodeAndTabCodeAndValueCode(colCode, tabCode, valueCode);
     }
+
+    /**
+     * @return 系统参数列表
+     */
     public List<SysParaDO> getSystemParameterList(){
         String sysKey = "SystemPara";
         if(redisTemplate.hasKey(sysKey)){
@@ -59,7 +72,8 @@ public class RedisServiceImpl {
             return (List<SysParaDO>)valueOperations.get(sysKey);
         }
         else{
-            return sysParaDOMapper.listAll();
+            
         }
+        return null;
     }
 }
