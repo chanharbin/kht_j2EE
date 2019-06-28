@@ -13,22 +13,28 @@ import com.kht.backend.service.model.DictionaryModel;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.service.model.UserListResponse;
 import com.kht.backend.util.IdProvider;
+import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private IdProvider idProvider;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserDOMapper userDOMapper;
     @Autowired
@@ -46,122 +52,136 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private AccountServiceImpl accountService;
-    @Autowired
     private OrganizationDOMapper organizationDOMapper;
     @Autowired
     private MainDataDictDOMapper mainDataDictDOMapper;
     @Autowired
     private SubDataDictDOMapper subDataDictDOMapper;
+    @Autowired
+    private RedisServiceImpl redisService;
     @Value("${app.pageSize}")
     private int pageSize;
     @Override
     public Result userRegister(Long telephone, String checkCode, String password) {
-        if(checkCode==null);//TODO
-        UserDO userDO=new UserDO();
+        if (checkCode == null) ;//TODO
+        UserDO userDO = new UserDO();
         userDO.setTelephone(telephone);
         userDO.setPassword(password);
         userDO.setUserType("0");
-        int affectRow=userDOMapper.insertSelective(userDO);
-        if(affectRow==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"注册失败");
+        int affectRow = userDOMapper.insertSelective(userDO);
+        if (affectRow == 0) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "注册失败");
         }
         return Result.OK("注册成功").build();
     }
+
     @Override
     @Transactional
-    public Result increaseAccountOpenInfo(int userCode,AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
-        AcctOpenInfoDO acctOpenInfoDO1=acctOpenInfoDOMapper.selectByUserCode(userCode);
-        if(acctOpenInfoDO1!=null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"已存在开户资料");
+    public Result increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO) {
+        AcctOpenInfoDO acctOpenInfoDO1 = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        if (acctOpenInfoDO1 != null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已存在开户资料");
         }
-        int affectRow1=imageDOMapper.insertSelective(imageDO);
-        if(affectRow1==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"添加影像资料失败");
+        int affectRow1 = imageDOMapper.insertSelective(imageDO);
+        if (affectRow1 == 0) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "添加影像资料失败");
         }
-        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
+        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
         acctOpenInfoDO.setUserCode(userDO.getUserCode());
         acctOpenInfoDO.setImgCode(imageDO.getImgCode());
         //0表示提交未审核
         acctOpenInfoDO.setInfoStatus("0");
         acctOpenInfoDO.setCmtTime(new Date().getTime());
-        int affectRow=acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
-        if(affectRow==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"添加开户资料失败");
+        int affectRow = acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
+        if (affectRow == 0) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "添加开户资料失败");
         }
         return Result.OK("添加开户资料成功").build();
     }
-    public Result getAccountOpeningInfo(int userCode){
-        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
-        if(acctOpenInfoDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"未提交开户资料");
+
+    public Map<String,Object> getAccountOpeningInfo(int userCode) {
+        String tabCode="acct_open_info";
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        if (acctOpenInfoDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交开户资料");
         }
-        ImageDO imageDO=imageDOMapper.selectByPrimaryKey(acctOpenInfoDO.getImgCode());
-        if(imageDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"未提交影像资料");
+        ImageDO imageDO = imageDOMapper.selectByPrimaryKey(acctOpenInfoDO.getImgCode());
+        if (imageDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交影像资料");
         }
-        String orgName=null;//TODO从redis读
-        Map<String,Object>data=new LinkedHashMap<>();
-        data.put("infoCode",acctOpenInfoDO.getInfoCode());
-        data.put("imgCode",acctOpenInfoDO.getImgCode());
-        data.put("name",acctOpenInfoDO.getName());
-        data.put("gender",acctOpenInfoDO.getGender());
-        data.put("idType",acctOpenInfoDO.getIdType());
-        data.put("idCode",acctOpenInfoDO.getIdCode());
-        data.put("idEffDate",acctOpenInfoDO.getIdEffDate());
-        data.put("idExpDat",acctOpenInfoDO.getIdExpDate());
-        data.put("telephone",acctOpenInfoDO.getTelephone());
-        data.put("email",acctOpenInfoDO.getEmail());
-        data.put("address",acctOpenInfoDO.getAddress());
-        data.put("occupation",acctOpenInfoDO.getOccupation());
-        data.put("company",acctOpenInfoDO.getCompany());
-        data.put("education",acctOpenInfoDO.getEducation());
-        data.put("orgName",orgName);
-        data.put("idFront",imageDO.getIdFront());
-        data.put("idBack",imageDO.getIdBack());
-        data.put("face",imageDO.getFace());
-        return new Result(200,"ok",data);
+
+        String orgName = redisService.getOrganizationName(acctOpenInfoDO.getOrgCode());
+        String gender = redisService.getDataDictionary("GENDER" , tabCode , acctOpenInfoDO.getGender());
+        String idType = redisService.getDataDictionary("ID_TYPE" , tabCode, acctOpenInfoDO.getIdType());
+        String education=redisService.getDataDictionary("EDUCATION" , tabCode, acctOpenInfoDO.getEducation());
+        //String bankType=redisService.getDataDictionary("BANK_TYPE",tabCode,acctOpenInfoDO.getBankType());
+        //String openChannel=redisService.getDataDictionary("OPEN_CHANNEL",tabCode,acctOpenInfoDO.getOpenChannel());
+        //String infoStatus=redisService.getDataDictionary("INFO_STATUS",tabCode,acctOpenInfoDO.getInfoStatus());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("infoCode", acctOpenInfoDO.getInfoCode());
+        data.put("imgCode", acctOpenInfoDO.getImgCode());
+        data.put("name", acctOpenInfoDO.getName());
+        data.put("gender", gender);
+        data.put("idType", idType);
+        data.put("idCode", acctOpenInfoDO.getIdCode());
+        data.put("idEffDate", acctOpenInfoDO.getIdEffDate());
+        data.put("idExpDat", acctOpenInfoDO.getIdExpDate());
+        data.put("telephone", acctOpenInfoDO.getTelephone());
+        data.put("email", acctOpenInfoDO.getEmail());
+        data.put("address", acctOpenInfoDO.getAddress());
+        data.put("occupation", acctOpenInfoDO.getOccupation());
+        data.put("company", acctOpenInfoDO.getCompany());
+        data.put("education", education);
+        data.put("orgName", orgName);
+        data.put("idFront", imageDO.getIdFront());
+        data.put("idBack", imageDO.getIdBack());
+        data.put("face", imageDO.getFace());
+        return data;
     }
+
     @Override
     public Result getOtp(String telephone) {
         //TODO redis
         return null;
     }
+
     @Override
     public Result getUserAccountInfo(int userCode) {
-        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
-        if(custAcctDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户未开户");
+        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        if (custAcctDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户未开户");
         }
-        List<CapAcctDO> capAcctDOList=capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
-        List<DepAcctDO> depAcctDOList =capAcctDOList.stream()
-                .map(i-> depAcctDOMapper.selectByCapCode(i.getCapCode()))
+        List<CapAcctDO> capAcctDOList = capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
+        List<DepAcctDO> depAcctDOList = capAcctDOList.stream()
+                .map(i -> depAcctDOMapper.selectByCapCode(i.getCapCode()))
                 .collect(Collectors.toList());
-        List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
+        List<TrdAcctDO> trdAcctDOList = trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("capital_accounts",capAcctDOList);
-        data.put("securities_accounts",trdAcctDOList);
+        data.put("capital_accounts", capAcctDOList);
+        data.put("securities_accounts", trdAcctDOList);
         data.put("depository_accounts", depAcctDOList);
-        return new Result(200,"OK",data);
+        return new Result(200, "OK", data);
     }
+
     @Override
-    public Result modifyUserPassword(int userCode,String oldPassword,String password) {
-        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
-        if(userDO==null||!userDO.getPassword().equals(passwordEncoder.encode(oldPassword))){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"密码错误");
+    public Result modifyUserPassword(int userCode, String oldPassword, String password) {
+        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
+        if (userDO == null || !userDO.getPassword().equals(passwordEncoder.encode(oldPassword))) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "密码错误");
         }
         userDO.setPassword(passwordEncoder.encode(password));
-        int affectRow=userDOMapper.updateByPrimaryKeySelective(userDO);
-        if(affectRow==0){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"更新用户信息失败");
+        int affectRow = userDOMapper.updateByPrimaryKeySelective(userDO);
+        if (affectRow == 0) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "更新用户信息失败");
         }
         return Result.OK("更新用户信息成功").build();
     }
+
     @Override
     public Result getUserInfo(int userCode) {
-        UserDO userDO=userDOMapper.selectByPrimaryKey(userCode);
-        if(userDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户不存在");
+        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
+        if (userDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户不存在");
         }
         /* Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("data",userDO);*/
@@ -169,53 +189,55 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String,Object> getUserAndState(int userCode) {
-        AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userCode);
-        CustAcctDO custAcctDO=custAcctDOMapper.selectByUserCode(userCode);
-        if(acctOpenInfoDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"获取用户开户信息失败");
+    public Map<String, Object> getUserAndState(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        if (acctOpenInfoDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "获取用户开户信息失败");
         }
-        Map<String,Object>data=new LinkedHashMap<>();
-        data.put("infoStatus",acctOpenInfoDO.getInfoStatus());
-        if(custAcctDO==null) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS","acct_open_info",acctOpenInfoDO.getInfoStatus()));
+        if (custAcctDO == null) {
             data.put("custCode", null);
-        }
-        else{
-            data.put("custCode",custAcctDO.getCustCode());
+        } else {
+            data.put("custCode", custAcctDO.getCustCode());
         }
         return data;
     }
 
-    public Map<String, Object> getUserInfoList(int pageNum){
-        PageHelper.startPage(pageNum,pageSize);
-        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.listAll();
-        if(acctOpenInfoDOList==null||acctOpenInfoDOList.isEmpty()){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"用户列表不存在");
+    public Map<String, Object> getUserInfoList(int pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
-        List<UserListResponse> userListResponseList=page.getList().stream()
-                .map(i->new UserListResponse(i.getInfoCode(),i.getName(),i.getIdType(),i.getIdCode(),
-                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(),i.getEmail()))
+        List<UserListResponse> userListResponseList = page.getList().stream()
+                .map(i -> new UserListResponse(i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
                 .collect(Collectors.toList());
-        Map<String,Object> data = new LinkedHashMap<>();
-        data.put("totalNum",page.getTotal());
-        data.put("userList",userListResponseList);
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("totalNum", page.getTotal());
+        data.put("userList", userListResponseList);
         return data;
     }
-    public List<DictionaryModel> getAllDataInfoList(String colCode,String tabCode){
-        MainDataDictDO mainDataDictDO=mainDataDictDOMapper.selectByColCodeAndTabCode(colCode,tabCode);
-        if(mainDataDictDO==null){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在该类型");
+
+    public List<DictionaryModel> getAllDataInfoList(String colCode, String tabCode) {
+        MainDataDictDO mainDataDictDO = mainDataDictDOMapper.selectByColCodeAndTabCode(colCode, tabCode);
+        if (mainDataDictDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "数据字典中不存在该类型");
         }
-        List<SubDataDictDO> subDataDictDOList=subDataDictDOMapper.selectByMainCode(mainDataDictDO.getMainCode());
-        if(subDataDictDOList==null||subDataDictDOList.isEmpty()){
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"数据字典中不存在信息");
+        List<SubDataDictDO> subDataDictDOList = subDataDictDOMapper.selectByMainCode(mainDataDictDO.getMainCode());
+        if (subDataDictDOList == null || subDataDictDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "数据字典中不存在信息");
         }
-        List<DictionaryModel> dictionaryModelList =subDataDictDOList.stream()
-                .map(i->new DictionaryModel(i.getValue(),i.getValueCode()))
+        List<DictionaryModel> dictionaryModelList = subDataDictDOList.stream()
+                .map(i -> new DictionaryModel(i.getValue(), i.getValueCode()))
                 .collect(Collectors.toList());
         return dictionaryModelList;
     }
+
+
     //废弃不确定是否要用
     //public List<>
      /*@Override

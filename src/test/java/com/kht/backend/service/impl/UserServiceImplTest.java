@@ -1,15 +1,25 @@
 package com.kht.backend.service.impl;
 
 import com.kht.backend.App;
+import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dao.UserDOMapper;
+import com.kht.backend.dataobject.SysParaDO;
 import com.kht.backend.dataobject.UserDO;
 import com.kht.backend.entity.Result;
+import com.kht.backend.service.RedisService;
 import com.kht.backend.service.impl.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.annotation.Resource;
+import java.sql.SQLOutput;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 @SpringBootTest(classes = App.class)
@@ -20,6 +30,12 @@ public class UserServiceImplTest {
     private UserServiceImpl userService;
     @Autowired
     private UserDOMapper userDOMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Resource
+    private RedisService redisService;
+    @Autowired
+    private SysParaDOMapper sysParaDOMapper;
     @Test
     public void userRegister() {
 
@@ -27,17 +43,19 @@ public class UserServiceImplTest {
 
     @Test
     public void getOtp() {
-        UserDO userDO=userDOMapper.selectByTelephone(12345678912L);
-        System.out.println(userDO.getUserType());
-        System.out.println(userDO.toString());
+        String otp="fuck";
+        ValueOperations<String,Object> operations = redisTemplate.opsForValue();
+        redisService.expireKey(otp,20, TimeUnit.SECONDS);
     }
 
     @Test
     public void getUserAccountInfo(){
+       // System.out.println(userService.getAccountOpeningInfo(1).getData());
     }
 
     @Test
     public void userLogin() {
+        List<SysParaDO> allSystemParameters = sysParaDOMapper.listAll();
     }
 
     @Test
@@ -72,4 +90,5 @@ public class UserServiceImplTest {
         //Result result=userService.modifyUserInfo(userDO);
         //System.out.println(result.getData());
     }
+
 }

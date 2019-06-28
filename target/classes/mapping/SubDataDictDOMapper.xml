@@ -169,4 +169,13 @@
     from sub_data_dict
     where MAIN_CODE = #{mainCode,jdbcType=INTEGER}
   </select>
+  <select id="selectByColCodeAndTabCodeAndValueCode" resultType="java.lang.String">
+    select VALUE
+    from sub_data_dict
+    where VALUE_CODE=#{valueCode,jdbcType=VARCHAR} and MAIN_CODE in (
+      select MAIN_CODE
+      from main_data_dict
+      where TAB_CODE = #{tabCode, jdbcType=VARCHAR} and COL_CODE = #{colCode, jdbcType=VARCHAR}
+    )
+  </select>
 </mapper>

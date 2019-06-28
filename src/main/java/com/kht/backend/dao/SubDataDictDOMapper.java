@@ -68,4 +68,5 @@ public interface SubDataDictDOMapper {
 
     Integer selectSubCode(@Param("mainCode") int mainCode, @Param("valueCode") String valueCode);
 
+    String selectByColCodeAndTabCodeAndValueCode(@Param("colCode") String colCode,@Param("tabCode") String tabCode,@Param("valueCode")String valueCode);
 }

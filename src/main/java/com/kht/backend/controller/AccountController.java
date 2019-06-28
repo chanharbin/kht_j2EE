@@ -10,30 +10,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 @RestController
 public class AccountController {
-
     @Autowired
     private AccountServiceImpl accountService;
     @GetMapping("/user/customer-account")
     public Result getUserCustomerAccount(@RequestParam("custCode")String customerCode){
-        CustAcctDO custAcctDO=accountService.getCustomerAccount(customerCode);
+        Map<String,Object>  custAcctDO=accountService.getCustomerAccount(customerCode);
         return Result.OK(custAcctDO).build();
     }
     @GetMapping("/user/depository-account")
     public Result getUserDepositoryAccount(@RequestParam("custCode")String customerCode){
-        List<DepAcctDO> depAcctDOList= accountService.getDepositoryAccount(customerCode);
+        List<Map<String,Object>> depAcctDOList= accountService.getDepositoryAccount(customerCode);
         return Result.OK(depAcctDOList).build();
     }
     @GetMapping("/user/trade-account")
     public Result getUserTradeAccount(@RequestParam("custCode")String customerCode){
-        List<TrdAcctDO>  trdAcctDOList=accountService.getTradeAccount(customerCode);
+        List<Map<String,Object>>  trdAcctDOList=accountService.getTradeAccount(customerCode);
         return Result.OK(trdAcctDOList).build();
     }
 
     @GetMapping("/user/capital-account")
     public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
-        List<CapitalAccountInfoResponse> capitalAccountInfoResponseList =accountService.getCapitalAccountInfo(customerCode);
+        List<Map<String,Object>> capitalAccountInfoResponseList =accountService. getCapitalAccount(customerCode);
         return Result.OK(capitalAccountInfoResponseList).build();
     }
     @PostMapping("/user/capital-account")

@@ -74,7 +74,7 @@ public class UserController {
     @GetMapping("/user/account-opening-info")
     public Result getUserAccountOpeningInfo(@RequestParam("userCode")int userCode){
         //UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        return userService.getAccountOpeningInfo(userCode);
+        return Result.OK(userService.getAccountOpeningInfo(userCode)).build();
     }
     @PostMapping("/user/account-opening-info")
     public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
@@ -121,6 +121,4 @@ public class UserController {
         systemParameterService.modifySystemParameter(paraCode,paraValue);
         return Result.OK("修改参数成功").build();
     }
-    //bankType list
-    //xueli list
 }
