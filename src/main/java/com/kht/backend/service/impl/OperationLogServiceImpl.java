@@ -20,11 +20,16 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
 
-    @Autowired
-    private RedisServiceImpl redisService;
+    public OperationLogServiceImpl(RedisServiceImpl redisService) {
+        String paraValue = redisService.getSystemParameterList().get(0).getParaValue();
+        try {
+            pageSize = Integer.parseInt(paraValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
 
-    //private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
-    private int pageSize = 10;
+    private int pageSize;
 
     @Override
     public Result getAllOperationLogs(int pageNum) {

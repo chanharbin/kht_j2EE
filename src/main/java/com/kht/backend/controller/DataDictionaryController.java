@@ -22,11 +22,16 @@ public class DataDictionaryController {
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
-    @Autowired
-    private RedisServiceImpl redisService;
+    public DataDictionaryController(RedisServiceImpl redisService) {
+        String paraValue = redisService.getSystemParameterList().get(0).getParaValue();
+        try {
+            pageSize = Integer.parseInt(paraValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
 
-    //private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
-    private int pageSize = 10;
+    private int pageSize;
 
     @MethodLog(12)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")

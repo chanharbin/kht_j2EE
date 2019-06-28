@@ -6,6 +6,7 @@ import com.kht.backend.dao.MainDataDictDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dataobject.MainDataDictDO;
 import com.kht.backend.dataobject.SubDataDictDO;
+import com.kht.backend.dataobject.SysParaDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
@@ -32,11 +33,16 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Autowired
     private MainDataDictDOMapper mainDataDictDOMapper;
 
-    @Autowired
-    private RedisServiceImpl redisService;
+    public DataDictionaryServiceImpl(RedisServiceImpl redisService) {
+        String paraValue = redisService.getSystemParameterList().get(0).getParaValue();
+        try {
+            pageSize = Integer.parseInt(paraValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
 
-    //private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
-    private int pageSize = 10;
+    private int pageSize;
 
     @Override
     public List<DataDictionaryModel> getAllDataDictionaries() {
