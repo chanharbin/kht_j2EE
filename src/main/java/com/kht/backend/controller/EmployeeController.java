@@ -1,5 +1,6 @@
 package com.kht.backend.controller;
 
+import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
@@ -30,6 +31,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
     //新增员工
+    @MethodLog(4)
     @RequestMapping(value = "/employee", method = POST)
     public Result increaseEmployee(@RequestParam("EMPLOYEE_NAME")String employeeName,
                                    @RequestParam("ID_CODE")String idCode,
@@ -57,12 +59,14 @@ public class EmployeeController {
         return result;
     }
     //删除员工
+    @MethodLog(6)
     @RequestMapping(value = "/employee",method = DELETE)
     public Result deleteEmployee(@RequestParam("EMPLOYEE_CODE")String employeeCode){
         return employeeService.deleteEmployee(employeeCode);
     }
     //ToTest
     //修改员工信息
+    @MethodLog(5)
     @RequestMapping(value = "/employee",method = PUT)
     public Result modifyEmployee(@RequestParam("employeeCode") String employeeCode,
                                  @RequestParam("userCode")int userCode,
@@ -102,11 +106,13 @@ public class EmployeeController {
         return result;
     }
     //根据姓名获取员工
+    @MethodLog(3)
     @GetMapping(value = "/employee/name")
     public Result getEmployeeByName(@RequestParam("name")String name){
         return employeeService.getEmployeeByName(name);
     }
     //获取员工列表
+    @MethodLog(2)
     @GetMapping(value = "/employee")
     public Result getEmployeeList(@RequestParam("page_num")int pageNum){
         Result result = employeeService.listEmployee(pageNum);
@@ -114,6 +120,7 @@ public class EmployeeController {
     }
 
     //用户审核
+    @MethodLog(9)
     @RequestMapping(value = "/user-validate",method = POST)
     public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
                                @RequestParam("INFO_STATUS")String infoStatus){

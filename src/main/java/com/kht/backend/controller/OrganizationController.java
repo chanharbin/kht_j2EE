@@ -1,6 +1,7 @@
 package com.kht.backend.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
@@ -36,6 +37,7 @@ public class OrganizationController {
     /*
     * 获取机构列表
     * */
+    @MethodLog(20)
     @RequestMapping(value = "/organization",method = GET)
     public Result getOrganization(@RequestParam("page_num") int pageNum){
         Map orgResult = organizationService.getOrganizationList(pageNum);
@@ -55,6 +57,7 @@ public class OrganizationController {
     }
 
     //新增机构
+    @MethodLog(21)
     @RequestMapping(value = "/organization", method = POST)
     public Result increaseOrg(@RequestParam("orgName") String orgName,
                               @RequestParam("orgCode") String orgCode,
@@ -69,6 +72,7 @@ public class OrganizationController {
         return result;
     }
     //修改机构
+    @MethodLog(22)
     @RequestMapping(value = "/organization",method = PUT)
     public Result modifyOrg(@RequestParam("orgName") String orgName,
                             @RequestParam("orgCode") String orgCode,
@@ -83,6 +87,7 @@ public class OrganizationController {
         return result;
     }
     //删除机构
+    @MethodLog(23)
     @RequestMapping(value = "/organization",method = DELETE)
     public Result deleteOrg(@RequestParam("orgCode")String orgCode){
         Result result = organizationService.decreaseOrganization(orgCode);
@@ -90,6 +95,7 @@ public class OrganizationController {
     }
 
     //根据机构姓名获取机构列表
+    @MethodLog(24)
     @RequestMapping(value = "/organizationByName",method = GET)
     public Result getOrgFromName(@RequestParam("organizationName")String orgName){
         List orgByName = organizationService.getOrgByName(orgName);

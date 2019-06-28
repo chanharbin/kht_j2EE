@@ -1,5 +1,6 @@
 package com.kht.backend.controller;
 
+import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.Result;
 import com.kht.backend.exception.AuthenticationException;
@@ -46,6 +47,7 @@ public class UserController {
     private RedisServiceImpl redisService;
 
     private final String prefix="Bearer ";
+
     @PostMapping(value = {"/user/login","/employee/login"})
     public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,HttpServletResponse httpServletResponse){
         try {
@@ -63,10 +65,12 @@ public class UserController {
             throw new AuthenticationException("Bad credentials!", e);
         }
     }
+
     @PostMapping(value = "/user/register")
     public Result registerUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,@RequestParam("checkCode")int checkCode){
         return userService.userRegister(telephone,checkCode,passwordEncoder.encode(password));
     }
+
     @PutMapping("/user/password")
     public Result modifyUserPassword(@RequestParam("oldPassword")String oldPassword,@RequestParam("newPassword")String newPassword,HttpServletResponse httpServletResponse)
     {
@@ -74,17 +78,20 @@ public class UserController {
         userService.modifyUserPassword(currentUser.getUserCode(),oldPassword,newPassword);
         return Result.OK("更新用户信息成功").build();
     }
+
     @GetMapping("/user/account-opening-info")
     public Result getUserAccountOpeningInfo(@RequestParam("userCode")int userCode){
         //UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return Result.OK(userService.getAccountOpeningInfo(userCode)).build();
     }
+
     @PostMapping("/user/account-opening-info")
     public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         //System.out.println(acctOpenInfoDO.toString()+imageDO.toString());
         return userService.increaseAccountOpenInfo(currentUser.getUserCode(),acctOpenInfoDO,imageDO);
     }
+
     @GetMapping("/user/account-opening-info/status")
     public Result getUserAccountOpeningInfoStatus(@RequestParam("userCode")int userCode, HttpServletResponse response){
         //response.setHeader("fuck","fuck");
@@ -96,30 +103,39 @@ public class UserController {
         userService.getOtp(telephone);
         return Result.OK("获取验证码成功").build();
     }
+
     @GetMapping("/bank")
     public Result getBankList(){
         return Result.OK(userService.getAllDataInfoList("BANK_TYPE","acct_open_info")).build();
     }
+
     @GetMapping("/education")
     public Result getEducationList(){
         return Result.OK(userService.getAllDataInfoList("EDUCATION","acct_open_info")).build();
     }
+
+    @MethodLog(7)
     @GetMapping("/user/list")
     public Result getUserList(@RequestParam("pageNum")int pageNum){
         Map<String,Object> data=userService.getUserInfoList(pageNum);
         return Result.OK(data).build();
     }
+
     @GetMapping("/user/info")
     public Result getUserInfo()
     {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         return userService.getUserInfo(currentUser.getUserCode());
     }
+
+    @MethodLog(10)
     @GetMapping("/system-parameter")
     public Result getAllSystemParameter(@RequestParam("pageNum")int pageNum){
         Map<String,Object> map=systemParameterService.getAllSystemParameters(pageNum);
         return Result.OK(map).build();
     }
+
+    @MethodLog(11)
     @PutMapping("/system-parameter")
     public Result modifySystemParameter(@RequestParam("paraCode")int paraCode,@RequestParam("paraValue")String paraValue){
         systemParameterService.modifySystemParameter(paraCode,paraValue);

@@ -33,6 +33,11 @@ public class DataDictionaryController {
 
     private int pageSize;
 
+    /**
+     * 获取所有数据字典信息
+     * @param pageNum
+     * @return
+     */
     @MethodLog(12)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
@@ -45,6 +50,12 @@ public class DataDictionaryController {
         return Result.OK(resultData).build();
     }
 
+    /**
+     * 根据字段名获取数据字典信息
+     * @param colName
+     * @param pageNum
+     * @return
+     */
     @MethodLog(13)
     @RequestMapping(value = "/data-dictionary/search", method = GET, produces = "application/json;charset=UTF-8")
     public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
@@ -53,28 +64,57 @@ public class DataDictionaryController {
         return dataDictionaryService.getDataDictionariesByColName(colName.trim(), pageNum);
     }
 
+    /**
+     * 获取单个字段的数据字典信息
+     * @param colCode
+     * @param tabCode
+     * @return
+     */
     @RequestMapping(value = "/data-dictionary/{tabCode}/{colCode}", method = GET, produces = "application/json;charset=UTF-8")
     public Result getColumnValues(@PathVariable("colCode") String colCode, @PathVariable("tabCode") String tabCode) {
         return dataDictionaryService.getColumnValues(colCode, tabCode);
     }
 
+    /**
+     * 获取数据字典的所有字段信息
+     * @return
+     */
     @RequestMapping(value = "/data-dictionary/columns", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllColumns() {
         return dataDictionaryService.getAllColumns();
     }
 
+    /**
+     * 添加数据字典字段取值信息
+     * @param mainCode
+     * @param valueCode
+     * @param value
+     * @return
+     */
     @MethodLog(14)
     @RequestMapping(value = "/data-dictionary", method = POST, produces = "application/json;charset=UTF-8")
     public Result addDataDictionary(@RequestParam("mainCode") int mainCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
         return dataDictionaryService.addDataDictionary(mainCode, valueCode, value);
     }
 
+    /**
+     * 删除数据字典字段取值信息
+     * @param subCode
+     * @return
+     */
     @MethodLog(16)
     @RequestMapping(value = "/data-dictionary", method = DELETE, produces = "application/json;charset=UTF-8")
     public Result removeDataDictionary(@RequestParam("subCode") int subCode) {
         return dataDictionaryService.removeDataDictionary(subCode);
     }
 
+    /**
+     * 修改数据字典字段取值信息
+     * @param subCode
+     * @param valueCode
+     * @param value
+     * @return
+     */
     @MethodLog(15)
     @RequestMapping(value = "/data-dictionary", method = PUT, produces = "application/json;charset=UTF-8")
     public Result modifyDataDictionary(@RequestParam("subCode") int subCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
