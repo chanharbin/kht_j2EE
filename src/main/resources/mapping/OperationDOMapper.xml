@@ -119,4 +119,19 @@
       OPERA_TYPE = #{operaType,jdbcType=VARCHAR}
     where OPERA_CODE = #{operaCode,jdbcType=INTEGER}
   </update>
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from operation
+  </select>
+  <select id="selectByPosition" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select OPERA_CODE,OPERA_NAME,URL,OPERA_TYPE
+    <include refid="Base_Column_List" />
+    from operation
+    where OPERA_CODE in (
+        select OPERA_CODE
+        from pos_opera_rel
+        where POS_CODE= #{posCode,jdbcType=INTEGER}
+    )
+  </select>
 </mapper>

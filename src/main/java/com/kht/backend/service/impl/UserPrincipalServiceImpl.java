@@ -43,6 +43,7 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                 if (custAcctDO != null) {
                     code=custAcctDO.getCustCode();
                 }
+                //TODO 用户的岗位
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER1"));
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
@@ -55,10 +56,10 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                 if (employeeDO != null) {
                     code=employeeDO.getEmployeeCode();
                 }
+
                 authorities.add(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER3"));
-                //TODO 权限待改
                 break;
             }
             default:
