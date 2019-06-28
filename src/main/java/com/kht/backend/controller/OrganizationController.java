@@ -1,6 +1,7 @@
 package com.kht.backend.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OrganizationService;
@@ -25,6 +26,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class OrganizationController {
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private OrganizationDOMapper organizationDOMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -38,9 +41,12 @@ public class OrganizationController {
         Map orgResult = organizationService.getOrganizationList(pageNum);
         return Result.OK(orgResult).build();
     }
-    @RequestMapping(value = "/organizationList",method = GET)
+    @RequestMapping(value = "/organization-list",method = GET)
     public Result getOrganization(){
         List<OrganizationDO> organizationList = (List<OrganizationDO>)valueOperations.get("OrganizationList");
+        if(organizationList.isEmpty()){
+            organizationList = organizationDOMapper.selectAll();
+        }
         List organizationListFilterd = organizationList.stream().map(organizationDO -> {
             OrgListModel orgListModel = this.converFromOrgDO(organizationDO);
             return orgListModel;

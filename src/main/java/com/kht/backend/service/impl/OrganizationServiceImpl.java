@@ -32,8 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
+    private static final String orgKey = "OrganizationList";
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
     @Autowired
@@ -58,6 +60,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"新增机构失败");
         }
+        List organizationList = (List)valueOperations.get(orgKey);
+        organizationList.add(organizationDO);
+        valueOperations.set(orgKey,organizationList);
         return Result.OK("新增机构成功").build();
     }
 
@@ -75,14 +80,21 @@ public class OrganizationServiceImpl implements OrganizationService {
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"删除机构失败");
         }
+        List orgList = (List)valueOperations.get(orgKey);
+        for(int i =0;i<orgList.size();i++){
+            OrganizationDO remove = (OrganizationDO)orgList.get(i);
+            if(remove.getOrgCode().equals(organizationId)){
+                orgList.remove(remove);
+            }
+        }
+        valueOperations.set(orgKey,orgList);
         return Result.OK("删除机构成功").build();
-
     }
 
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
         PageHelper.startPage(pageNum,10);
-        String key = "OrganizationList1";
+        String key = "OrganizationList";
         List orgList = (List) valueOperations.get(key);
         if(orgList == null || orgList.isEmpty()){
             List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
