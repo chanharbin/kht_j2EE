@@ -59,4 +59,6 @@ public interface SysParaDOMapper {
     int updateParaValueByPrimaryKeySelective(int paraCode,String paraValue);
 
     List<SysParaDO> listAll();
+
+    SysParaDO selectByParaName(String paraName);
 }

@@ -46,13 +46,39 @@ public class RedisServiceImpl {
             organizationDO = (OrganizationDO) valueOperations.get("org" + orgCode);
         } else {
             organizationDO = organizationDOMapper.selectByPrimaryKey(orgCode);
+            valueOperations.set("org"+orgCode,organizationDO);
         }
         if (organizationDO != null) {
             return organizationDO.getOrgName();
         }
         return null;
     }
-    public boolean updateOrg;
+    public boolean updateOrgDO(OrganizationDO organizationDO){
+        organizationDOMapper.updateByPrimaryKeySelective(organizationDO);
+        return false;
+    }
+
+    /**
+     * @param paraName
+     * return 系统参数值
+     */
+    public String getParaValue(String paraName){
+        if(paraName == null){
+            return null;
+        }
+        String paraValue;
+        String key = "sys" + paraName;
+        SysParaDO sysParaDO = new SysParaDO();
+        if(redisTemplate.hasKey(key)){
+            paraValue = (String)valueOperations.get(key);
+        }
+        else{
+            sysParaDO = sysParaDOMapper.selectByParaName(paraName);
+            valueOperations.set(key,sysParaDO.getParaValue());
+            paraValue = sysParaDO.getParaValue();
+        }
+        return paraValue;
+    }
 
     /**
      *
@@ -69,7 +95,11 @@ public class RedisServiceImpl {
         if (redisTemplate.hasKey(key)) {
             return (String) valueOperations.get(key);
         }
-        return subDataDictDOMapper.selectByColCodeAndTabCodeAndValueCode(colCode, tabCode, valueCode);
+        else{
+            String value = subDataDictDOMapper.selectByColCodeAndTabCodeAndValueCode(colCode, tabCode, valueCode);
+            valueOperations.set(key,value);
+            return value;
+        }
     }
 
     /**
@@ -82,7 +112,9 @@ public class RedisServiceImpl {
             return (List<SysParaDO>)valueOperations.get(sysKey);
         }
         else{
-            return sysParaDOMapper.listAll();
+            List<SysParaDO> sysParaDOS = sysParaDOMapper.listAll();
+            valueOperations.set(sysKey,sysParaDOS);
+            return sysParaDOS;
         }
     }
 
