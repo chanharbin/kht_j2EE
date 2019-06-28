@@ -96,7 +96,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(employeeDOVer == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工编号不存在");
         }
-        employeeDO.setEmployeeStatus(employeeDOVer.getEmployeeStatus());
         int affectRow = employeeDOMapper.updateByPrimaryKey(employeeDO);
         int affectRow1 = userDOMapper.updateByPrimaryKey(userDO);
         if(affectRow <= 0 || affectRow1 <= 0){

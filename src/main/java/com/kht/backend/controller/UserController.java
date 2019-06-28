@@ -43,7 +43,7 @@ public class UserController {
     private HttpServletRequest httpServletRequest;
 
     private final String prefix="Bearer ";
-    @PostMapping("/user/login")
+    @PostMapping(value = {"/user/login","/employee/login"})
     public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,HttpServletResponse httpServletResponse){
         try {
             Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(telephone, password));
@@ -61,7 +61,7 @@ public class UserController {
             throw new AuthenticationException("Bad credentials!", e);
         }
     }
-    @PostMapping("/user/register")
+    @PostMapping(value = "/user/register")
     public Result registerUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,@RequestParam("checkCode")String checkCode){
         return userService.userRegister(telephone,checkCode,passwordEncoder.encode(password));
     }

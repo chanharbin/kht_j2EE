@@ -65,18 +65,18 @@ public class EmployeeController {
                                  @RequestParam("EMAIL")String email,
                                  @RequestParam("ADDRESS")String address,
                                  @RequestParam("EMPLOYEE_PWD")String pwd,
-                                 @RequestParam("TELEPHONE")long telphone){
+                                 @RequestParam("TELEPHONE")long telphone,
+                                 @RequestParam("EMPLOYEE_STATUS")String employeeStatus){
         UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         EmployeeDO employeeDO = new EmployeeDO();
         UserDO userDO = new UserDO();
-        employeeDO.setEmployeeCode(userPrincipalFromRequest.getCode());
-        employeeDO.setUserCode(userPrincipalFromRequest.getUserCode());
         employeeDO.setTelephone(telphone);
         employeeDO.setAddress(address);
         employeeDO.setEmail(email);
         employeeDO.setIdCode(idCode);
         employeeDO.setPosCode(posCode);
         employeeDO.setEmployeeName(employeeName);
+        employeeDO.setEmployeeStatus(employeeStatus);
         pwd = passwordEncoder.encode(pwd);
         System.out.println(pwd);
         userDO.setPassword(pwd);
@@ -110,4 +110,6 @@ public class EmployeeController {
             return Result.OK("审核结果已提交").build();
         }
     }
+
+
 }
