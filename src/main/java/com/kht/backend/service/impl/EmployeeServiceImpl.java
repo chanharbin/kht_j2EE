@@ -2,10 +2,7 @@ package com.kht.backend.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.kht.backend.dao.AcctOpenInfoDOMapper;
-import com.kht.backend.dao.EmployeeDOMapper;
-import com.kht.backend.dao.OperaLogDOMapper;
-import com.kht.backend.dao.UserDOMapper;
+import com.kht.backend.dao.*;
 import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
@@ -13,6 +10,7 @@ import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.AccountService;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.UserService;
+import com.kht.backend.service.model.EmployeeModel;
 import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +45,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private RedisTemplate redisTemplate;
     @Resource
     private ValueOperations<String,Object> valueOperations;
+    @Autowired
+    private RedisServiceImpl redisService;
+    @Autowired
+    private PositionDOMapper positionDOMapper;
     @Transactional
     @Override
     public Result deleteEmployee(String employeeCode) {
@@ -109,11 +111,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Result getEmployeeByName(String name) {
         List<EmployeeDO> employeeDOList = employeeDOMapper.selectByName(name);
+        List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
+            EmployeeModel employeeModel = new EmployeeModel();
+            BeanUtils.copyProperties(employeeDO,employeeModel);
+            PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
+            employeeModel.setPosition(positionDO.getPosName());
+            employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
+            return employeeModel;
+        }).collect(Collectors.toList());
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"找不到员工信息");
         }
         else{
-            return Result.OK(employeeDOList).build();
+            return Result.OK(employeeModelList).build();
         }
 
     }
@@ -122,11 +132,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Result listEmployee(int pageNum) {
         PageHelper.startPage(pageNum,10);
         List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
-        List<EmployeeDO> employeeDOListFilterd = employeeDOList.stream().filter(emplist->!emplist.getEmployeeCode().isEmpty()).collect(Collectors.toList());
+        List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
+            EmployeeModel employeeModel = new EmployeeModel();
+            BeanUtils.copyProperties(employeeDO,employeeModel);
+            PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
+            employeeModel.setPosition(positionDO.getPosName());
+            employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
+            return employeeModel;
+        }).collect(Collectors.toList());
+
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
         }
-        PageInfo<EmployeeDO> page = new PageInfo<>(employeeDOListFilterd);
+        PageInfo<EmployeeModel> page = new PageInfo<>(employeeModelList);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("employee_num",page.getTotal());
         resultData.put("employees",page.getList());
