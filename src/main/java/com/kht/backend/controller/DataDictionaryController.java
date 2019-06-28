@@ -25,7 +25,8 @@ public class DataDictionaryController {
     @Autowired
     private RedisServiceImpl redisService;
 
-    private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
+    //private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
+    private int pageSize = 10;
 
     @MethodLog(12)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
