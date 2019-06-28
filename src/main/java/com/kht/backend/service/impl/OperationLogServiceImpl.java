@@ -21,7 +21,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     private OperaLogDOMapper operaLogDOMapper;
 
     public OperationLogServiceImpl(RedisServiceImpl redisService) {
-        String paraValue = redisService.getSystemParameterList().get(0).getParaValue();
+        String paraValue = redisService.getParaValue("pageSize");
         try {
             pageSize = Integer.parseInt(paraValue);
         } catch (NumberFormatException e) {

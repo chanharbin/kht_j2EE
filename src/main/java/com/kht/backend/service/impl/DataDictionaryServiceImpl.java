@@ -34,7 +34,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     private MainDataDictDOMapper mainDataDictDOMapper;
 
     public DataDictionaryServiceImpl(RedisServiceImpl redisService) {
-        String paraValue = redisService.getSystemParameterList().get(0).getParaValue();
+        String paraValue = redisService.getParaValue("pageSize");
         try {
             pageSize = Integer.parseInt(paraValue);
         } catch (NumberFormatException e) {
