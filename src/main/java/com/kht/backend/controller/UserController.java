@@ -62,14 +62,14 @@ public class UserController {
         }
     }
     @PostMapping(value = "/user/register")
-    public Result registerUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,@RequestParam("checkCode")String checkCode){
+    public Result registerUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,@RequestParam("checkCode")int checkCode){
         return userService.userRegister(telephone,checkCode,passwordEncoder.encode(password));
     }
     @PutMapping("/user/password")
-    public Result modifyUserPassword(@RequestParam("oldPassword")String oldPassowrd,@RequestParam("newPassword")String newPassword)
+    public Result modifyUserPassword(@RequestParam("oldPassword")String oldPassword,@RequestParam("newPassword")String newPassword)
     {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        return userService.modifyUserPassword(currentUser.getUserCode(),oldPassowrd,newPassword);
+        return userService.modifyUserPassword(currentUser.getUserCode(),oldPassword,newPassword);
     }
     @GetMapping("/user/account-opening-info")
     public Result getUserAccountOpeningInfo(@RequestParam("userCode")int userCode){
@@ -89,8 +89,9 @@ public class UserController {
     }
 
     @GetMapping("/user/check-code")
-    public Result getCheckCode(@RequestParam("telephone")String telephone){
-        return userService.getOtp(telephone);
+    public Result getCheckCode(@RequestParam("telephone")Long telephone){
+        userService.getOtp(telephone);
+        return Result.OK("获取验证码成功").build();
     }
     @GetMapping("/bank")
     public Result getBankList(){
