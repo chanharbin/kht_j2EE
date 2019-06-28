@@ -1,8 +1,11 @@
 package com.kht.backend.controller;
 
+import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
+import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
@@ -24,6 +27,8 @@ public class EmployeeController {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
     //新增员工
     @RequestMapping(value = "/employee", method = POST)
     public Result increaseEmployee(@RequestParam("EMPLOYEE_NAME")String employeeName,
@@ -59,17 +64,28 @@ public class EmployeeController {
     //ToTest
     //修改员工信息
     @RequestMapping(value = "/employee",method = PUT)
-    public Result modifyEmployee(@RequestParam("POS_CODE") int posCode,
-                                 @RequestParam("EMPLOYEE_NAME")String employeeName,
-                                 @RequestParam("ID_CODE")String idCode,
-                                 @RequestParam("EMAIL")String email,
-                                 @RequestParam("ADDRESS")String address,
-                                 @RequestParam("EMPLOYEE_PWD")String pwd,
-                                 @RequestParam("TELEPHONE")long telphone,
-                                 @RequestParam("EMPLOYEE_STATUS")String employeeStatus){
-        UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+    public Result modifyEmployee(@RequestParam("employeeCode") String employeeCode,
+                                 @RequestParam("userCode")int userCode,
+                                 @RequestParam("posCode") int posCode,
+                                 @RequestParam("employeeName")String employeeName,
+                                 @RequestParam("idCode")String idCode,
+                                 @RequestParam("email")String email,
+                                 @RequestParam("address")String address,
+                                 @RequestParam("employeePwd")String pwd,
+                                 @RequestParam("telephone")long telphone,
+                                 @RequestParam("employeeStatus")String employeeStatus){
+        /*UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        int userCode_I = userPrincipalFromRequest.getUserCode();
+        EmployeeDO employeeDOI = employeeDOMapper.selectByUserCode(userCode_I);
+        Integer i_posCode = employeeDOI.getPosCode();
+        if(i_posCode <= 3 || i_posCode <= posCode){
+            return Result.OK("您当前无权限修改信息").build();
+        }
+        else{*/
         EmployeeDO employeeDO = new EmployeeDO();
         UserDO userDO = new UserDO();
+        employeeDO.setUserCode(userCode);
+        employeeDO.setEmployeeCode(employeeCode);
         employeeDO.setTelephone(telphone);
         employeeDO.setAddress(address);
         employeeDO.setEmail(email);
@@ -78,10 +94,9 @@ public class EmployeeController {
         employeeDO.setEmployeeName(employeeName);
         employeeDO.setEmployeeStatus(employeeStatus);
         pwd = passwordEncoder.encode(pwd);
-        System.out.println(pwd);
         userDO.setPassword(pwd);
         userDO.setTelephone(telphone);
-        userDO.setUserCode(userPrincipalFromRequest.getUserCode());
+        userDO.setUserCode(userCode);
         userDO.setUserType("1");
         Result result = employeeService.modifyEmployee(employeeDO, userDO);
         return result;
@@ -110,6 +125,4 @@ public class EmployeeController {
             return Result.OK("审核结果已提交").build();
         }
     }
-
-
 }
