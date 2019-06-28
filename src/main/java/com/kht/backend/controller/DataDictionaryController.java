@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.entity.*;
 import com.kht.backend.service.DataDictionaryService;
+import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.service.model.DataDictionaryModel;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,10 @@ public class DataDictionaryController {
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
-    @Value("${app.pageSize}")
-    private int pageSize;
+    @Autowired
+    private RedisServiceImpl redisService;
+
+    private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
 
     @MethodLog(12)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")

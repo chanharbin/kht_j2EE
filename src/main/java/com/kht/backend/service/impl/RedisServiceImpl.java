@@ -2,6 +2,7 @@ package com.kht.backend.service.impl;
 
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
+import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.dataobject.SysParaDO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class RedisServiceImpl {
     private OrganizationDOMapper organizationDOMapper;
     @Resource
     private ValueOperations<String, Object> valueOperations;
+    @Autowired
+    private SysParaDOMapper sysParaDOMapper;
 
     public String getOrganizationName(String orgCode) {
         if (orgCode == null) {
@@ -55,6 +58,8 @@ public class RedisServiceImpl {
             System.out.println("get from redis");
             return (List<SysParaDO>)valueOperations.get(sysKey);
         }
-        return null;
+        else{
+            return sysParaDOMapper.listAll();
+        }
     }
 }

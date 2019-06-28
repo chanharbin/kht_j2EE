@@ -20,8 +20,10 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
 
-    @Value("${app.pageSize}")
-    private int pageSize;
+    @Autowired
+    private RedisServiceImpl redisService;
+
+    private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
 
     @Override
     public Result getAllOperationLogs(int pageNum) {

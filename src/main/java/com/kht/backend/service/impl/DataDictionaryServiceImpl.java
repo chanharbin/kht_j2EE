@@ -32,8 +32,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Autowired
     private MainDataDictDOMapper mainDataDictDOMapper;
 
-    @Value("${app.pageSize}")
-    private int pageSize;
+    @Autowired
+    private RedisServiceImpl redisService;
+
+    private int pageSize = Integer.parseInt(redisService.getSystemParameterList().get(0).getParaValue());
 
     @Override
     public List<DataDictionaryModel> getAllDataDictionaries() {
