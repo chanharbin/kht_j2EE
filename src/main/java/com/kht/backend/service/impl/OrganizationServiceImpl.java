@@ -132,6 +132,16 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，不能修改信息");
         }
         int affectRow = organizationDOMapper.updateByPrimaryKeySelective(organizationDO);
+        List orgList = (List)valueOperations.get(orgKey);
+        for(int i = 0;i<orgList.size();i++){
+            OrganizationDO organizationDO2 = (OrganizationDO)orgList.get(i);
+            if(organizationDO2.getOrgCode().equals(organizationDO.getOrgCode())){
+                orgList.remove(i);
+                orgList.add(organizationDO);
+                break;
+            }
+        }
+        valueOperations.set(orgKey,orgList);
         if(affectRow <= 0){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构修改失败");
         }
