@@ -33,5 +33,5 @@ public interface UserService {
     public Map<String,Object> getUserAndState(int userCode);
 
     //修改用户密码
-    public Result modifyUserPassword(int userCode,String oldPassword,String password);
+    public void modifyUserPassword(int userCode,String oldPassword,String password);
 }

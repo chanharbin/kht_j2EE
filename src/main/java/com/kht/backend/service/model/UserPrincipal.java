@@ -49,7 +49,7 @@ public class UserPrincipal implements UserDetails {
         return new UserPrincipal(
                 (int)claims.get("userCode"),
                 Long.valueOf(((Number)claims.get("telephone")).longValue()),
-                (String)claims.get("password"),
+                "",//(String)claims.get("password"),
                 (String)claims.get("userType"),
                 (String)claims.get("code"),
                 authoritiesList
@@ -59,7 +59,7 @@ public class UserPrincipal implements UserDetails {
         Map<String,Object>claims=new HashMap<>();
         claims.put("userCode",userCode);
         claims.put("telephone",telephone);
-        claims.put("password",password);
+        //claims.put("password",password);
         claims.put("userType",userType);
         claims.put("code",code);
         claims.put("authorities",authorities);
@@ -105,18 +105,7 @@ public class UserPrincipal implements UserDetails {
     public int hashCode() {
         return Objects.hash(telephone);
     }
-    public int getUserCode() {
-        return userCode;
-    }
-    public Long getTelephone() {
-        return telephone;
-    }
-    public String getUserType() {
-        return userType;
-    }
-    public String getCode() {
-        return code;
-    }
+
 
     @Override
     public String toString() {
@@ -130,15 +119,27 @@ public class UserPrincipal implements UserDetails {
                 '}';
     }
 
-
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public int getUserCode() {
+        return userCode;
+    }
+    public Long getTelephone() {
+        return telephone;
+    }
+    public String getUserType() {
+        return userType;
+    }
+    public String getCode() {
+        return code;
+    }
     public void setUserType(String userType) {
         this.userType = userType;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
-
     public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
     }

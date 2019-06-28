@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
     public void getOtp(Long telephone) {
         int otpValue=(int)(Math.random()*10000);
         valueOperations.set(otpKey+telephone,otpValue,otpExpirationInSecond, TimeUnit.SECONDS);
-        logger.info("telephone get checkCode :"+otpValue);
+        logger.info("telephone "+telephone+" get checkCode :"+otpValue);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result modifyUserPassword(int userCode, String oldPassword, String password) {
+    public void modifyUserPassword(int userCode, String oldPassword, String password) {
         UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
         if (userDO == null || !userDO.getPassword().equals(passwordEncoder.encode(oldPassword))) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "密码错误");
@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
         if (affectRow == 0) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "更新用户信息失败");
         }
-        return Result.OK("更新用户信息成功").build();
+
     }
 
     @Override

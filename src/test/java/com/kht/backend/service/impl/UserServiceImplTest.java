@@ -6,7 +6,6 @@ import com.kht.backend.dao.UserDOMapper;
 import com.kht.backend.dataobject.SysParaDO;
 import com.kht.backend.dataobject.UserDO;
 import com.kht.backend.entity.Result;
-import com.kht.backend.service.RedisService;
 import com.kht.backend.service.impl.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;

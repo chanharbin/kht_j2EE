@@ -2,7 +2,6 @@ package com.kht.backend.config;
 /*
 import com.alibaba.fastjson.JSON;
 import com.kht.backend.dataobject.PositionDO;
-import com.kht.backend.service.RedisService;
 import com.kht.backend.util.RedisKeyUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,8 +45,6 @@ public class RedisConfigTest {
     @Autowired
     private ZSetOperations<String, Object> zSetOperations;
 
-    @Resource
-    private RedisService redisService;
 
     @Test
     public void testObj() throws Exception{

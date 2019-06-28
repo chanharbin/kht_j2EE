@@ -2,15 +2,19 @@ package com.kht.backend.service.impl;
 
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
+import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.dataobject.SysParaDO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RedisServiceImpl {
@@ -20,9 +24,14 @@ public class RedisServiceImpl {
     private SubDataDictDOMapper subDataDictDOMapper;
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
+    @Autowired
+    private SysParaDOMapper sysParaDOMapper;
     @Resource
     private ValueOperations<String, Object> valueOperations;
 
+    private final String jwtBlackKey="jwtBlackKey";
+    @Value("${app.jwtExpirationInMs}")
+    private Long jwtExpirationInMs;
     /**
      *
      * @param orgCode
@@ -72,8 +81,27 @@ public class RedisServiceImpl {
             return (List<SysParaDO>)valueOperations.get(sysKey);
         }
         else{
-            
+            return sysParaDOMapper.listAll();
         }
-        return null;
+    }
+
+    /**
+     * 生成token的黑名单
+     * @param userCode
+     */
+    public void setJwtBlackList(int userCode,Date time){
+        valueOperations.set(jwtBlackKey+userCode,time,jwtExpirationInMs, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * 获取最新token的产生时间
+     * @param userCode
+     * @return
+     */
+    public Date getJwtTime(int userCode){
+        if(redisTemplate.hasKey(jwtBlackKey+userCode)){
+            return (Date)valueOperations.get(jwtBlackKey+userCode);
+        }
+        return new Date(0L);
     }
 }

@@ -4,6 +4,7 @@ import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.Result;
 import com.kht.backend.exception.AuthenticationException;
 import com.kht.backend.service.impl.AccountServiceImpl;
+import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.service.impl.SystemParameterServiceImpl;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.service.model.UserListResponse;
@@ -41,17 +42,18 @@ public class UserController {
     private SystemParameterServiceImpl systemParameterService;
     @Autowired
     private HttpServletRequest httpServletRequest;
+    @Autowired
+    private RedisServiceImpl redisService;
 
     private final String prefix="Bearer ";
     @PostMapping(value = {"/user/login","/employee/login"})
     public Result authenticateUser(@RequestParam("telephone") Long telephone,@RequestParam("password")String password,HttpServletResponse httpServletResponse){
         try {
-            Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(telephone, password));
+            Authentication authentication =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt=jwtTokenProvider.generateToken(authentication);
             UserPrincipal userPrincipal=jwtTokenProvider.getUserPrincipalFromJWT(jwt);
             Map<String,Object>data=new LinkedHashMap<>();
-            //data.put("Authorization",prefix+jwt);
             data.put("userCode",userPrincipal.getUserCode());
             httpServletResponse.setHeader("Authorization",prefix+jwt);
             return Result.OK(data).build();
@@ -66,10 +68,11 @@ public class UserController {
         return userService.userRegister(telephone,checkCode,passwordEncoder.encode(password));
     }
     @PutMapping("/user/password")
-    public Result modifyUserPassword(@RequestParam("oldPassword")String oldPassword,@RequestParam("newPassword")String newPassword)
+    public Result modifyUserPassword(@RequestParam("oldPassword")String oldPassword,@RequestParam("newPassword")String newPassword,HttpServletResponse httpServletResponse)
     {
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        return userService.modifyUserPassword(currentUser.getUserCode(),oldPassword,newPassword);
+        userService.modifyUserPassword(currentUser.getUserCode(),oldPassword,newPassword);
+        return Result.OK("更新用户信息成功").build();
     }
     @GetMapping("/user/account-opening-info")
     public Result getUserAccountOpeningInfo(@RequestParam("userCode")int userCode){

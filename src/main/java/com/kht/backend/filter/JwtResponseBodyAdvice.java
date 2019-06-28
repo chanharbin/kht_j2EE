@@ -12,15 +12,20 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.Arrays;
 import java.util.List;
 
 @ControllerAdvice
 public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    private List<String>noSupportMethod= Arrays.asList("authenticateUser","registerUser");
     @Override
     public boolean supports(MethodParameter methodParameter, Class aClass) {
         //methodParameter.
+        //System.out.println(methodParameter.getMethod().getName());
+        if(noSupportMethod.stream().anyMatch(str->str.trim().matches(methodParameter.getMethod().getName())))
+            return false;
         return true;
     }
 
@@ -31,12 +36,15 @@ public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
         List<String> bearerToken=serverHttpRequest.getHeaders().get("Authorization");
         String newToken=null;
         String token=null;
-        //System.out.println(bearerToken);
+        //System.out.println("Go Into Body Advice");
         if(bearerToken!=null&&bearerToken.size()==1&& StringUtils.hasText(bearerToken.get(0))&&bearerToken.get(0).startsWith("Bearer ")){
             token=bearerToken.get(0).substring(7, bearerToken.get(0).length());
             newToken=jwtTokenProvider.refreshToken(token);
+
         }
-        servletServerResponse.getHeaders().add("Authorization","Bearer "+newToken);
+        if(newToken!=null){
+            servletServerResponse.getHeaders().add("Authorization","Bearer "+newToken);
+        }
         return o;
     }
 }
