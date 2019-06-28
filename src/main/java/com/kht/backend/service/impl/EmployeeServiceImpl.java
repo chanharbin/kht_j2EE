@@ -60,11 +60,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工不存在");
         }
         Integer userCode = employeeDO.getUserCode();
-        int affectRow = employeeDOMapper.deleteByPrimaryKey(employeeCode);
-        int affectRow1 = userDOMapper.deleteByPrimaryKey(userCode);
-        if(affectRow <= 0 || affectRow1 <= 0){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"删除员工信息失败");
-        }
+        employeeDO.setEmployeeStatus("2");
+        employeeDOMapper.updateByPrimaryKey(employeeDO);
         return Result.OK("删除员工成功").build();
     }
 
@@ -140,11 +137,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
             return employeeModel;
         }).collect(Collectors.toList());
+        List<EmployeeModel> employeeModels = employeeModelList.stream().filter(employeeModel -> employeeModel.getEmployeeStatus().equals("在职")).collect(Collectors.toList());
 
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
         }
-        PageInfo<EmployeeModel> page = new PageInfo<>(employeeModelList);
+        PageInfo<EmployeeModel> page = new PageInfo<>(employeeModels);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("employee_num",page.getTotal());
         resultData.put("employees",page.getList());

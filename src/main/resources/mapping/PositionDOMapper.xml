@@ -29,6 +29,13 @@
     from position
     where POS_CODE = #{posCode,jdbcType=INTEGER}
   </select>
+  <select id="listAll" resultMap="BaseResultMap">
+
+    select
+    <include refid="Base_Column_List" />
+    from position
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbg.generated

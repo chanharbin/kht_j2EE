@@ -4,6 +4,8 @@ package com.kht.backend.dao;
 import com.kht.backend.dataobject.PositionDO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public interface PositionDOMapper {
     /**
@@ -53,4 +55,6 @@ public interface PositionDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int updateByPrimaryKey(PositionDO record);
+
+    List<PositionDO> listAll();
 }

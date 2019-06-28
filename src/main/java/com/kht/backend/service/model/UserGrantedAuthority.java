@@ -10,6 +10,9 @@ public class UserGrantedAuthority implements GrantedAuthority {
         return url+operaType;
     }
 
+    public UserGrantedAuthority() {
+    }
+
     public UserGrantedAuthority(String url, String operaType) {
         this.url = url;
         this.operaType = operaType;

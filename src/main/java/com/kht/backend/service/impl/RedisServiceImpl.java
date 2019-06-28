@@ -52,6 +52,7 @@ public class RedisServiceImpl {
         }
         return null;
     }
+    public boolean updateOrg;
 
     /**
      *
