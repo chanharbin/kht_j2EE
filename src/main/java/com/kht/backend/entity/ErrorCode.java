@@ -8,6 +8,11 @@ public enum ErrorCode {
     PARAM_ERR_COMMON(400, "Bad Request"),
 
     /**
+     * 鉴权失败，没有权限
+     */
+    AUTHENTICATION_EXCEPTION(401, "没有权限"),
+
+    /**
      * 服务器端错误
      */
     SERVER_EXCEPTION(500, "服务器发生异常");
