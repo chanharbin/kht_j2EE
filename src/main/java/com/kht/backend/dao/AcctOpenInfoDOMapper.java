@@ -61,5 +61,4 @@ public interface AcctOpenInfoDOMapper {
     AcctOpenInfoDO selectByUserCode(Integer userCode);
     List<AcctOpenInfoDO> listAll();
 
-    int getValidatedUser();
 }

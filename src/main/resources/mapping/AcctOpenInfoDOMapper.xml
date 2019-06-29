@@ -453,4 +453,5 @@
     from acct_open_info
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
   </select>
+
 </mapper>
