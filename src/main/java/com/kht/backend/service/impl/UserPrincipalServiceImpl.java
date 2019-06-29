@@ -50,10 +50,10 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                 if(acctOpenInfoDO==null){
                     posCode=8;
                 } else {
-                    if(acctOpenInfoDO.getInfoStatus()=="1"){
+                    if(acctOpenInfoDO.getInfoStatus().equals("1")){
                     posCode=9; //8 待审核 9 审核通过
                 }
-                    if(acctOpenInfoDO.getInfoStatus()=="0"||acctOpenInfoDO.getInfoStatus()=="2") {
+                    if(acctOpenInfoDO.getInfoStatus().equals("0")||acctOpenInfoDO.equals("2")) {
                         posCode = 8;
                     }
                 }
