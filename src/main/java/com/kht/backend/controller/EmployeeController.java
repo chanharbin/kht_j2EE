@@ -1,13 +1,18 @@
 package com.kht.backend.controller;
 
+
 import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
+import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
+import com.kht.backend.service.OrganizationService;
+import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +37,8 @@ public class EmployeeController {
     //新增员工
     @Autowired
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
+    @Autowired
+    private OrganizationService organizationService;
     @MethodLog(4)
     @RequestMapping(value = "/employee", method = POST)
     public Result increaseEmployee(@RequestParam("EMPLOYEE_NAME")String employeeName,
@@ -136,4 +143,15 @@ public class EmployeeController {
             return Result.OK("审核未通过结果已提交").build();
         }
     }
+
+    //根据机构名获取用户列表
+    @RequestMapping(value = "/user",method = GET)
+    public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
+                                       @RequestParam("orgCode") String orgCode){
+        System.out.println(orgCode);
+        System.out.println(pageNum);
+        Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum);
+        return organizationUser;
+    }
+
 }

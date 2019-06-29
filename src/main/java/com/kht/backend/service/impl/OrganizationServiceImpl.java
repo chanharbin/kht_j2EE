@@ -1,6 +1,7 @@
 package com.kht.backend.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -93,28 +94,29 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
-        PageHelper.startPage(pageNum,10);
+        Page<Object> pages = PageHelper.startPage(pageNum, 15);
        /* String key = "OrganizationList1";
         List orgList = (List) valueOperations.get(key);
         if(orgList == null || orgList.isEmpty()){*/
-            List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
-            List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
-                OrganizationModel organizationModel = new OrganizationModel();
-                BeanUtils.copyProperties(organizationDO,organizationModel);
-                int userNum;
-                userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
-                organizationModel.setUserNum(userNum);
-                return organizationModel;
-            }).collect(Collectors.toList());
+       List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
+       List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
+           OrganizationModel organizationModel = new OrganizationModel();
+           BeanUtils.copyProperties(organizationDO,organizationModel);
+           int userNum;
+           userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
+           organizationModel.setUserNum(userNum);
+           return organizationModel;
+       }).collect(Collectors.toList());
             /*valueOperations.set(key,organizationModelList);*/
-            if(organizationModelList == null){
+        if(organizationModelList == null){
                 throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"机构不存在，请等待机构添加");
             }
-            PageInfo<OrganizationModel> page = new PageInfo<>(organizationModelList);
-            Map<String,Object> resultData = new LinkedHashMap<>();
-            resultData.put("organization_num",page.getTotal());
-            resultData.put("organizations",page.getList());
-            return resultData;
+        System.out.println(organizationDOList.size());
+        PageInfo<OrganizationModel> page = new PageInfo<>(organizationModelList);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("organization_num",pages.getTotal());
+        resultData.put("organizations",page.getList());
+        return resultData;
         //}
         /*System.out.println("redis_有");
         PageInfo<OrganizationModel> page = new PageInfo<>(orgList);
