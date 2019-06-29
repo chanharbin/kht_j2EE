@@ -6,7 +6,6 @@ import com.kht.backend.dao.MainDataDictDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dataobject.MainDataDictDO;
 import com.kht.backend.dataobject.SubDataDictDO;
-import com.kht.backend.dataobject.SysParaDO;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
@@ -49,6 +48,12 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return subDataDictDOMapper.listAll();
     }
 
+    /**
+     * 根据字段名获取数据字典信息
+     * @param colName
+     * @param pageNum
+     * @return
+     */
     @Override
     public Result getDataDictionariesByColName(String colName, int pageNum) {
         PageHelper.startPage(pageNum,pageSize);
@@ -60,6 +65,12 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return Result.OK(resultData).build();
     }
 
+    /**
+     *获取单个字段的数据字典信息
+     * @param colCode
+     * @param tabCode
+     * @return
+     */
     @Override
     public Result getColumnValues(String colCode, String tabCode) {
         List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValues(colCode, tabCode);
@@ -68,6 +79,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return  Result.OK(resultData).build();
     }
 
+    /**
+     * 获取数据字典的所有字段信息
+     * @return
+     */
     @Override
     public Result getAllColumns() {
         List<MainDataDictDO> mainDataDictDOList = mainDataDictDOMapper.listAll();
@@ -81,6 +96,14 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return  Result.OK(resultData).build();
     }
 
+    /**
+     * 添加数据字典的字段取值
+     * @param mainCode
+     * @param valueCode
+     * @param value
+     * @return
+     * @throws ServiceException
+     */
     @Transactional
     @Override
     public Result addDataDictionary(int mainCode, String valueCode, String value) throws ServiceException {
@@ -96,6 +119,11 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return Result.OK(subCode).build();
     }
 
+    /**
+     * 删除数据字典的字段取值
+     * @param subCode
+     * @return
+     */
     @Transactional
     @Override
     public Result removeDataDictionary(int subCode) {
@@ -106,6 +134,13 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         return Result.OK("删除数据字典信息成功").build();
     }
 
+    /**
+     * 修改数据字典的字段取值
+     * @param subCode
+     * @param valueCode
+     * @param value
+     * @return
+     */
     @Transactional
     @Override
     public Result modifyDataDictionary(int subCode, String valueCode, String value) {

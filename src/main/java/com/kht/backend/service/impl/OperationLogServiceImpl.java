@@ -31,6 +31,11 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     private int pageSize;
 
+    /**
+     * 获取所有操作记录
+     * @param pageNum
+     * @return
+     */
     @Override
     public Result getAllOperationLogs(int pageNum) {
         PageHelper.startPage(pageNum,pageSize);
@@ -42,6 +47,12 @@ public class OperationLogServiceImpl implements OperationLogService {
         return Result.OK(resultData).build();
     }
 
+    /**
+     * 根据操作人员获取操作记录
+     * @param pageNum
+     * @param employeeCode
+     * @return
+     */
     @Override
     public Result getOperationLogsByEmployeeCode(int pageNum, String employeeCode) {
         PageHelper.startPage(pageNum,pageSize);
@@ -53,6 +64,13 @@ public class OperationLogServiceImpl implements OperationLogService {
         return Result.OK(resultData).build();
     }
 
+    /**
+     * 根据时间段获取操作记录
+     * @param pageNum
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     @Override
     public Result getOperationLogsByLogTime(int pageNum, Long startTime, Long endTime) {
         PageHelper.startPage(pageNum,pageSize);
@@ -64,6 +82,11 @@ public class OperationLogServiceImpl implements OperationLogService {
         return Result.OK(resultData).build();
     }
 
+    /**
+     * 添加操作记录
+     * @param operaLogDO
+     * @return
+     */
     @Override
     public boolean addOperationLog(OperaLogDO operaLogDO) {
         int affectedRow = operaLogDOMapper.insert(operaLogDO);
