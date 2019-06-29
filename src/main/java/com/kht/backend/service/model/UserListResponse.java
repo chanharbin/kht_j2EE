@@ -3,6 +3,7 @@ package com.kht.backend.service.model;
 import java.io.Serializable;
 
 public class UserListResponse implements Serializable {
+    private int userCode;
     private int infoCode;
     private String name;
     private String idType;
@@ -10,7 +11,8 @@ public class UserListResponse implements Serializable {
     private String orgName;
     private String email;
 
-    public UserListResponse(int infoCode, String name, String idType, String idCode, String orgName, String email) {
+    public UserListResponse(int userCode,int infoCode, String name, String idType, String idCode, String orgName, String email) {
+        this.userCode = userCode;
         this.infoCode = infoCode;
         this.name = name;
         this.idType = idType;
@@ -65,5 +67,13 @@ public class UserListResponse implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(int userCode) {
+        this.userCode = userCode;
     }
 }

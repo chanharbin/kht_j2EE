@@ -116,9 +116,14 @@ public class UserController {
     }
 
     @MethodLog(7)
+    @GetMapping("/user/listFiltered")
+    public Result getUserListFiltered(@RequestParam("pageNum")int pageNum){
+        Map<String,Object> data=userService.getUserInfoList(pageNum);
+        return Result.OK(data).build();
+    }
     @GetMapping("/user/list")
     public Result getUserList(@RequestParam("pageNum")int pageNum){
-        Map<String,Object> data=userService.getUserInfoList(pageNum);
+        Map<String,Object> data = userService.getList(pageNum);
         return Result.OK(data).build();
     }
 

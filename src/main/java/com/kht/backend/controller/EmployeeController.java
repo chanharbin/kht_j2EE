@@ -1,7 +1,9 @@
 package com.kht.backend.controller;
 
 import com.kht.backend.annotation.MethodLog;
+import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
+import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
 import com.kht.backend.entity.ErrorCode;
@@ -31,6 +33,8 @@ public class EmployeeController {
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
     //新增员工
+    @Autowired
+    private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @MethodLog(4)
     @RequestMapping(value = "/employee", method = POST)
     public Result increaseEmployee(@RequestParam("EMPLOYEE_NAME")String employeeName,
@@ -121,15 +125,18 @@ public class EmployeeController {
 
     //用户审核
     @MethodLog(9)
-    @RequestMapping(value = "/user-validate",method = POST)
+    @RequestMapping(value = "/user-validate",method = PUT)
     public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
                                @RequestParam("INFO_STATUS")String infoStatus){
         if(infoStatus.equals("success")){
             employeeService.getUserValidationInfo(infoCode);
-            return Result.OK("审核结果已提交").build();
+            return Result.OK("审核通过结果结果已提交").build();
         }
         else{
-            return Result.OK("审核结果已提交").build();
+            AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
+            acctOpenInfoDO.setInfoStatus("2");
+            acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
+            return Result.OK("审核未通过结果已提交").build();
         }
     }
 }

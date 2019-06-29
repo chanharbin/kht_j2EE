@@ -20,8 +20,11 @@ public interface UserService {
     //public Result modifyCapitalAccountPassword(String oldPassword,String newPassword,String capitalCode);
 
 
-    //获取客户信息
+    //获取未审核客户信息
     public Result getUserInfo(int userCode);
+
+    //获取全部客户信息
+    public Map<String,Object> getList(int pageNum);
 
     //提交审核资料
     public void increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO);
