@@ -1,6 +1,5 @@
 package com.kht.backend.aspect;
 
-import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.dataobject.OperaLogDO;
 import com.kht.backend.service.OperationLogService;
 import com.kht.backend.util.JwtTokenProvider;
@@ -26,7 +25,7 @@ public class OperationLogAspect {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @Pointcut("@annotation(com.kht.backend.annotation.MethodLog)")
+    @Pointcut("@annotation(com.kht.backend.aspect.MethodLog)")
     public void logPointCut() {}
 
     @AfterReturning("logPointCut()")

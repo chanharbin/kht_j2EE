@@ -12,6 +12,8 @@ public class OperationLogModel {
 
     private String employeeCode;
 
+    private String employeeName;
+
     private String operaName;
 
     private String url;

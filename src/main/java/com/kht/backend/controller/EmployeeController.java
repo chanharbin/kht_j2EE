@@ -1,16 +1,13 @@
 package com.kht.backend.controller;
 
-import com.kht.backend.annotation.MethodLog;
+import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
-import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
-import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
-import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

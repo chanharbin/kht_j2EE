@@ -1,7 +1,7 @@
 package com.kht.backend.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.kht.backend.annotation.MethodLog;
+import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.dao.OrganizationDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 

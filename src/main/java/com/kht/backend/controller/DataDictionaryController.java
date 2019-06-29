@@ -2,7 +2,7 @@ package com.kht.backend.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.kht.backend.annotation.MethodLog;
+import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.entity.*;
 import com.kht.backend.service.DataDictionaryService;
 import com.kht.backend.service.impl.RedisServiceImpl;

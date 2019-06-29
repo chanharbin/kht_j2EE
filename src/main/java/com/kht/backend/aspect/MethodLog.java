@@ -1,4 +1,4 @@
-package com.kht.backend.annotation;
+package com.kht.backend.aspect;
 
 import java.lang.annotation.*;
 

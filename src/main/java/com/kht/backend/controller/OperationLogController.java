@@ -1,6 +1,5 @@
 package com.kht.backend.controller;
 
-import com.kht.backend.annotation.MethodLog;
 import com.kht.backend.entity.*;
 import com.kht.backend.service.OperationLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,9 @@ public class OperationLogController {
      * @param employeeCode
      * @return
      */
-    @RequestMapping(value = "/operation-log/{employeeCode}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getOperationLogsByEmployeeCode(@RequestParam("pageNum") int pageNum, @PathVariable("employeeCode") String employeeCode) {
-        return operationLogService.getOperationLogsByEmployeeCode(pageNum, employeeCode);
+    @RequestMapping(value = "/operation-log/search", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getOperationLogsByEmployeeName(@RequestParam("pageNum") int pageNum, @RequestParam("employeeName") String employeeName) {
+        return operationLogService.getOperationLogsByEmployeeName(pageNum, employeeName);
     }
 
     /**

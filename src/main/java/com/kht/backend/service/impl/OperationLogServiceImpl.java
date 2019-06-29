@@ -50,13 +50,13 @@ public class OperationLogServiceImpl implements OperationLogService {
     /**
      * 根据操作人员获取操作记录
      * @param pageNum
-     * @param employeeCode
+     * @param employeeName
      * @return
      */
     @Override
-    public Result getOperationLogsByEmployeeCode(int pageNum, String employeeCode) {
+    public Result getOperationLogsByEmployeeName(int pageNum, String employeeName) {
         PageHelper.startPage(pageNum,pageSize);
-        List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByEmployeeCode(employeeCode);
+        List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByEmployeeCode(employeeName);
         PageInfo<OperationLogModel> page = new PageInfo<>(operationLogModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
