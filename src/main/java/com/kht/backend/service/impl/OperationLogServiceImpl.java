@@ -56,7 +56,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Override
     public Result getOperationLogsByEmployeeName(int pageNum, String employeeName) {
         PageHelper.startPage(pageNum,pageSize);
-        List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByEmployeeCode(employeeName);
+        List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByEmployeeName(employeeName);
         PageInfo<OperationLogModel> page = new PageInfo<>(operationLogModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());

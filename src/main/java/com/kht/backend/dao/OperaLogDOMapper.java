@@ -61,7 +61,7 @@ public interface OperaLogDOMapper {
 
     List<OperationLogModel> listAll();
 
-    List<OperationLogModel> selectByEmployeeCode(String employeeCode);
+    List<OperationLogModel> selectByEmployeeName(String employeeName);
 
     List<OperationLogModel> selectByLogTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }

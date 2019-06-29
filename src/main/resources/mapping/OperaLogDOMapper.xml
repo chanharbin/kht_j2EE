@@ -44,14 +44,14 @@
     where LOG_CODE = #{logCode,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByEmployeeCode" parameterType="java.lang.String" resultMap="OperationLogResultMap">
+  <select id="selectByEmployeeName" parameterType="java.lang.String" resultMap="OperationLogResultMap">
     select
     <include refid="Operation_Log_Column_List" />
     from (
     select *
-    from opera_log
-    where EMPLOYEE_CODE = #{employeeCode,jdbcType=VARCHAR}
-    ) as temp natural join operation
+    from employee
+    where EMPLOYEE_NAME = #{employeeName,jdbcType=VARCHAR}
+    ) as temp natural join opera_log natural join operation
     order by LOG_TIME desc
   </select>
 
@@ -62,7 +62,7 @@
     select *
     from opera_log
     where LOG_TIME &gt;= #{startTime} and LOG_TIME &lt;= #{endTime}
-    ) as temp natural join operation
+    ) as temp natural join employee natural join operation
     order by LOG_TIME desc
   </select>
 
@@ -70,7 +70,7 @@
   <select id="listAll"  resultMap="OperationLogResultMap">
     select
     <include refid="Operation_Log_Column_List" />
-    from opera_log natural join operation
+    from opera_log natural join employee natural join operation
     order by LOG_TIME desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
