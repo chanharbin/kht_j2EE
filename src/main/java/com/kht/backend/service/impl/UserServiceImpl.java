@@ -206,6 +206,8 @@ public class UserServiceImpl implements UserService {
         return Result.OK(userDO).build();
     }
 
+
+
     @Override
     public Map<String, Object> getUserAndState(int userCode) {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
@@ -231,6 +233,24 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOListFiltered);
+        List<UserListResponse> userListResponseList = page.getList().stream()
+                .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("totalNum", page.getTotal());
+        data.put("userList", userListResponseList);
+        return data;
+    }
+
+    @Override
+    public Map<String, Object> getList(int pageNum) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
         List<UserListResponse> userListResponseList = page.getList().stream()
                 .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
                         organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
