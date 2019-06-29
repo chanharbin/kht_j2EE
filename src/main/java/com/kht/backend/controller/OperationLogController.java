@@ -31,7 +31,10 @@ public class OperationLogController {
      */
     @RequestMapping(value = "/operation-log/search", method = GET, produces = "application/json;charset=UTF-8")
     public Result getOperationLogsByEmployeeName(@RequestParam("pageNum") int pageNum, @RequestParam("employeeName") String employeeName) {
-        return operationLogService.getOperationLogsByEmployeeName(pageNum, employeeName);
+        if (employeeName == null || employeeName.trim().isEmpty()) {
+            return operationLogService.getAllOperationLogs(pageNum);
+        }
+        return operationLogService.getOperationLogsByEmployeeName(pageNum, employeeName.trim());
     }
 
     /**

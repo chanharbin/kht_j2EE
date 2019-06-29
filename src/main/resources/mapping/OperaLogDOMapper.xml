@@ -50,7 +50,7 @@
     from (
     select *
     from employee
-    where EMPLOYEE_NAME = #{employeeName,jdbcType=VARCHAR}
+    where EMPLOYEE_NAME like '%${value}%'
     ) as temp natural join opera_log natural join operation
     order by LOG_TIME desc
   </select>
