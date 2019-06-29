@@ -189,7 +189,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List getOrgByName(String orgName) {
         if(orgName == null || orgName.isEmpty()){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"输入关键字为空");
+            return organizationDOMapper.selectAll();
         }
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectByName(orgName);
         if(organizationDOList == null || organizationDOList.isEmpty()){
