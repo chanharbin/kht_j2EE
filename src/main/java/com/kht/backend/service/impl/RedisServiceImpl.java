@@ -1,9 +1,11 @@
 package com.kht.backend.service.impl;
 
 import com.kht.backend.dao.OrganizationDOMapper;
+import com.kht.backend.dao.PositionDOMapper;
 import com.kht.backend.dao.SubDataDictDOMapper;
 import com.kht.backend.dao.SysParaDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
+import com.kht.backend.dataobject.PositionDO;
 import com.kht.backend.dataobject.SysParaDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +30,8 @@ public class RedisServiceImpl {
     private SysParaDOMapper sysParaDOMapper;
     @Resource
     private ValueOperations<String, Object> valueOperations;
+    @Autowired
+    private PositionDOMapper positionDOMapper;
 
     private final String jwtBlackKey="jwtBlackKey";
     @Value("${app.jwtExpirationInMs}")
@@ -117,7 +121,24 @@ public class RedisServiceImpl {
             return sysParaDOS;
         }
     }
-
+    /**
+     * @param posCode
+     * return posName
+     */
+    public String getPosName(int posCode){
+        StringBuffer stringBuffer = new StringBuffer("position");
+        stringBuffer.append(posCode);
+        String key = stringBuffer.toString();
+        if(redisTemplate.hasKey(key)){
+            System.out.println("get from redis");
+            return (String)valueOperations.get(key);
+        }
+        else{
+            PositionDO positionDO = positionDOMapper.selectByPrimaryKey(posCode);
+            valueOperations.set(key,positionDO.getPosName());
+            return positionDO.getPosName();
+        }
+    }
     /**
      * 生成token的黑名单
      * @param userCode

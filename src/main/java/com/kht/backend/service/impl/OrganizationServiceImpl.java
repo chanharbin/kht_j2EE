@@ -94,7 +94,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
-        Page<Object> pages = PageHelper.startPage(pageNum, 15);
+        Page<Object> pages = PageHelper.startPage(pageNum, 10);
        /* String key = "OrganizationList1";
         List orgList = (List) valueOperations.get(key);
         if(orgList == null || orgList.isEmpty()){*/

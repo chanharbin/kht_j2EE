@@ -1,9 +1,11 @@
 package com.kht.backend.controller;
 
 import com.kht.backend.aspect.MethodLog;
+import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.*;
 import com.kht.backend.entity.Result;
 import com.kht.backend.exception.AuthenticationException;
+import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.service.impl.SystemParameterServiceImpl;
 import com.kht.backend.service.model.UserPrincipal;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +43,8 @@ public class UserController {
     private HttpServletRequest httpServletRequest;
     @Autowired
     private RedisServiceImpl redisService;
+    @Autowired
+    private EmployeeDOMapper employeeDOMapper;
 
     private final String prefix="Bearer ";
 
@@ -50,13 +55,24 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt=jwtTokenProvider.generateToken(authentication);
             UserPrincipal userPrincipal=jwtTokenProvider.getUserPrincipalFromJWT(jwt);
-            Map<String,Object>data=new LinkedHashMap<>();
-            data.put("userCode",userPrincipal.getUserCode());
-            httpServletResponse.setHeader("Authorization",prefix+jwt);
+            Map<String, Object> data = new LinkedHashMap<>();
+            if(userPrincipal.getUserType().equals("0")) {
+                data.put("userCode", userPrincipal.getUserCode());
+            }
+            else {
+                EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
+                String employeeName = employeeDO.getEmployeeName();
+                String position = redisService.getPosName(employeeDO.getPosCode());
+                data.put("employeeName",employeeName);
+                data.put("employeePosition",position);
+            }
+            httpServletResponse.setHeader("Authorization", prefix + jwt);
             return Result.OK(data).build();
-        } catch (DisabledException e) {
+        }
+        catch (DisabledException e) {
             throw new AuthenticationException("User is disabled!", e);
-        } catch (BadCredentialsException e) {
+        }
+        catch (BadCredentialsException e) {
             throw new AuthenticationException("Bad credentials!", e);
         }
     }

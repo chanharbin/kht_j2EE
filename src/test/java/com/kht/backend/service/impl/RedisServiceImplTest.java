@@ -31,4 +31,9 @@ public class RedisServiceImplTest {
     public void getParaValue() {
         System.out.println(redisService.getParaValue("pageSize"));
     }
+
+    @Test
+    public void getPosionName(){
+        System.out.println(redisService.getPosName(2));
+    }
 }
