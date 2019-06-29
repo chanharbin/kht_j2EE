@@ -156,6 +156,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(acctOpenInfoDO == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资料编号错误");
         }
+        acctOpenInfoDO.setInfoStatus("1");
+        acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
         CustAcctDO custAcctDO = new CustAcctDO();
         BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);
         StringBuffer stringBuffer = new StringBuffer();

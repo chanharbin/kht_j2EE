@@ -226,12 +226,13 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getUserInfoList(int pageNum) {
         PageHelper.startPage(pageNum, pageSize);
         List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        List<AcctOpenInfoDO> acctOpenInfoDOListFiltered = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
         if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
-        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOListFiltered);
         List<UserListResponse> userListResponseList = page.getList().stream()
-                .map(i -> new UserListResponse(i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
+                .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
                         organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
                 .collect(Collectors.toList());
         Map<String, Object> data = new LinkedHashMap<>();

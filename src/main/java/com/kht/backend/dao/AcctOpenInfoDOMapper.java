@@ -59,6 +59,7 @@ public interface AcctOpenInfoDOMapper {
     AcctOpenInfoDO selectByInfoCode(int infoCode);
 
     AcctOpenInfoDO selectByUserCode(Integer userCode);
+
     List<AcctOpenInfoDO> listAll();
 
 }
