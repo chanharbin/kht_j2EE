@@ -64,7 +64,7 @@ public class JwtTokenProvider {
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(authToken).getBody();
             Date curTime=redisService.getJwtTime((int)claims.get("userCode"));
-            if(claims.getIssuedAt().before(curTime)){
+            if(claims.getIssuedAt().after(curTime)){
                 logger.error("JWT time out");
                 throw new  UnsupportedJwtException("JWT time out");
             }

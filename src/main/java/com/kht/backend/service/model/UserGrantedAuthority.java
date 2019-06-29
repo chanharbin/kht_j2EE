@@ -7,7 +7,7 @@ public class UserGrantedAuthority implements GrantedAuthority {
     private String operaType;
     @Override
     public String getAuthority() {
-        return url+operaType;
+        return url+";"+operaType;
     }
 
     public UserGrantedAuthority() {

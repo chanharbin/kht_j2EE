@@ -1,12 +1,8 @@
 package com.kht.backend.service.impl;
 
-import com.kht.backend.dao.CapAcctDOMapper;
-import com.kht.backend.dao.CustAcctDOMapper;
-import com.kht.backend.dao.EmployeeDOMapper;
-import com.kht.backend.dao.UserDOMapper;
-import com.kht.backend.dataobject.CustAcctDO;
-import com.kht.backend.dataobject.EmployeeDO;
-import com.kht.backend.dataobject.UserDO;
+import com.kht.backend.dao.*;
+import com.kht.backend.dataobject.*;
+import com.kht.backend.service.model.UserGrantedAuthority;
 import com.kht.backend.service.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserPrincipalServiceImpl implements UserDetailsService {
     @Autowired
@@ -27,6 +25,10 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
     private CustAcctDOMapper custAcctDOMapper;
+    @Autowired
+    private OperationDOMapper operationDOMapper;
+    @Autowired
+    private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -35,38 +37,55 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
         if(userDO==null){
             throw new UsernameNotFoundException("User not found with username or email : " + userDO.getUserCode());
         }
-        List<GrantedAuthority> authorities=new ArrayList<>();
+        List<GrantedAuthority> authorities;
         String code=null;
         switch (userDO.getUserType()) {
             case "0": {
                 CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userDO.getUserCode());
+                int posCode=0;
                 if (custAcctDO != null) {
                     code=custAcctDO.getCustCode();
                 }
-                //TODO 用户的岗位
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER1"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER3"));
-
+                AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userDO.getUserCode());
+                if(acctOpenInfoDO==null){
+                    posCode=8;
+                } else {
+                    if(acctOpenInfoDO.getInfoStatus()=="1"){
+                    posCode=9; //8 待审核 9 审核通过
+                }
+                    if(acctOpenInfoDO.getInfoStatus()=="0"||acctOpenInfoDO.getInfoStatus()=="2") {
+                        posCode = 8;
+                    }
+                }
+                if(posCode==0){
+                    throw new UsernameNotFoundException("empty posCode");
+                }
+                List<OperationDO> operationDOList=operationDOMapper.selectByPosition(posCode);
+                authorities = operationDOList.stream()
+                        .filter(operationDO -> operationDO != null && operationDO.getUrl() != null)
+                        .map(operationDO -> new UserGrantedAuthority(operationDO.getUrl(), operationDO.getOperaType()))
+                        .collect(Collectors.toList());
                 break;
             }
             case "1": {
                 EmployeeDO employeeDO = employeeDOMapper.selectByUserCode(userDO.getUserCode());
                 if (employeeDO != null) {
-                    code=employeeDO.getEmployeeCode();
+                    code = employeeDO.getEmployeeCode();
+                    List<OperationDO> operationDOList = operationDOMapper.selectByPosition(employeeDO.getPosCode());
+                    authorities = operationDOList.stream()
+                            .filter(operationDO -> operationDO != null && operationDO.getUrl() != null)
+                            .map(operationDO -> new UserGrantedAuthority(operationDO.getUrl(), operationDO.getOperaType()))
+                            .collect(Collectors.toList());
                 }
-
-                authorities.add(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER2"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER3"));
+                else{
+                    throw new UsernameNotFoundException("user :"+userDO.getUserCode()+" can not found");
+                }
                 break;
             }
             default:
                 throw new UsernameNotFoundException("UserType Error");
         }
         UserPrincipal userPrincipal=UserPrincipal.create(userDO, code, authorities);
-        //System.out.println(userPrincipal.toString());
         return userPrincipal;
     }
 }

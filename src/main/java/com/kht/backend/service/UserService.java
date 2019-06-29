@@ -24,7 +24,7 @@ public interface UserService {
     public Result getUserInfo(int userCode);
 
     //提交审核资料
-    public Result increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO);
+    public void increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO);
 
     //增加资金账户
     //public Result increaseCapitalAccount(String customerCode,String capitalAccountPassword,String bankType,String bankCardCode);

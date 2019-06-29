@@ -40,12 +40,17 @@ public class UserPrincipal implements UserDetails {
                 authorities);
     }
     public static UserPrincipal create(Claims claims){
-
+       List<Map<String,String>> temp=(List<Map<String,String>>)claims.get("authorities");
+        /*for(Map<String,String>map:temp){
+            for (Map.Entry<String, String> entry: map.entrySet()) {
+                System.out.println("key:"+entry.getKey());
+                System.out.println("value:"+entry.getValue());
+            }
+        }*/
         List<GrantedAuthority> authoritiesList=((List<Map<String,String>>)claims.get("authorities")).stream()
-                .map(i->new SimpleGrantedAuthority((String)i.values().toArray()[0]))
+                .map(authority-> new UserGrantedAuthority(authority.get("url").trim(),authority.get("operaType")))
                 .collect(Collectors.toList());
         //System.out.println(authoritiesList);
-        //System.out.println(authes.get(0).getClass());
         return new UserPrincipal(
                 (int)claims.get("userCode"),
                 Long.valueOf(((Number)claims.get("telephone")).longValue()),

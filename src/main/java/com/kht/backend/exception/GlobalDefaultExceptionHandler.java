@@ -18,4 +18,10 @@ public class GlobalDefaultExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         return new Result.ResultBuilder(errorCode.getStatusCode(),ex.getDesc()).build();
     }
+    /*@ExceptionHandler(ServiceException.class)
+    @ResponseBody
+    public Result authenticationErrorHandle(ServiceException ex, HttpServletResponse response){
+        return new Result.ResultBuilder(401,ex.getDesc()).build();
+
+    }*/
 }

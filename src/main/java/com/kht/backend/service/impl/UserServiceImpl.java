@@ -94,26 +94,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Result increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO) {
+    public void increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO) {
         AcctOpenInfoDO acctOpenInfoDO1 = acctOpenInfoDOMapper.selectByUserCode(userCode);
-        if (acctOpenInfoDO1 != null) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已存在开户资料");
-        }
         int affectRow1 = imageDOMapper.insertSelective(imageDO);
         if (affectRow1 == 0) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "添加影像资料失败");
         }
+        int affectRow;
         UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
         acctOpenInfoDO.setUserCode(userDO.getUserCode());
         acctOpenInfoDO.setImgCode(imageDO.getImgCode());
         //0表示提交未审核
         acctOpenInfoDO.setInfoStatus("0");
         acctOpenInfoDO.setCmtTime(new Date().getTime());
-        int affectRow = acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
-        if (affectRow == 0) {
+        if (acctOpenInfoDO1 != null) {
+            if(acctOpenInfoDO1.getInfoCode()==1) {
+                throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已开户不能重复提交");
+            }else{
+                affectRow=acctOpenInfoDOMapper.updateByPrimaryKeySelective(acctOpenInfoDO);
+            }
+        }else {
+            affectRow = acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
+        }
+        if (affectRow <= 0) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "添加开户资料失败");
         }
-        return Result.OK("添加开户资料成功").build();
+
     }
 
     public Map<String,Object> getAccountOpeningInfo(int userCode) {

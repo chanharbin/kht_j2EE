@@ -89,7 +89,8 @@ public class UserController {
     public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO){
         UserPrincipal currentUser=jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         //System.out.println(acctOpenInfoDO.toString()+imageDO.toString());
-        return userService.increaseAccountOpenInfo(currentUser.getUserCode(),acctOpenInfoDO,imageDO);
+        userService.increaseAccountOpenInfo(currentUser.getUserCode(),acctOpenInfoDO,imageDO);
+        return Result.OK("添加开户资料成功").build();
     }
 
     @GetMapping("/user/account-opening-info/status")
