@@ -20,7 +20,7 @@ public interface OrganizationService {
     public Result getOrganizationUser(String orgCode,int pageNum);
 
     public Result getOrganizationById(String orgCode);
-
+    //根据姓名获取机构
     public List getOrgByName(String orgName);
 
 
