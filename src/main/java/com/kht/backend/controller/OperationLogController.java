@@ -26,7 +26,7 @@ public class OperationLogController {
     /**
      * 根据操作人员获取操作记录
      * @param pageNum
-     * @param employeeCode
+     * @param employeeName
      * @return
      */
     @RequestMapping(value = "/operation-log/search", method = GET, produces = "application/json;charset=UTF-8")
