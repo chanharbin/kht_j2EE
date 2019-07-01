@@ -1,5 +1,6 @@
 package com.kht.backend.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.*;
@@ -127,7 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result listEmployee(int pageNum) {
-        PageHelper.startPage(pageNum,10);
+        Page<Object> pages = PageHelper.startPage(pageNum, 10);
         List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
         List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
             EmployeeModel employeeModel = new EmployeeModel();
@@ -144,7 +145,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         PageInfo<EmployeeModel> page = new PageInfo<>(employeeModels);
         Map<String,Object> resultData = new LinkedHashMap<>();
-        resultData.put("employee_num",page.getTotal());
+        resultData.put("employee_num",pages.getTotal());
         resultData.put("employees",page.getList());
         return Result.OK(resultData).build();
     }
