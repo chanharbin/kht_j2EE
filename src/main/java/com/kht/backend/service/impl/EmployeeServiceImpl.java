@@ -123,7 +123,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         else{
             return Result.OK(employeeModelList).build();
         }
-
     }
 
     @Override
