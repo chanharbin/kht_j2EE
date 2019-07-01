@@ -3,6 +3,7 @@ package com.kht.backend.dao;
 
 import com.kht.backend.dataobject.CustAcctDO;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -61,4 +62,9 @@ public interface CustAcctDOMapper {
     List<CustAcctDO> selectCustCodeByOrgCode(String orgCode);
     CustAcctDO selectByUserCode(int userCode);
     int getUserCountByOrgCode(String orgCode);
+
+    int getAllCount(String orgCode);
+
+    int getTodayCount(@RequestParam("dateForToday") Long dateForToday,@RequestParam("orgCode") String orgCode);
+
 }

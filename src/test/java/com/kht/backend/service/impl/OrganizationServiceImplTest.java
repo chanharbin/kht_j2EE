@@ -2,6 +2,7 @@ package com.kht.backend.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kht.backend.App;
+import com.kht.backend.dao.CustAcctDOMapper;
 import com.kht.backend.dataobject.OrganizationDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.OrganizationService;
@@ -20,6 +21,8 @@ import java.util.Map;
 public class OrganizationServiceImplTest {
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private CustAcctDOMapper custAcctDOMapper;
 
 
     @Test
@@ -72,5 +75,15 @@ public class OrganizationServiceImplTest {
         Result re = organizationService.getOrganizationById("1");
         String s = JSONObject.toJSONString(re.getData());
         System.out.println(s);
+    }
+    @Test
+    public void getTodayCount(){
+        int todayCount = custAcctDOMapper.getTodayCount((long) 20001010,"1000");
+        System.out.println(todayCount);
+    }
+    @Test
+    public void getTotalUserNum(){
+        int allCount = custAcctDOMapper.getAllCount("1000");
+        System.out.println(allCount);
     }
 }

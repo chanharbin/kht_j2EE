@@ -28,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,15 +99,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Page<Object> pages = PageHelper.startPage(pageNum, 10);
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
        List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
-           OrganizationModel organizationModel = new OrganizationModel();
-           BeanUtils.copyProperties(organizationDO,organizationModel);
-           int userNum;
-           userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
-           int todayUserNum;
-           int totalUserNum;
-           //custAcctDOMapper.getAllCount();
-           organizationModel.setUserNum(userNum);
-           organizationModel.setOrgName(organizationModel.getOrgCode()+ "-" +  organizationModel.getOrgName());
+           OrganizationModel organizationModel = this.convertFromDO(organizationDO);
            return organizationModel;
        }).collect(Collectors.toList());
         if(organizationModelList == null){
@@ -191,15 +185,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"暂无此机构列表");
         }
         List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
-            OrganizationModel organizationModel = new OrganizationModel();
-            BeanUtils.copyProperties(organizationDO,organizationModel);
-            int userNum;
-            userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
-            organizationModel.setUserNum(userNum);
-            organizationModel.setOrgName(organizationModel.getOrgCode()+ "-" + organizationModel.getOrgName());
+            OrganizationModel organizationModel = this.convertFromDO(organizationDO);
             return organizationModel;
         }).collect(Collectors.toList());
-        return organizationDOList;
+        return organizationModelList;
     }
     private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
         if(custAcctDO == null){
@@ -208,6 +197,26 @@ public class OrganizationServiceImpl implements OrganizationService {
         UserFromOrg userFromOrg = new UserFromOrg();
         BeanUtils.copyProperties(custAcctDO,userFromOrg);
         return userFromOrg;
+    }
+    private OrganizationModel convertFromDO(OrganizationDO organizationDO){
+        OrganizationModel organizationModel = new OrganizationModel();
+        BeanUtils.copyProperties(organizationDO,organizationModel);
+        int userNum;
+        userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
+        int todayUserNum;
+        int totalUserNum;
+        long dateForToday = 0;
+        SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = smf.format(new Date());
+        String replace = date.replace("-", "");
+        dateForToday = Long.parseLong(replace);
+        totalUserNum = custAcctDOMapper.getAllCount(organizationDO.getOrgCode());
+        todayUserNum = custAcctDOMapper.getTodayCount(dateForToday,organizationDO.getOrgCode());
+        organizationModel.setUserNum(userNum);
+        organizationModel.setOrgName(organizationModel.getOrgCode()+ "-" +  organizationModel.getOrgName());
+        organizationModel.setTotalUserNum(totalUserNum);
+        organizationModel.setTodayUserNum(todayUserNum);
+        return organizationModel;
     }
 
 }
