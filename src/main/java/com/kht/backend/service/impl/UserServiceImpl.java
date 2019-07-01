@@ -1,6 +1,7 @@
 package com.kht.backend.service.impl;
 
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.*;
@@ -23,10 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -39,13 +39,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDOMapper userDOMapper;
     @Autowired
-    private CapAcctDOMapper capAcctDOMapper;
-    @Autowired
-    private TrdAcctDOMapper trdAcctDOMapper;
-    @Autowired
     private CustAcctDOMapper custAcctDOMapper;
-    @Autowired
-    private DepAcctDOMapper depAcctDOMapper;
     @Autowired
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
@@ -66,19 +60,39 @@ public class UserServiceImpl implements UserService {
     private ValueOperations<String, Object> valueOperations;
     @Value("${app.pageSize}")
     private int pageSize;
-    private final String otpKey="otp";
+    private final String otpKey = "otp";
     //验证码过期时间 单位秒
-    private  long otpExpirationInSecond=900;
+    private long otpExpirationInSecond = 900;
+
+    /**
+     * 获取验证码
+     *
+     * @param telephone
+     */
     @Override
-    public Result userRegister(Long telephone, int checkCode, String password) {
+    public void getOtp(Long telephone) {
+        int otpValue = (int) (Math.random() * 10000);
+        valueOperations.set(otpKey + telephone, otpValue, otpExpirationInSecond, TimeUnit.SECONDS);
+        logger.info("telephone " + telephone + " get checkCode :" + otpValue);
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param telephone
+     * @param checkCode
+     * @param password
+     */
+    @Override
+    @Transactional
+    public void userRegister(Long telephone, int checkCode, String password) {
         int realOtp;
-        if (redisTemplate.hasKey(otpKey+telephone.toString())) {
-            realOtp=(int)valueOperations.get(otpKey+telephone.toString());
-        }
-        else{
+        if (redisTemplate.hasKey(otpKey + telephone.toString())) {
+            realOtp = (int) valueOperations.get(otpKey + telephone.toString());
+        } else {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "无验证码或验证码过期");
         }
-        if(realOtp!=checkCode){
+        if (realOtp != checkCode) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "验证码错误");
         }
         UserDO userDO = new UserDO();
@@ -89,9 +103,136 @@ public class UserServiceImpl implements UserService {
         if (affectRow == 0) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "注册失败");
         }
-        return Result.OK("注册成功").build();
+
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @param userCode
+     * @return
+     */
+    @Override
+    public UserDO getUserInfo(int userCode) {
+        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
+        if (userDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户不存在");
+        }
+        return userDO;
+    }
+
+    /**
+     * 修改用户密码
+     *
+     * @param userCode
+     * @param oldPassword
+     * @param password
+     */
+    public void modifyUserPassword(int userCode, String oldPassword, String password) {
+        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
+        if (userDO == null || !userDO.getPassword().equals(passwordEncoder.encode(oldPassword))) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "密码错误");
+        }
+        userDO.setPassword(passwordEncoder.encode(password));
+        int affectRow = userDOMapper.updateByPrimaryKeySelective(userDO);
+        if (affectRow == 0) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "更新用户信息失败");
+        }
+    }
+
+    /**
+     * 获取用户列表
+     *
+     * @param pageNum
+     * @param filterable true 代表只选出未审核的用户； false 代表选出所有用户
+     * @return
+     */
+    @Override
+    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable) {
+        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList;
+        String tabCode = "acct_open_info";
+        if (filterable) {
+            //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
+            acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUser();
+        } else {
+            acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        }
+        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        if(page.getList()==null||page.getList().isEmpty()){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        List<UserListResponse> userListResponseList = page.getList().stream()
+                .map(i -> new UserListResponse(i.getUserCode(), i.getInfoCode(), i.getName(),
+                        redisService.getDataDictionary("ID_TYPE", tabCode, i.getIdType()), i.getIdCode(),
+                        redisService.getOrganizationName(i.getOrgCode()), i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("totalNum", page.getTotal());
+        data.put("userList", userListResponseList);
+        data.put("pageSize", pageSize);
+        return data;
+    }
+    public Map<String,Object> getUserListByEmployeeCodeAndStartTimeAndEndTIme(int pageNum,String employeeCode,Long startTime,Long endTime){
+        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        String tabCode = "acct_open_info";
+        if(startTime==null||endTime==null){
+            startTime=getNeedTime(0,0,0,0).getTime();
+            endTime=getNeedTime(23,59,59,0).getTime();
+        }
+        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.selectByEmployeeCodeAndStartTimeAndEndTime(employeeCode,startTime,endTime);
+        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        if(page.getList()==null||page.getList().isEmpty()){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        List<UserListResponse> userListResponseList = page.getList().stream()
+                .map(i -> new UserListResponse(i.getUserCode(), i.getInfoCode(), i.getName(),
+                        redisService.getDataDictionary("ID_TYPE", tabCode, i.getIdType()), i.getIdCode(),
+                        redisService.getOrganizationName(i.getOrgCode()), i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("totalNum", page.getTotal());
+        data.put("userList", userListResponseList);
+        data.put("pageSize", pageSize);
+        return data;
+    }
+    /**
+     * 获取用户审核状态
+     *
+     * @param userCode
+     * @return
+     */
+    @Override
+    public Map<String, Object> getUserAndState(int userCode) {
+        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        if (acctOpenInfoDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "获取用户开户信息失败");
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS", "acct_open_info", acctOpenInfoDO.getInfoStatus()));
+        if (custAcctDO == null) {
+            data.put("custCode", null);
+        } else {
+            data.put("custCode", custAcctDO.getCustCode());
+        }
+        return data;
+    }
+
+    /**
+     * 如果已存在开户资料修改原先的开户资料
+     * 如果不存在开户资料则增加数据项
+     *
+     * @param userCode
+     * @param acctOpenInfoDO
+     * @param imageDO
+     */
     @Override
     @Transactional
     public void increaseAccountOpenInfo(int userCode, AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO) {
@@ -108,12 +249,12 @@ public class UserServiceImpl implements UserService {
         acctOpenInfoDO.setInfoStatus("0");
         acctOpenInfoDO.setCmtTime(new Date().getTime());
         if (acctOpenInfoDO1 != null) {
-            if(acctOpenInfoDO1.getInfoCode()==1) {
+            if (acctOpenInfoDO1.getInfoCode() == 1) {
                 throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已开户不能重复提交");
-            }else{
-                affectRow=acctOpenInfoDOMapper.updateByPrimaryKeySelective(acctOpenInfoDO);
+            } else {
+                affectRow = acctOpenInfoDOMapper.updateByPrimaryKeySelective(acctOpenInfoDO);
             }
-        }else {
+        } else {
             affectRow = acctOpenInfoDOMapper.insertSelective(acctOpenInfoDO);
         }
         if (affectRow <= 0) {
@@ -122,8 +263,15 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public Map<String,Object> getAccountOpeningInfo(int userCode) {
-        String tabCode="acct_open_info";
+    /**
+     * 获取开户资料
+     *
+     * @param userCode
+     * @return
+     */
+    @Override
+    public Map<String, Object> getAccountOpeningInfo(int userCode) {
+        String tabCode = "acct_open_info";
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
         if (acctOpenInfoDO == null) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交开户资料");
@@ -134,12 +282,12 @@ public class UserServiceImpl implements UserService {
         }
 
         String orgName = redisService.getOrganizationName(acctOpenInfoDO.getOrgCode());
-        String gender = redisService.getDataDictionary("GENDER" , tabCode , acctOpenInfoDO.getGender());
-        String idType = redisService.getDataDictionary("ID_TYPE" , tabCode, acctOpenInfoDO.getIdType());
-        String education=redisService.getDataDictionary("EDUCATION" , tabCode, acctOpenInfoDO.getEducation());
+        String gender = redisService.getDataDictionary("GENDER", tabCode, acctOpenInfoDO.getGender());
+        String idType = redisService.getDataDictionary("ID_TYPE", tabCode, acctOpenInfoDO.getIdType());
+        String education = redisService.getDataDictionary("EDUCATION", tabCode, acctOpenInfoDO.getEducation());
         //String bankType=redisService.getDataDictionary("BANK_TYPE",tabCode,acctOpenInfoDO.getBankType());
         //String openChannel=redisService.getDataDictionary("OPEN_CHANNEL",tabCode,acctOpenInfoDO.getOpenChannel());
-        //String infoStatus=redisService.getDataDictionary("INFO_STATUS",tabCode,acctOpenInfoDO.getInfoStatus());
+        String infoStatus = redisService.getDataDictionary("INFO_STATUS", tabCode, acctOpenInfoDO.getInfoStatus());
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("infoCode", acctOpenInfoDO.getInfoCode());
         data.put("imgCode", acctOpenInfoDO.getImgCode());
@@ -159,114 +307,21 @@ public class UserServiceImpl implements UserService {
         data.put("idFront", imageDO.getIdFront());
         data.put("idBack", imageDO.getIdBack());
         data.put("face", imageDO.getFace());
+        //TODO
+        data.put("infoStatus", infoStatus);
+        data.put("auditRemark", null);
+        data.put("birthday", getBirthDayFromIdCode(acctOpenInfoDO.getIdCode()));
         return data;
     }
 
+    /**
+     * 获取数据字典里面的数据列表，如银行列表等
+     *
+     * @param colCode 列名
+     * @param tabCode 表名
+     * @return
+     */
     @Override
-    public void getOtp(Long telephone) {
-        int otpValue=(int)(Math.random()*10000);
-        valueOperations.set(otpKey+telephone,otpValue,otpExpirationInSecond, TimeUnit.SECONDS);
-        logger.info("telephone "+telephone+" get checkCode :"+otpValue);
-    }
-
-    @Override
-    public Result getUserAccountInfo(int userCode) {
-        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
-        if (custAcctDO == null) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户未开户");
-        }
-        List<CapAcctDO> capAcctDOList = capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
-        List<DepAcctDO> depAcctDOList = capAcctDOList.stream()
-                .map(i -> depAcctDOMapper.selectByCapCode(i.getCapCode()))
-                .collect(Collectors.toList());
-        List<TrdAcctDO> trdAcctDOList = trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("capital_accounts", capAcctDOList);
-        data.put("securities_accounts", trdAcctDOList);
-        data.put("depository_accounts", depAcctDOList);
-        return new Result(200, "OK", data);
-    }
-
-    @Override
-    public void modifyUserPassword(int userCode, String oldPassword, String password) {
-        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
-        if (userDO == null || !userDO.getPassword().equals(passwordEncoder.encode(oldPassword))) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "密码错误");
-        }
-        userDO.setPassword(passwordEncoder.encode(password));
-        int affectRow = userDOMapper.updateByPrimaryKeySelective(userDO);
-        if (affectRow == 0) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "更新用户信息失败");
-        }
-
-    }
-
-    @Override
-    public Result getUserInfo(int userCode) {
-        UserDO userDO = userDOMapper.selectByPrimaryKey(userCode);
-        if (userDO == null) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户不存在");
-        }
-        /* Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("data",userDO);*/
-        return Result.OK(userDO).build();
-    }
-
-
-
-    @Override
-    public Map<String, Object> getUserAndState(int userCode) {
-        AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
-        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
-        if (acctOpenInfoDO == null) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "获取用户开户信息失败");
-        }
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS","acct_open_info",acctOpenInfoDO.getInfoStatus()));
-        if (custAcctDO == null) {
-            data.put("custCode", null);
-        } else {
-            data.put("custCode", custAcctDO.getCustCode());
-        }
-        return data;
-    }
-
-    public Map<String, Object> getUserInfoList(int pageNum) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
-        List<AcctOpenInfoDO> acctOpenInfoDOListFiltered = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
-        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
-        }
-        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOListFiltered);
-        List<UserListResponse> userListResponseList = page.getList().stream()
-                .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
-                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
-                .collect(Collectors.toList());
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("totalNum", page.getTotal());
-        data.put("userList", userListResponseList);
-        return data;
-    }
-
-    @Override
-    public Map<String, Object> getList(int pageNum) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
-        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
-            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
-        }
-        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
-        List<UserListResponse> userListResponseList = page.getList().stream()
-                .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
-                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
-                .collect(Collectors.toList());
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("totalNum", page.getTotal());
-        data.put("userList", userListResponseList);
-        return data;
-    }
-
     public List<DictionaryModel> getAllDataInfoList(String colCode, String tabCode) {
         MainDataDictDO mainDataDictDO = mainDataDictDOMapper.selectByColCodeAndTabCode(colCode, tabCode);
         if (mainDataDictDO == null) {
@@ -282,7 +337,38 @@ public class UserServiceImpl implements UserService {
         return dictionaryModelList;
     }
 
+    /**
+     * @param idCode
+     * @return
+     */
+    public Long getBirthDayFromIdCode(String idCode) {
+        Date date;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        if (idCode.length() == 18) {
+            System.out.println(idCode.substring(6, 14));
+            try {
+                date = simpleDateFormat.parse(idCode.substring(6, 14));
+            } catch (ParseException e) {
+                return 0L;
+            }
+            return date.getTime();
+        }
+        return 0L;
+    }
 
+    private Date getNeedTime(int hour,int minute,int second,int addDay,int ...args) {
+        Calendar calendar = Calendar.getInstance();
+        if (addDay != 0) {
+            calendar.add(Calendar.DATE, addDay);
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        if (args.length == 1) {
+            calendar.set(Calendar.MILLISECOND, args[0]);
+        }
+        return calendar.getTime();
+    }
     //废弃不确定是否要用
     //public List<>
      /*@Override
@@ -343,6 +429,43 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"资金账户不存在");
         }
         return Result.OK("更新资金账户密码成功").build();
+    }*/
+
+    /*@Override
+    public Map<String,Object> getUserAccountInfo(int userCode) {
+        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        if (custAcctDO == null) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户未开户");
+        }
+        List<CapAcctDO> capAcctDOList = capAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
+        List<DepAcctDO> depAcctDOList = capAcctDOList.stream()
+                .map(i -> depAcctDOMapper.selectByCapCode(i.getCapCode()))
+                .collect(Collectors.toList());
+        List<TrdAcctDO> trdAcctDOList = trdAcctDOMapper.selectByCustomerCode(custAcctDO.getCustCode());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("capital_accounts", capAcctDOList);
+        data.put("securities_accounts", trdAcctDOList);
+        data.put("depository_accounts", depAcctDOList);
+        return data;
+    }*/
+    /*
+    //全部客户
+    @Override
+    public Map<String, Object> getList(int pageNum) {
+        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
+        }
+        PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
+        List<UserListResponse> userListResponseList = page.getList().stream()
+                .map(i -> new UserListResponse(i.getUserCode(),i.getInfoCode(), i.getName(), i.getIdType(), i.getIdCode(),
+                        organizationDOMapper.selectByPrimaryKey(i.getOrgCode()).getOrgName(), i.getEmail()))
+                .collect(Collectors.toList());
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("totalNum", page.getTotal());
+        data.put("userList", userListResponseList);
+        return data;
     }*/
 }
 

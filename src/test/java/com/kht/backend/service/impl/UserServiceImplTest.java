@@ -54,8 +54,8 @@ public class UserServiceImplTest {
 
     @Test
     public void getUserInfo() {
-        Result result=userService.getUserInfo(2);
-        System.out.println(result.getData());
+        //Result result=userService.getUserInfo(2);
+        //System.out.println(result.getData());
     }
 
     @Test
@@ -85,4 +85,8 @@ public class UserServiceImplTest {
         //System.out.println(result.getData());
     }
 
+    @Test
+    public void getAllDataInfoList() {
+        //System.out.println(userService.getBrithDayFromIdCode("410322199202152910"));
+    }
 }

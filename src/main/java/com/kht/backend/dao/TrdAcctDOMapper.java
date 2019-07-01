@@ -3,7 +3,7 @@ package com.kht.backend.dao;
 
 import com.kht.backend.dataobject.TrdAcctDO;
 import org.springframework.stereotype.Component;
-
+import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Component
@@ -57,4 +57,7 @@ public interface TrdAcctDOMapper {
     int updateByPrimaryKey(TrdAcctDO record);
 
     List<TrdAcctDO> selectByCustomerCode(String customerCode);
+    List<TrdAcctDO> selectByOrgCode(String orgCode);
+    List<TrdAcctDO> listAll();
+    List<TrdAcctDO> selectByOpenTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }

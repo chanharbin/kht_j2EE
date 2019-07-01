@@ -1,11 +1,7 @@
 package com.kht.backend.controller;
 
-import com.kht.backend.dataobject.CustAcctDO;
-import com.kht.backend.dataobject.DepAcctDO;
-import com.kht.backend.dataobject.TrdAcctDO;
 import com.kht.backend.entity.Result;
 import com.kht.backend.service.impl.AccountServiceImpl;
-import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +14,12 @@ public class AccountController {
     private AccountServiceImpl accountService;
     @GetMapping("/user/customer-account")
     public Result getUserCustomerAccount(@RequestParam("custCode")String customerCode){
-        Map<String,Object>  custAcctDO=accountService.getCustomerAccount(customerCode);
+        Map<String,Object>  custAcctDO=accountService.getCustomerAccountByCustCode(customerCode);
         return Result.OK(custAcctDO).build();
     }
     @GetMapping("/user/depository-account")
     public Result getUserDepositoryAccount(@RequestParam("custCode")String customerCode){
-        List<Map<String,Object>> depAcctDOList= accountService.getDepositoryAccount(customerCode);
+        List<Map<String,Object>> depAcctDOList= accountService.getDepositoryAccountByCustCode(customerCode);
         return Result.OK(depAcctDOList).build();
     }
     @GetMapping("/user/trade-account")
@@ -34,7 +30,7 @@ public class AccountController {
 
     @GetMapping("/user/capital-account")
     public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
-        List<Map<String,Object>> capitalAccountInfoResponseList =accountService. getCapitalAccount(customerCode);
+        List<Map<String,Object>> capitalAccountInfoResponseList =accountService. getCapitalAccountByCustCode(customerCode);
         return Result.OK(capitalAccountInfoResponseList).build();
     }
     @PostMapping("/user/capital-account")

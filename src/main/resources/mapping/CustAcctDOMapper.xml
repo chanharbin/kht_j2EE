@@ -326,11 +326,21 @@
     from cust_acct
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </select>
-
   <select id="getUserCountByOrgCode" parameterType="java.lang.String" resultType="java.lang.Integer">
     select  count(USER_CODE)
     from cust_acct
     where ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cust_acct
+  </select>
+  <select id="selectByOpenTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cust_acct
+    where OPEN_TIME>=#{startTime} and OPEN_TIME &lt;= #{endTime}
   </select>
 
   <select id="getAllCount"  resultType="java.lang.Integer">

@@ -2,7 +2,10 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.DepAcctDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public interface DepAcctDOMapper {
@@ -55,4 +58,10 @@ public interface DepAcctDOMapper {
     int updateByPrimaryKey(DepAcctDO record);
 
     DepAcctDO selectByCapCode(String capCode);
+
+    List<DepAcctDO> selectByOrgCode(String orgCode);
+
+    List<DepAcctDO> listAll();
+
+    List<DepAcctDO> selectByOpenTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }

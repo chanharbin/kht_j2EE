@@ -185,4 +185,25 @@
     from trd_acct
     where CUST_CODE = #{customerCode,jdbcType=VARCHAR}
   </select>
+  <select id="selectByOpenTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from trd_acct
+    where OPEN_TIME>=#{startTime} and OPEN_TIME &lt;= #{endTime}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from trd_acct
+  </select>
+  <select id="selectByOrgCode" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from trd_acct
+    where CUST_CODE in (
+        select CUST_CODE
+        from cust_acct
+        where ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    )
+  </select>
 </mapper>

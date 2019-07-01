@@ -29,6 +29,13 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
     private OperationDOMapper operationDOMapper;
     @Autowired
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
+
+    /**
+     * 从数据库读取用户
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

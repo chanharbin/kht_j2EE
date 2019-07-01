@@ -453,6 +453,18 @@
     from acct_open_info
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
   </select>
+  <select id="listUnauditedUser" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where INFO_STATUS = '0'
+  </select>
+  <select id="selectByEmployeeCodeAndStartTimeAndEndTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where EMPLOYEE_CODE=#{employeeCode,jdbcType=VARCHAR} and CMT_TIME >= #{startTime,jdbcType=BIGINT} and CMT_TIME &lt;= #{endTime,jdbcType=BIGINT}
+  </select>
 
 
 </mapper>

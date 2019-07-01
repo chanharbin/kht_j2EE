@@ -2,6 +2,7 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.SysParaDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public interface SysParaDOMapper {
      */
     int updateByPrimaryKey(SysParaDO record);
 
-    int updateParaValueByPrimaryKeySelective(int paraCode,String paraValue);
+    int updateParaValueByPrimaryKeySelective(@Param("paraCode") int paraCode,@Param("paraValue") String paraValue);
 
     List<SysParaDO> listAll();
 

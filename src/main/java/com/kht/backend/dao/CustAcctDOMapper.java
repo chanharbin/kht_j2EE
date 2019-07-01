@@ -2,6 +2,8 @@ package com.kht.backend.dao;
 
 
 import com.kht.backend.dataobject.CustAcctDO;
+import com.kht.backend.service.model.OperationLogModel;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,7 +26,6 @@ public interface CustAcctDOMapper {
      * @mbg.generated Wed Jun 19 15:57:39 CST 2019
      */
     int insert(CustAcctDO record);
-
 
 
     /**
@@ -60,7 +61,13 @@ public interface CustAcctDOMapper {
     int updateByPrimaryKey(CustAcctDO record);
 
     List<CustAcctDO> selectCustCodeByOrgCode(String orgCode);
+
+    List<CustAcctDO> selectByOpenTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
+
+    List<CustAcctDO> listAll();
+
     CustAcctDO selectByUserCode(int userCode);
+
     int getUserCountByOrgCode(String orgCode);
 
     int getAllCount(String orgCode);

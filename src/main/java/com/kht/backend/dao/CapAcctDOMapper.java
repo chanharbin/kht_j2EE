@@ -57,5 +57,13 @@ public interface CapAcctDOMapper {
     int updateByPrimaryKey(CapAcctDO record);
 
     List<CapAcctDO> selectByCustomerCode(String customerCode);
+
+    List<CapAcctDO> selectByOrgCode(String orgCode);
+
+    List<CapAcctDO> listAll();
+
+    List<CapAcctDO> selectByOpenTime(@Param("startTime") long startTime, @Param("endTime") long endTime);
+
     int updatePasswordByPrimaryKey(@Param("capitalCode") String capitalCode, @Param("password") String password);
+
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class IdProvider {
 
-    private long twepoch=1560667623144L;
+    private final long twepoch=1561947119754L;
 
     private final long sequenceBits=2L;
 
@@ -17,6 +17,7 @@ public class IdProvider {
 
     private long lastTimestamp=-1L;
 
+    private long idMask=1000000000000L;
     private final long charBits=5;
 
     private final long charMasks=-1L^(-1L<<charBits);
@@ -26,11 +27,11 @@ public class IdProvider {
     public IdProvider(){}
 
     /**
-     *
+     * 生成10位的证券账户
      * @param prefix
-     * @return 生成不重复的id
+     * @return
      */
-    public String getId(String prefix) {
+    public String getTrdId(String prefix){
         long suffix=nextId();
         char[] tempString=new char[8];
         for(int i=7;i>=0;i--) {
@@ -38,6 +39,16 @@ public class IdProvider {
             suffix>>=charBits;
         }
         return prefix+new String(tempString);
+    }
+    /**
+     *最长12位数字
+     * @param prefix
+     * @return 生成不重复的id
+     */
+    public String getId(String prefix) {
+        long suffix=nextId();
+        suffix=suffix%idMask;
+        return prefix+suffix;
     }
     /**
      * 线程安全

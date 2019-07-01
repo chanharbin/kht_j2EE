@@ -1,6 +1,7 @@
 
 package com.kht.backend.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kht.backend.dao.SysParaDOMapper;
@@ -25,14 +26,14 @@ public class SystemParameterServiceImpl implements SystemParameterService {
     private int pageSize;
     @Override
     public Map<String,Object>  getAllSystemParameters(int pageNum){
-        PageHelper.startPage(pageNum,pageSize);
+        Page<Object> objectPage= PageHelper.startPage(pageNum,pageSize);
         List<SysParaDO> sysParaDOList =sysparaDOMapper.listAll();
         if(sysParaDOList==null||sysParaDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"无系统参数");
         }
         PageInfo<SysParaDO> page = new PageInfo<>(sysParaDOList);
         Map<String,Object> resultData = new LinkedHashMap<>();
-        resultData.put("parameterNum",page.getTotal());
+        resultData.put("parameterNum",objectPage.getTotal());
         resultData.put("parameters",page.getList());
         return resultData;
     }

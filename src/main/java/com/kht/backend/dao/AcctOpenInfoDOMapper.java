@@ -2,6 +2,8 @@ package com.kht.backend.dao;
 
 import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.service.model.UserFromOrg;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 
@@ -61,5 +63,9 @@ public interface AcctOpenInfoDOMapper {
     AcctOpenInfoDO selectByUserCode(Integer userCode);
 
     List<AcctOpenInfoDO> listAll();
+    List<AcctOpenInfoDO> listUnauditedUser();
+    List<AcctOpenInfoDO> selectByEmployeeCodeAndStartTimeAndEndTime(@Param("employeeCode") String employeeCode,
+                                                                    @Param("startTime") Long startTime,
+                                                                    @Param("endTime")Long endTime);
 
 }

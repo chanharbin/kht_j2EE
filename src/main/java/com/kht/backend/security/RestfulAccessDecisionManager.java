@@ -16,14 +16,16 @@ import java.util.Collection;
 import java.util.List;
 @Service
 public class RestfulAccessDecisionManager implements AccessDecisionManager{
-    //TODO 待完善
-    private List<String> whiteList= Arrays.asList("/user/login","/user/register","/employee/login");
+    //TODO 白名单待完善
+    private List<String> whiteList= Arrays.asList("/user/check-code","/user/login","/user/register","/employee/login");
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         HttpServletRequest request = ((FilterInvocation) object).getHttpRequest();
 
         String url,method;
         AntPathRequestMatcher matcher;
+        System.out.println("current url "+request.getRequestURI());
+        System.out.println("request.getMethod "+request.getMethod());
         if(request.getRequestURI().equals("/error")){
             return;
         }
@@ -42,10 +44,8 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
                 method=userGrantedAuthority.getOperaType();
                 System.out.println("url "+url);
                 System.out.println("method "+method);
-                System.out.println("current url "+request.getRequestURI());
-                System.out.println("request.getMethod "+request.getMethod());
                 matcher=new AntPathRequestMatcher(url);
-                if(url.equals(request.getRequestURI())&&
+                if(matcher.matches(request)&&
                         method.equals(request.getMethod())){
                         return;
                 }
@@ -58,7 +58,7 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
                 }
             }
         }
-        System.out.println("fuck decision");
+        System.out.println("bad decision");
         throw new AccessDeniedException("no right");
     }
 
