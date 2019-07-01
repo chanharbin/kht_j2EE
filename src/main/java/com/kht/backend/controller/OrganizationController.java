@@ -42,7 +42,7 @@ public class OrganizationController {
         Map orgResult = organizationService.getOrganizationList(pageNum);
         return Result.OK(orgResult).build();
     }
-    @RequestMapping(value = "/organization-list",method = GET)
+    @RequestMapping(value = "/organization/list",method = GET)
     public Result getOrganization(){
         List<OrganizationDO> organizationList = (List<OrganizationDO>)valueOperations.get("OrganizationList");
         if(organizationList.isEmpty()){
@@ -95,7 +95,7 @@ public class OrganizationController {
 
     //根据机构姓名获取机构列表
     @MethodLog(24)
-    @RequestMapping(value = "/organizationByName",method = GET)
+    @RequestMapping(value = "/organization/name",method = GET)
     public Result getOrgFromName(@RequestParam("organizationName")String orgName){
         List orgByName = organizationService.getOrgByName(orgName);
         int orgNum = orgByName.size();

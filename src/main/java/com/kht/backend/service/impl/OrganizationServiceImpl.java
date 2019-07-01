@@ -181,12 +181,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List getOrgByName(String orgName) {
         if(orgName == null || orgName.isEmpty()){
-            return organizationDOMapper.selectAll();
+            return null;
         }
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectByName(orgName);
         if(organizationDOList == null || organizationDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"暂无此机构列表");
         }
+        List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
+            OrganizationModel organizationModel = new OrganizationModel();
+            BeanUtils.copyProperties(organizationDO,organizationModel);
+            int userNum;
+            userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
+            organizationModel.setUserNum(userNum);
+            organizationModel.setOrgName(organizationModel.getOrgCode()+ organizationModel.getOrgName());
+            return organizationModel;
+        }).collect(Collectors.toList());
         return organizationDOList;
     }
     private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
