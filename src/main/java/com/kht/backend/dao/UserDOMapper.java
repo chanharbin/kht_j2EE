@@ -63,4 +63,6 @@ public interface UserDOMapper {
      */
     int updateByPrimaryKey(UserDO record);
 
+    int selectUserCount();
+
 }

@@ -57,9 +57,19 @@ public class RedisServiceImpl {
         }
         return null;
     }
-    public boolean updateOrgDO(OrganizationDO organizationDO){
-        organizationDOMapper.updateByPrimaryKeySelective(organizationDO);
-        return false;
+
+    public boolean updateOrganization(OrganizationDO organizationDO){
+        try {
+            organizationDOMapper.updateByPrimaryKeySelective(organizationDO);
+            String key = "org" + organizationDO.getOrgCode();
+            if (redisTemplate.hasKey(key)) {
+                redisTemplate.delete(key);
+            }
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     /**
@@ -82,6 +92,21 @@ public class RedisServiceImpl {
             paraValue = sysParaDO.getParaValue();
         }
         return paraValue;
+    }
+    public boolean updataParaValue(SysParaDO sysParaDO){
+        String paraName = sysParaDO.getParaName();
+        try {
+            sysParaDOMapper.updateByPrimaryKey(sysParaDO);
+            String key = "sys" + paraName;
+            if(redisTemplate.hasKey(key)) {
+                redisTemplate.delete(key);
+            }
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
+
     }
 
     /**
@@ -106,6 +131,10 @@ public class RedisServiceImpl {
         }
     }
 
+  /*  public boolean updateDataDic( sysParaDO){
+
+    }
+*/
     /**
      * @return 系统参数列表
      */

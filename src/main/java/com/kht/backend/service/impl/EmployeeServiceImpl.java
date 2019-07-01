@@ -139,7 +139,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             return employeeModel;
         }).collect(Collectors.toList());
         List<EmployeeModel> employeeModels = employeeModelList.stream().filter(employeeModel -> employeeModel.getEmployeeStatus().equals("在职")).collect(Collectors.toList());
-
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
         }

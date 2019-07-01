@@ -95,7 +95,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
         Page<Object> pages = PageHelper.startPage(pageNum, 10);
-       List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
+        List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
        List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
            OrganizationModel organizationModel = new OrganizationModel();
            BeanUtils.copyProperties(organizationDO,organizationModel);

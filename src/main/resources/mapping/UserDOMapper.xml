@@ -127,4 +127,10 @@
       USER_TYPE=#{userType,jdbcType=CHAR}
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </update>
+
+  <select id="selectUserCount"  resultType="java.lang.Integer">
+    select count(*)
+    from user
+    where USER_TYPE = '0'
+  </select>
 </mapper>

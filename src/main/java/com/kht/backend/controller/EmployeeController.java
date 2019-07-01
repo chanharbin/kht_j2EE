@@ -102,7 +102,9 @@ public class EmployeeController {
         employeeDO.setAddress(address);
         employeeDO.setEmail(email);
         employeeDO.setIdCode(idCode);
-        employeeDO.setPosCode(posCode);
+        if(employeeStatus.equals("1")||employeeStatus.equals("2")){
+            employeeDO.setPosCode(1);
+        }
         employeeDO.setEmployeeName(employeeName);
         employeeDO.setEmployeeStatus(employeeStatus);
         pwd = passwordEncoder.encode(pwd);
@@ -154,7 +156,6 @@ public class EmployeeController {
         return organizationUser;
     }
 
-    //获取员工姓名和岗位
 
 
 }
