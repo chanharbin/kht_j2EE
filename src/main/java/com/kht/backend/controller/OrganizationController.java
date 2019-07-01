@@ -28,7 +28,6 @@ public class OrganizationController {
     private OrganizationService organizationService;
     @Autowired
     private OrganizationDOMapper organizationDOMapper;
-
     @Autowired
     private RedisTemplate redisTemplate;
     @Resource

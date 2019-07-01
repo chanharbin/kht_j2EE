@@ -105,6 +105,7 @@ public class EmployeeController {
         if(employeeStatus.equals("1")||employeeStatus.equals("2")){
             employeeDO.setPosCode(1);
         }
+        employeeDO.setPosCode(posCode);
         employeeDO.setEmployeeName(employeeName);
         employeeDO.setEmployeeStatus(employeeStatus);
         pwd = passwordEncoder.encode(pwd);

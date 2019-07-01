@@ -14,4 +14,8 @@ public class OrganizationModel {
 
     private int userNum;
 
+    private int todayUserNum;
+
+    private int totalUserNum;
+
 }

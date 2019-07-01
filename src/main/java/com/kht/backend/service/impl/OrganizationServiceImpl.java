@@ -101,8 +101,11 @@ public class OrganizationServiceImpl implements OrganizationService {
            BeanUtils.copyProperties(organizationDO,organizationModel);
            int userNum;
            userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
+           int todayUserNum;
+           int totalUserNum;
+           //custAcctDOMapper.getAllCount();
            organizationModel.setUserNum(userNum);
-           organizationModel.setOrgName(organizationModel.getOrgCode()+ organizationModel.getOrgName());
+           organizationModel.setOrgName(organizationModel.getOrgCode()+ "-" +  organizationModel.getOrgName());
            return organizationModel;
        }).collect(Collectors.toList());
         if(organizationModelList == null){
@@ -193,7 +196,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             int userNum;
             userNum = custAcctDOMapper.getUserCountByOrgCode(organizationDO.getOrgCode());
             organizationModel.setUserNum(userNum);
-            organizationModel.setOrgName(organizationModel.getOrgCode()+ organizationModel.getOrgName());
+            organizationModel.setOrgName(organizationModel.getOrgCode()+ "-" + organizationModel.getOrgName());
             return organizationModel;
         }).collect(Collectors.toList());
         return organizationDOList;
