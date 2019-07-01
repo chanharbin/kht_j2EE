@@ -6,6 +6,7 @@ import lombok.Data;
 public class EmployeeModel {
     private String employeeCode;
     private Integer userCode;
+    private Integer posCode;
     private String position;
     private String employeeName;
     private String idCode;
@@ -13,4 +14,6 @@ public class EmployeeModel {
     private String email;
     private String address;
     private String employeeStatus;
+    private String employeeStatusName;
+
 }

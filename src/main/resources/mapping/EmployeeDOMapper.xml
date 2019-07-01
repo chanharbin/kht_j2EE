@@ -58,7 +58,7 @@
     -->
     select
     <include refid="Base_Column_List" />
-    from employee
+    from employee order by EMPLOYEE_STATUS asc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     <!--

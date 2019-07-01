@@ -135,14 +135,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             BeanUtils.copyProperties(employeeDO,employeeModel);
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
             employeeModel.setPosition(positionDO.getPosName());
-            employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
+            employeeModel.setEmployeeStatusName(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
             return employeeModel;
         }).collect(Collectors.toList());
-        List<EmployeeModel> employeeModels = employeeModelList.stream().filter(employeeModel -> employeeModel.getEmployeeStatus().equals("在职")).collect(Collectors.toList());
+        /*List<EmployeeModel> employeeModels = employeeModelList.stream().filter(employeeModel -> employeeModel.getEmployeeStatus().equals("在职")).collect(Collectors.toList());*/
         if(employeeDOList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
         }
-        PageInfo<EmployeeModel> page = new PageInfo<>(employeeModels);
+        PageInfo<EmployeeModel> page = new PageInfo<>(employeeModelList);
         Map<String,Object> resultData = new LinkedHashMap<>();
         resultData.put("employee_num",pages.getTotal());
         resultData.put("employees",page.getList());

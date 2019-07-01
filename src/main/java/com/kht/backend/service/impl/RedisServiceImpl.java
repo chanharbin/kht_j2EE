@@ -73,6 +73,25 @@ public class RedisServiceImpl {
     }
 
     /**
+     * 删除机构缓存
+     * @param  orgCode
+     * @return
+     */
+    public boolean deleteOrganization(String orgCode){
+        try{
+            organizationDOMapper.deleteByPrimaryKey(orgCode);
+            String key = "org" + orgCode;
+            if(redisTemplate.hasKey(key)){
+                redisTemplate.delete(key);
+            }
+            return  true;
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
+    /**
      * @param paraName
      * return 系统参数值
      */
@@ -131,10 +150,13 @@ public class RedisServiceImpl {
         }
     }
 
-  /*  public boolean updateDataDic( sysParaDO){
+    /**
+     *更新数据字典
+     */
+    /*public boolean updateDataDic( ){
 
-    }
-*/
+    }*/
+
     /**
      * @return 系统参数列表
      */
@@ -148,6 +170,19 @@ public class RedisServiceImpl {
             List<SysParaDO> sysParaDOS = sysParaDOMapper.listAll();
             valueOperations.set(sysKey,sysParaDOS);
             return sysParaDOS;
+        }
+    }
+
+    public boolean updataSysParaList(){
+        try {
+            String key = "SystemPara";
+            if (redisTemplate.hasKey(key)) {
+                redisTemplate.delete(key);
+            }
+            return true;
+        }
+        catch (Exception e){
+            return false;
         }
     }
     /**
@@ -166,6 +201,21 @@ public class RedisServiceImpl {
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(posCode);
             valueOperations.set(key,positionDO.getPosName());
             return positionDO.getPosName();
+        }
+    }
+
+    public boolean updataPosName(PositionDO positionDO){
+        try {
+            Integer posCode = positionDO.getPosCode();
+            String key = "position" + String.valueOf(posCode);
+            System.out.println(key);
+            if (redisTemplate.hasKey(key)) {
+                redisTemplate.delete(key);
+            }
+            return true;
+        }
+        catch (Exception e){
+            return false;
         }
     }
     /**
