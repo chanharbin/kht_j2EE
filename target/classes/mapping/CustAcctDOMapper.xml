@@ -331,6 +331,18 @@
     from cust_acct
     where ORG_CODE = #{orgCode,jdbcType=VARCHAR}
   </select>
+
+  <select id="getAllCount"  resultType="java.lang.Integer">
+    select  count(USER_CODE)
+    from cust_acct
+    where ORG_CODE = #{orgCode,jdbcType = VARCHAR}
+  </select>
+
+  <select id="getTodayCount" resultType="java.lang.Integer">
+    select  count(USER_CODE)
+    from cust_acct
+    where ID_EFF_DATE = #{dateForToday,jdbcType=BIGINT} AND ORG_CODE = #{orgCode,jdbcType = VARCHAR}
+  </select>
   <select id="listAll" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

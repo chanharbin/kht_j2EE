@@ -11,6 +11,7 @@ import com.kht.backend.service.impl.SystemParameterServiceImpl;
 import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import com.kht.backend.service.impl.UserServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -137,6 +138,7 @@ public class UserController {
                                                                   @RequestParam(value = "endTime",defaultValue = "null",required = false)Long endTime){
         return Result.OK(userService.getUserListByEmployeeCodeAndStartTimeAndEndTIme(pageNum,employeeCode,startTime,endTime)).build();
     }
+    //获取待审核用户列表
     @MethodLog(7)
     @GetMapping("/user/unaudited-users")
     public Result getUserListFiltered(@RequestParam("pageNum") int pageNum) {
@@ -164,4 +166,6 @@ public class UserController {
         systemParameterService.modifySystemParameter(paraCode, paraValue);
         return Result.OK("修改参数成功").build();
     }
+
+
 }

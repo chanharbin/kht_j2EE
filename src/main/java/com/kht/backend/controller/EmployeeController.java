@@ -132,7 +132,7 @@ public class EmployeeController {
 
     //用户审核
     @MethodLog(9)
-    @RequestMapping(value = "/user-validate",method = PUT)
+    @RequestMapping(value = "/user/audit",method = PUT)
     public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
                                @RequestParam("INFO_STATUS")String infoStatus){
         if(infoStatus.equals("success")){
