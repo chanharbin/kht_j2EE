@@ -131,6 +131,7 @@ public class UserController {
         return Result.OK(userService.getAllDataInfoList("EDUCATION", "acct_open_info")).build();
     }
 
+    @MethodLog(28)
     @GetMapping("/user/audit/employee/time")
     public Result getUserListByEmployeeCodeAndStartTimeAndEndTIme(@RequestParam("pageNum") int pageNum,
                                                                   @RequestParam("employeeCode")String employeeCode,
@@ -139,13 +140,14 @@ public class UserController {
         return Result.OK(userService.getUserListByEmployeeCodeAndStartTimeAndEndTIme(pageNum,employeeCode,startTime,endTime)).build();
     }
     //获取待审核用户列表
-    @MethodLog(7)
+    @MethodLog(8)
     @GetMapping("/user/unaudited-users")
     public Result getUserListFiltered(@RequestParam("pageNum") int pageNum) {
         Map<String, Object> data = userService.getUserInfoList(pageNum, true);
         return Result.OK(data).build();
     }
 
+    @MethodLog(7)
     @GetMapping("/user/all-users")
     public Result getUserList(@RequestParam("pageNum") int pageNum) {
         Map<String, Object> data = userService.getUserInfoList(pageNum, false);
@@ -153,14 +155,14 @@ public class UserController {
     }
 
 
-    @MethodLog(10)
+    @MethodLog(11)
     @GetMapping("/system-parameter")
     public Result getAllSystemParameter(@RequestParam("pageNum") int pageNum) {
         Map<String, Object> map = systemParameterService.getAllSystemParameters(pageNum);
         return Result.OK(map).build();
     }
 
-    @MethodLog(11)
+    @MethodLog(12)
     @PutMapping("/system-parameter")
     public Result modifySystemParameter(@RequestParam("paraCode") int paraCode, @RequestParam("paraValue") String paraValue) {
         systemParameterService.modifySystemParameter(paraCode, paraValue);

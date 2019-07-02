@@ -29,7 +29,7 @@ public class OperationLogController {
      * @param employeeName
      * @return
      */
-    @RequestMapping(value = "/operation-log/search", method = GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/operation-log/name", method = GET, produces = "application/json;charset=UTF-8")
     public Result getOperationLogsByEmployeeName(@RequestParam("pageNum") int pageNum, @RequestParam("employeeName") String employeeName) {
         if (employeeName == null || employeeName.trim().isEmpty()) {
             return operationLogService.getAllOperationLogs(pageNum);
@@ -44,8 +44,8 @@ public class OperationLogController {
      * @param endTime
      * @return
      */
-    @RequestMapping(value = "/operation-log/{startTime}/{endTime}", method = GET, produces = "application/json;charset=UTF-8")
-    public Result getOperationLogsByLogTime(@RequestParam("pageNum") int pageNum, @PathVariable("startTime") Long startTime, @PathVariable("endTime") Long endTime) {
+    @RequestMapping(value = "/operation-log/time", method = GET, produces = "application/json;charset=UTF-8")
+    public Result getOperationLogsByLogTime(@RequestParam("pageNum") int pageNum, @RequestParam("startTime") Long startTime, @RequestParam("endTime") Long endTime) {
         return operationLogService.getOperationLogsByLogTime(pageNum, startTime, endTime);
     }
 }
