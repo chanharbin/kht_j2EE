@@ -13,6 +13,7 @@ import com.kht.backend.service.UserService;
 import com.kht.backend.service.model.DictionaryModel;
 import com.kht.backend.service.model.CapitalAccountInfoResponse;
 import com.kht.backend.service.model.UserListResponse;
+import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
 import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -249,7 +250,22 @@ public class UserServiceImpl implements UserService {
         //0表示提交未审核
         acctOpenInfoDO.setInfoStatus("0");
         acctOpenInfoDO.setCmtTime(new Date().getTime());
-        System.out.println(acctOpenInfoDO.toString());
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(acctOpenInfoDO.getAnsOne());
+        stringBuffer.append(acctOpenInfoDO.getAnsTwo());
+        stringBuffer.append(acctOpenInfoDO.getAnsThree());
+        stringBuffer.append(acctOpenInfoDO.getAnsFour());
+        stringBuffer.append(acctOpenInfoDO.getAnsFive());
+        stringBuffer.append(acctOpenInfoDO.getAnsSix());
+        stringBuffer.append(acctOpenInfoDO.getAnsSeven());
+        stringBuffer.append(acctOpenInfoDO.getAnsEight());
+        stringBuffer.append(acctOpenInfoDO.getAnsNine());
+        stringBuffer.append(acctOpenInfoDO.getAnsTen());
+        char[] s = stringBuffer.toString().toCharArray();
+        GetPoint getPoint = new GetPoint(s);
+        acctOpenInfoDO.setRiskScore(getPoint.getPoint());
+        acctOpenInfoDO.setInvestorType(getPoint.getInvestorType());
+        //System.out.println(acctOpenInfoDO.toString());
         if (acctOpenInfoDO1 != null) {
             if (acctOpenInfoDO1.getInfoCode() == 1) {
                 throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已开户不能重复提交");
@@ -309,9 +325,8 @@ public class UserServiceImpl implements UserService {
         data.put("idFront", imageDO.getIdFront());
         data.put("idBack", imageDO.getIdBack());
         data.put("face", imageDO.getFace());
-        //TODO
         data.put("infoStatus", infoStatus);
-        data.put("auditRemark", null);
+        data.put("auditRemark", acctOpenInfoDO.getAuditRemark());
         data.put("birthday", getBirthDayFromIdCode(acctOpenInfoDO.getIdCode()));
         return data;
     }
