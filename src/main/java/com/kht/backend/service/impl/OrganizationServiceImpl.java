@@ -44,14 +44,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private CustAcctDOMapper custAcctDOMapper;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisServiceImpl redisService;
     @Resource
     private ValueOperations<String,Object> valueOperations;
-    @Autowired
-    private ListOperations<String, Object> listOperations;
 
-    @Autowired
-    private SetOperations<String, Object> setOperations;
 
     @Transactional
     @Override
@@ -96,7 +92,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Map<String, Object> getOrganizationList(int pageNum) {
-        Page<Object> pages = PageHelper.startPage(pageNum, 10);
+        Page<Object> pages = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<OrganizationDO> organizationDOList = organizationDOMapper.selectAll();
        List<OrganizationModel> organizationModelList = organizationDOList.stream().map(organizationDO -> {
            OrganizationModel organizationModel = this.convertFromDO(organizationDO);
@@ -108,6 +104,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         System.out.println(organizationDOList.size());
         PageInfo<OrganizationModel> page = new PageInfo<>(organizationModelList);
         Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("pageSize",redisService.getParaValue("pageSize"));
         resultData.put("organization_num",pages.getTotal());
         resultData.put("organizations",page.getList());
         return resultData;
@@ -151,29 +148,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
-    //TODO
     @Override
     public Result getOrganizationById(String orgCode) {
-       /* @Override
-   public Result getOrganizationById(String orgCode) {
-        String orgKey = "organization";
-        OrganizationDO organizationDO = redisTempleService.get(orgKey, OrganizationDO.class);
-        //String json = jedisCluster.get(employeeKey);
-        OrganizationDO organizationDO1 = new OrganizationDO();
-        if( organizationDO == null){
-            *//*if(json == null || "".equals(json) || "null".equalsIgnoreCase(json)){*//*
-            organizationDO1 = organizationDOMapper.selectByPrimaryKey(orgCode);
-            if(organizationDO1 == null){
-                throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
-            }
-            redisTempleService.set(orgKey,organizationDO1);
-            System.out.println(JSONObject.toJSONString(redisTempleService.get(orgKey,OrganizationDO.class)));
-            return Result.OK(organizationDO1).build();
-        }
-        return  Result.OK(organizationDO).build();
-    }*/
         return null;
     }
+
 
     @Override
     public List getOrgByName(String orgName) {
