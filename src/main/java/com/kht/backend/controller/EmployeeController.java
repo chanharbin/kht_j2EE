@@ -131,8 +131,8 @@ public class EmployeeController {
     }
 
     //用户审核
-    @MethodLog(9)
-    @RequestMapping(value = "/user-validate",method = PUT)
+    @MethodLog(10)
+    @RequestMapping(value = "/user/audit",method = PUT)
     public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
                                @RequestParam("INFO_STATUS")String infoStatus){
         if(infoStatus.equals("success")){
@@ -148,7 +148,8 @@ public class EmployeeController {
     }
 
     //根据机构名获取用户列表
-    @RequestMapping(value = "/user",method = GET)
+    @MethodLog(9)
+    @RequestMapping(value = "/user/organization",method = GET)
     public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
                                        @RequestParam("orgCode") String orgCode){
         System.out.println(orgCode);
