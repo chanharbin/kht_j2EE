@@ -131,7 +131,6 @@ public class UserController {
         return Result.OK(userService.getAllDataInfoList("EDUCATION", "acct_open_info")).build();
     }
 
-    @MethodLog(28)
     @GetMapping("/user/audit/employee/time")
     public Result getUserListByEmployeeCodeAndStartTimeAndEndTIme(@RequestParam("pageNum") int pageNum,
                                                                   @RequestParam("employeeCode")String employeeCode,

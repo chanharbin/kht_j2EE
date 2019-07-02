@@ -72,6 +72,6 @@ public interface CustAcctDOMapper {
 
     int getAllCount(String orgCode);
 
-    int getTodayCount(@RequestParam("dateForToday") Long dateForToday,@RequestParam("orgCode") String orgCode);
+    int getTodayCount(@Param("dateForToday") Long dateForToday,@Param("orgCode") String orgCode);
 
 }

@@ -341,7 +341,7 @@ public class UserServiceImpl implements UserService {
      * @param idCode
      * @return
      */
-    public Long getBirthDayFromIdCode(String idCode) {
+    private Long getBirthDayFromIdCode(String idCode) {
         Date date;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         if (idCode.length() == 18) {
