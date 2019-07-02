@@ -213,10 +213,10 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getUserAndState(int userCode) {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
         CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        Map<String, Object> data = new LinkedHashMap<>();
         if (acctOpenInfoDO == null) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "获取用户开户信息失败");
         }
-        Map<String, Object> data = new LinkedHashMap<>();
         data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS", "acct_open_info", acctOpenInfoDO.getInfoStatus()));
         data.put("auditRemark",acctOpenInfoDO.getAuditRemark());
         if (custAcctDO == null) {
@@ -270,6 +270,7 @@ public class UserServiceImpl implements UserService {
             if (acctOpenInfoDO1.getInfoCode() == 1) {
                 throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已开户不能重复提交");
             } else {
+                acctOpenInfoDO.setInfoStatus("0");
                 affectRow = acctOpenInfoDOMapper.updateByPrimaryKeySelective(acctOpenInfoDO);
             }
         } else {

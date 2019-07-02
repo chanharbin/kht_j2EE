@@ -8,6 +8,7 @@ import com.kht.backend.exception.AuthenticationException;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.service.impl.SystemParameterServiceImpl;
+import com.kht.backend.service.impl.UserPrincipalServiceImpl;
 import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import com.kht.backend.service.impl.UserServiceImpl;
@@ -19,6 +20,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,8 @@ import java.util.Map;
 
 @RestController
 public class UserController {
+    @Autowired
+    private UserPrincipalServiceImpl userPrincipalService;
     @Autowired
     private UserServiceImpl userService;
     @Autowired
@@ -102,10 +106,20 @@ public class UserController {
     }
 
     @PostMapping("/user/account-opening-info")
-    public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO) {
+    public Result setUserAccountInfo(AcctOpenInfoDO acctOpenInfoDO, ImageDO imageDO, HttpServletResponse httpServletResponse) {
         UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         //System.out.println(acctOpenInfoDO.toString()+imageDO.toString());
         userService.increaseAccountOpenInfo(currentUser.getUserCode(), acctOpenInfoDO, imageDO);
+        UserDetails refreshUser=userPrincipalService.loadUserByUsername(currentUser.getUsername());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                refreshUser,
+                null,
+                refreshUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String newJwt = jwtTokenProvider.generateToken(authentication);
+        //UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(newJwt);
+        //System.out.println(userPrincipal.getAuthorities());
+        httpServletResponse.setHeader("Authorization", prefix + newJwt);
         return Result.OK("添加开户资料成功").build();
     }
 

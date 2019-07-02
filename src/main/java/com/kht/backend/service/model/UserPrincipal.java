@@ -54,7 +54,7 @@ public class UserPrincipal implements UserDetails {
         return new UserPrincipal(
                 (int)claims.get("userCode"),
                 Long.valueOf(((Number)claims.get("telephone")).longValue()),
-                "",//(String)claims.get("password"),
+                (String)claims.get("password"),
                 (String)claims.get("userType"),
                 (String)claims.get("code"),
                 authoritiesList
@@ -64,7 +64,7 @@ public class UserPrincipal implements UserDetails {
         Map<String,Object>claims=new HashMap<>();
         claims.put("userCode",userCode);
         claims.put("telephone",telephone);
-        //claims.put("password",password);
+        claims.put("password",password);
         claims.put("userType",userType);
         claims.put("code",code);
         claims.put("authorities",authorities);
