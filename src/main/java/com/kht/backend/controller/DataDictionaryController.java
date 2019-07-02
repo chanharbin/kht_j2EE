@@ -38,7 +38,7 @@ public class DataDictionaryController {
      * @param pageNum
      * @return
      */
-    @MethodLog(12)
+    @MethodLog(13)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
         PageHelper.startPage(pageNum, pageSize);
@@ -47,6 +47,7 @@ public class DataDictionaryController {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
+        resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
@@ -56,8 +57,8 @@ public class DataDictionaryController {
      * @param pageNum
      * @return
      */
-    @MethodLog(13)
-    @RequestMapping(value = "/data-dictionary/search", method = GET, produces = "application/json;charset=UTF-8")
+    @MethodLog(14)
+    @RequestMapping(value = "/data-dictionary/column", method = GET, produces = "application/json;charset=UTF-8")
     public Result getDataDictionariesByColName(@RequestParam("colName") String colName, @RequestParam("pageNum") int pageNum) {
         if (colName == null || colName.trim().isEmpty())
             return this.getAllDataDictionaries(1);
@@ -65,15 +66,18 @@ public class DataDictionaryController {
     }
 
     /**
+     * 弃用
      * 获取单个字段的数据字典信息
      * @param colCode
      * @param tabCode
      * @return
      */
+    /*
     @RequestMapping(value = "/data-dictionary/{tabCode}/{colCode}", method = GET, produces = "application/json;charset=UTF-8")
     public Result getColumnValues(@PathVariable("colCode") String colCode, @PathVariable("tabCode") String tabCode) {
         return dataDictionaryService.getColumnValues(colCode, tabCode);
     }
+    */
 
     /**
      * 获取数据字典的所有字段信息
@@ -91,7 +95,7 @@ public class DataDictionaryController {
      * @param value
      * @return
      */
-    @MethodLog(14)
+    @MethodLog(16)
     @RequestMapping(value = "/data-dictionary", method = POST, produces = "application/json;charset=UTF-8")
     public Result addDataDictionary(@RequestParam("mainCode") int mainCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
         return dataDictionaryService.addDataDictionary(mainCode, valueCode, value);
@@ -102,7 +106,7 @@ public class DataDictionaryController {
      * @param subCode
      * @return
      */
-    @MethodLog(16)
+    @MethodLog(18)
     @RequestMapping(value = "/data-dictionary", method = DELETE, produces = "application/json;charset=UTF-8")
     public Result removeDataDictionary(@RequestParam("subCode") int subCode) {
         return dataDictionaryService.removeDataDictionary(subCode);
@@ -115,7 +119,7 @@ public class DataDictionaryController {
      * @param value
      * @return
      */
-    @MethodLog(15)
+    @MethodLog(17)
     @RequestMapping(value = "/data-dictionary", method = PUT, produces = "application/json;charset=UTF-8")
     public Result modifyDataDictionary(@RequestParam("subCode") int subCode, @RequestParam("valueCode") String valueCode, @RequestParam("value") String value) {
         return dataDictionaryService.modifyDataDictionary(subCode, valueCode, value);

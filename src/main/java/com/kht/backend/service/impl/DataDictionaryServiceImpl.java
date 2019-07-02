@@ -62,6 +62,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
+        resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 

@@ -44,6 +44,7 @@ public class OperationLogServiceImpl implements OperationLogService {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
+        resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
@@ -61,6 +62,7 @@ public class OperationLogServiceImpl implements OperationLogService {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
+        resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
@@ -79,6 +81,7 @@ public class OperationLogServiceImpl implements OperationLogService {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("totalNum",page.getTotal());
         resultData.put("data",page.getList());
+        resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
