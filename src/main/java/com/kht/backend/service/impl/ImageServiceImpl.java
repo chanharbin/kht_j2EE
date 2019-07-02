@@ -13,6 +13,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Result saveImage(MultipartFile multipartFile) {
+
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("imageUrl","");
         return Result.OK(resultData).build();
