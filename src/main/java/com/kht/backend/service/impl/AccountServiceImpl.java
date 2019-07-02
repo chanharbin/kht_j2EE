@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,6 +86,7 @@ public class AccountServiceImpl implements AccountService {
         custAcctMap.put("education", redisService.getDataDictionary("EDUCATION", tabCode, (String) custAcctMap.get("education")));
         custAcctMap.put("investorType", redisService.getDataDictionary("INVESTOR_TYPE", tabCode, (String) custAcctMap.get("investorType")));
         custAcctMap.put("custStatus", redisService.getDataDictionary("CUST_STATUS", tabCode, (String) custAcctMap.get("custStatus")));
+        custAcctMap.put("birthday",getBirthDayFromIdCode(custAcctDO.getIdCode()));
         return custAcctMap;
     }
 
@@ -483,5 +486,18 @@ public class AccountServiceImpl implements AccountService {
         data.put("pageSize", pageSize);
         return data;
     }
-
+    private Long getBirthDayFromIdCode(String idCode) {
+        Date date;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        if (idCode.length() == 18) {
+            System.out.println(idCode.substring(6, 14));
+            try {
+                date = simpleDateFormat.parse(idCode.substring(6, 14));
+            } catch (ParseException e) {
+                return 0L;
+            }
+            return date.getTime();
+        }
+        return 0L;
+    }
 }

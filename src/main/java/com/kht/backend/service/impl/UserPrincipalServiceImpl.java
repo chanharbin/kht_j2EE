@@ -53,15 +53,19 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                 if (custAcctDO != null) {
                     code=custAcctDO.getCustCode();
                 }
+                //posCode 6未提交开户信息 7待审核 8审核不通过 9审核通过
                 AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userDO.getUserCode());
                 if(acctOpenInfoDO==null){
-                    posCode=8;
+                    posCode=6;
                 } else {
                     if(acctOpenInfoDO.getInfoStatus().equals("1")){
-                    posCode=9; //8 待审核 9 审核通过
-                }
-                    if(acctOpenInfoDO.getInfoStatus().equals("0")||acctOpenInfoDO.getInfoStatus().equals("2")) {
-                        posCode = 8;
+                    posCode=9;
+                    }
+                    if(acctOpenInfoDO.getInfoStatus().equals("0")) {
+                        posCode = 7;
+                    }
+                    if(acctOpenInfoDO.getInfoStatus().equals("2")){
+                        posCode=8;
                     }
                 }
                 if(posCode==0){
