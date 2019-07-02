@@ -1,6 +1,9 @@
 package com.kht.backend.dao;
 
-import com.remake.dataobject.AcctOpenInfoDO;
+import com.kht.backend.dataobject.AcctOpenInfoDO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface AcctOpenInfoDOMapper {
     /**
@@ -50,4 +53,13 @@ public interface AcctOpenInfoDOMapper {
      * @mbg.generated Tue Jul 02 10:10:49 CST 2019
      */
     int updateByPrimaryKey(AcctOpenInfoDO record);
+    AcctOpenInfoDO selectByInfoCode(int infoCode);
+
+    AcctOpenInfoDO selectByUserCode(Integer userCode);
+
+    List<AcctOpenInfoDO> listAll();
+    List<AcctOpenInfoDO> listUnauditedUser();
+    List<AcctOpenInfoDO> selectByEmployeeCodeAndStartTimeAndEndTime(@Param("employeeCode") String employeeCode,
+                                                                    @Param("startTime") Long startTime,
+                                                                    @Param("endTime")Long endTime);
 }

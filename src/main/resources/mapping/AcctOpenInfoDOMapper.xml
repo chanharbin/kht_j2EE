@@ -506,4 +506,34 @@
       AUDIT_REMARK = #{auditRemark,jdbcType=VARCHAR}
     where INFO_CODE = #{infoCode,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByUserCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where USER_CODE = #{USER_CODE,jdbcType=INTEGER}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+  </select>
+  <select id="selectByInfoCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where INFO_CODE = #{infoCode,jdbcType=INTEGER}
+  </select>
+  <select id="listUnauditedUser" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where INFO_STATUS = '0'
+  </select>
+  <select id="selectByEmployeeCodeAndStartTimeAndEndTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from acct_open_info
+    where EMPLOYEE_CODE=#{employeeCode,jdbcType=VARCHAR} and CMT_TIME >= #{startTime,jdbcType=BIGINT} and CMT_TIME &lt;= #{endTime,jdbcType=BIGINT}
+  </select>
 </mapper>
