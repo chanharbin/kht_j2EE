@@ -42,8 +42,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private UserDOMapper userDOMapper;
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private RedisTemplate redisTemplate;
     @Resource
     private ValueOperations<String,Object> valueOperations;
     @Autowired
@@ -127,7 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result listEmployee(int pageNum) {
-        Page<Object> pages = PageHelper.startPage(pageNum, 10);
+        Page<Object> pages = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
         List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
             EmployeeModel employeeModel = new EmployeeModel();
@@ -143,6 +141,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         PageInfo<EmployeeModel> page = new PageInfo<>(employeeModelList);
         Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("pageSizes",redisService.getParaValue("pageSize"));
         resultData.put("employee_num",pages.getTotal());
         resultData.put("employees",page.getList());
         return Result.OK(resultData).build();
@@ -150,12 +149,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public void getUserValidationInfo(int infoCode) {
+    public void getUserValidationInfo(int infoCode,String msg) {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
         if(acctOpenInfoDO == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资料编号错误");
         }
         acctOpenInfoDO.setInfoStatus("1");
+        acctOpenInfoDO.setAuditRemark(msg);
         acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
         CustAcctDO custAcctDO = new CustAcctDO();
         BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);

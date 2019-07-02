@@ -1221,4 +1221,47 @@ public class AcctOpenInfoDO {
     public void setAuditRemark(String auditRemark) {
         this.auditRemark = auditRemark == null ? null : auditRemark.trim();
     }
+
+    @Override
+    public String toString() {
+        return "AcctOpenInfoDO{" +
+                "infoCode=" + infoCode +
+                ", userCode=" + userCode +
+                ", imgCode=" + imgCode +
+                ", name='" + name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", idType='" + idType + '\'' +
+                ", idCode='" + idCode + '\'' +
+                ", idEffDate=" + idEffDate +
+                ", idExpDate=" + idExpDate +
+                ", telephone=" + telephone +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", occupation='" + occupation + '\'' +
+                ", company='" + company + '\'' +
+                ", education='" + education + '\'' +
+                ", orgCode='" + orgCode + '\'' +
+                ", ansOne='" + ansOne + '\'' +
+                ", ansTwo='" + ansTwo + '\'' +
+                ", ansThree='" + ansThree + '\'' +
+                ", ansFour='" + ansFour + '\'' +
+                ", ansFive='" + ansFive + '\'' +
+                ", ansSix='" + ansSix + '\'' +
+                ", ansSeven='" + ansSeven + '\'' +
+                ", ansEight='" + ansEight + '\'' +
+                ", ansNine='" + ansNine + '\'' +
+                ", ansTen='" + ansTen + '\'' +
+                ", riskScore=" + riskScore +
+                ", investorType='" + investorType + '\'' +
+                ", bankType='" + bankType + '\'' +
+                ", bankCardCode='" + bankCardCode + '\'' +
+                ", stkEx='" + stkEx + '\'' +
+                ", stkBd='" + stkBd + '\'' +
+                ", openChannel='" + openChannel + '\'' +
+                ", cmtTime=" + cmtTime +
+                ", infoStatus='" + infoStatus + '\'' +
+                ", employeeCode='" + employeeCode + '\'' +
+                ", auditRemark='" + auditRemark + '\'' +
+                '}';
+    }
 }

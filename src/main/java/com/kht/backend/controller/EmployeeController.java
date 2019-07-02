@@ -134,9 +134,10 @@ public class EmployeeController {
     @MethodLog(10)
     @RequestMapping(value = "/user/audit",method = PUT)
     public Result validateUser(@RequestParam("INFO_CODE")int infoCode,
-                               @RequestParam("INFO_STATUS")String infoStatus){
+                               @RequestParam("INFO_STATUS")String infoStatus,
+                               @RequestParam("FAIL_MSG")String msg){
         if(infoStatus.equals("success")){
-            employeeService.getUserValidationInfo(infoCode);
+            employeeService.getUserValidationInfo(infoCode,msg);
             return Result.OK("审核通过结果结果已提交").build();
         }
         else{

@@ -217,6 +217,7 @@ public class UserServiceImpl implements UserService {
         }
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS", "acct_open_info", acctOpenInfoDO.getInfoStatus()));
+        data.put("auditRemark",acctOpenInfoDO.getAuditRemark());
         if (custAcctDO == null) {
             data.put("custCode", null);
         } else {
@@ -248,6 +249,7 @@ public class UserServiceImpl implements UserService {
         //0表示提交未审核
         acctOpenInfoDO.setInfoStatus("0");
         acctOpenInfoDO.setCmtTime(new Date().getTime());
+        System.out.println(acctOpenInfoDO.toString());
         if (acctOpenInfoDO1 != null) {
             if (acctOpenInfoDO1.getInfoCode() == 1) {
                 throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "已开户不能重复提交");

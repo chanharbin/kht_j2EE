@@ -90,7 +90,7 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void getUserValidationInfo() {
-        employeeService.getUserValidationInfo(3);
+        employeeService.getUserValidationInfo(3,"1331");
     }
     @Test
     public void getCount(){
