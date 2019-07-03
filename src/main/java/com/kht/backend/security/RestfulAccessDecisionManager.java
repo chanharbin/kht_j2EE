@@ -13,6 +13,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +24,7 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         HttpServletRequest request = ((FilterInvocation) object).getHttpRequest();
-
+        HttpServletResponse response=((FilterInvocation) object).getHttpResponse();
         String url,method;
         AntPathRequestMatcher matcher;
         System.out.println("current url "+request.getRequestURI());
@@ -31,7 +32,8 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
         if(request.getRequestURI().equals("/error")){
             return;
         }
-        /*if(authentication.getAuthorities()==null){
+        /*
+        if(authentication.getAuthorities()==null){
             for(String whiteUrl:whiteList){
                 matcher = new AntPathRequestMatcher(whiteUrl);
                 if(matcher.matches(request)){
@@ -44,8 +46,8 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
                 UserGrantedAuthority userGrantedAuthority=(UserGrantedAuthority) grantedAuthority;
                 url=userGrantedAuthority.getUrl();
                 method=userGrantedAuthority.getOperaType();
-                System.out.println("url "+url);
-                System.out.println("method "+method);
+                //System.out.println("url "+url);
+                //System.out.println("method "+method);
                 matcher=new AntPathRequestMatcher(url);
                 if(matcher.matches(request)&&
                         method.equals(request.getMethod())){

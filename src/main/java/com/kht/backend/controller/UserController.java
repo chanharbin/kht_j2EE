@@ -69,11 +69,11 @@ public class UserController {
             httpServletResponse.setHeader("Authorization", prefix + jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {
-            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
-            //throw new AuthenticationException("User is disabled!", e);
+            //throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
+            throw new AuthenticationException("User is disabled!", e);
         } catch (BadCredentialsException e) {
-            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
-            //throw new AuthenticationException("Bad credentials!", e);
+            //throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
+            throw new AuthenticationException("Bad credentials!", e);
         }
     }
 
