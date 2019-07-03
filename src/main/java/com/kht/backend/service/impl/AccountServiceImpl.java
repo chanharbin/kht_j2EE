@@ -78,6 +78,7 @@ public class AccountServiceImpl implements AccountService {
         }
         Map<String, Object> custAcctMap = objectMapper.convertValue(custAcctDO, Map.class);
         String tabCode = "cust_acct";
+        custAcctMap.put("orgName",redisService.getOrganizationName(custAcctDO.getOrgCode()));
         custAcctMap.put("gender", redisService.getDataDictionary("GENDER", tabCode, (String) custAcctMap.get("gender")));
         custAcctMap.put("idType", redisService.getDataDictionary("ID_TYPE", tabCode, (String) custAcctMap.get("idType")));
         custAcctMap.put("education", redisService.getDataDictionary("EDUCATION", tabCode, (String) custAcctMap.get("education")));
