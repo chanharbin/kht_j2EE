@@ -517,6 +517,7 @@
     select
     <include refid="Base_Column_List" />
     from acct_open_info
+    where INFO_STATUS &lt;&gt;  '0'
   </select>
   <select id="selectByInfoCode" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
