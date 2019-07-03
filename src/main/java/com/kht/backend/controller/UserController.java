@@ -161,14 +161,18 @@ public class UserController {
     @MethodLog(8)
     @GetMapping("/user/unaudited-users")
     public Result getUserListFiltered(@RequestParam("pageNum") int pageNum) {
-        Map<String, Object> data = userService.getUserInfoList(pageNum, true);
+        UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        String employeeCode = currentUser.getCode();
+        Map<String, Object> data = userService.getUserInfoList(pageNum, true,employeeCode);
         return Result.OK(data).build();
     }
 
     @MethodLog(7)
     @GetMapping("/user/all-users")
     public Result getUserList(@RequestParam("pageNum") int pageNum) {
-        Map<String, Object> data = userService.getUserInfoList(pageNum, false);
+        UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        String employeeCode = currentUser.getCode();
+        Map<String, Object> data = userService.getUserInfoList(pageNum, false,employeeCode);
         return Result.OK(data).build();
     }
 

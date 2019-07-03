@@ -64,4 +64,7 @@ public interface AcctOpenInfoDOMapper {
     List<AcctOpenInfoDO> selectByEmployeeCodeAndStartTimeAndEndTime(@Param("employeeCode") String employeeCode,
                                                                     @Param("startTime") Long startTime,
                                                                     @Param("endTime")Long endTime);
+
+    List<AcctOpenInfoDO> listAllByOrg(String orgCode);
+    List<AcctOpenInfoDO> listUnauditedUserByOrg(String orgCode);
 }
