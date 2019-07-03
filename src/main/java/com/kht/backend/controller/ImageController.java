@@ -25,23 +25,23 @@ public class ImageController {
     private ImageService imageService;
 
     @RequestMapping(value = "/image", method = POST)
-    public Result saveImage(@RequestParam("file") MultipartFile file) {
+    public Result saveImage(@RequestParam("image") MultipartFile image) {
         String imageUrl = null;
         try {
-            if (file != null && !file.isEmpty()) {
-                String name = file.getOriginalFilename();
+            if (image != null && !image.isEmpty()) {
+                String name = image.getOriginalFilename();
                 String ext = name.substring(name.lastIndexOf("."));
-                String sha1 = DigestUtils.sha1Hex(file.getInputStream());
+                String sha1 = DigestUtils.sha1Hex(image.getInputStream());
                 String fileName = sha1 + ext;
                 String path = System.getProperty("java.io.tmpdir") + File.separator + imageService.sha1ToPath(sha1);
                 imageService.mkdirs(path);
-                FileUtils.copyInputStreamToFile(file.getInputStream(), new File(path, fileName));
+                FileUtils.copyInputStreamToFile(image.getInputStream(), new File(path, fileName));
                 imageUrl = imageService.uploadImage("http://119.23.239.101:4869/upload", path + File.separator + fileName);
-                if (imageUrl != null && imageUrl.trim().length() > 0) {
-                    File f = new File(path, fileName);
-                    f.setWritable(true);
+                if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                    File file = new File(path, fileName);
+                    file.setWritable(true);
                     System.gc();
-                    f.delete();
+                    file.delete();
                 }
             }
         }
