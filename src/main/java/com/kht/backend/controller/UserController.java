@@ -55,7 +55,7 @@ public class UserController {
 
     private final String prefix = "Bearer ";
 
-    @PostMapping(value = {"/user/login", "/employee/login"})
+    @PostMapping("/user/login")
     public Result authenticateUser(@RequestParam("telephone") Long telephone, @RequestParam("password") String password, HttpServletResponse httpServletResponse) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
@@ -65,13 +65,6 @@ public class UserController {
             Map<String, Object> data = new LinkedHashMap<>();
             if (userPrincipal.getUserType().equals("0")) {
                 data.put("userCode", userPrincipal.getUserCode());
-            } else {
-                EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
-                String employeeName = employeeDO.getEmployeeName();
-                String position = redisService.getPosName(employeeDO.getPosCode());
-                data.put("posCode",employeeDO.getPosCode());
-                data.put("employeeName", employeeName);
-                data.put("employeePosition", position);
             }
             httpServletResponse.setHeader("Authorization", prefix + jwt);
             return Result.OK(data).build();

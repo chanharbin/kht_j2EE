@@ -12,9 +12,16 @@ import com.kht.backend.entity.Result;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.OrganizationService;
+import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +29,14 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 public class EmployeeController {
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Autowired
     private EmployeeService employeeService;
     @Autowired
@@ -40,6 +52,9 @@ public class EmployeeController {
     private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private RedisServiceImpl redisService;
+    private final String prefix = "Bearer ";
     @MethodLog(4)
     @RequestMapping(value = "/employee", method = POST)
     public Result increaseEmployee(@RequestParam("EMPLOYEE_NAME")String employeeName,
@@ -163,12 +178,42 @@ public class EmployeeController {
     @RequestMapping(value = "/user/organization",method = GET)
     public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
                                        @RequestParam("orgCode") String orgCode){
-        System.out.println(orgCode);
-        System.out.println(pageNum);
-        Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum);
-        return organizationUser;
+        UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        if(orgCode.equals(userPrincipalFromRequest.getCode().substring(0,4))) {
+            Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum);
+            return organizationUser;
+        }
+        else{
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"您无法查询其他营业厅的用户列表");
+        }
     }
 
-
-
+    //员工登录
+    @PostMapping("/employee/login")
+    public Result authenticateUser(@RequestParam("telephone") Long telephone, @RequestParam("password") String password, HttpServletResponse httpServletResponse) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtTokenProvider.generateToken(authentication);
+            UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(jwt);
+            Map<String, Object> data = new LinkedHashMap<>();
+            if (userPrincipal.getUserType().equals("1")) {
+                EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
+                String employeeName = employeeDO.getEmployeeName();
+                String position = redisService.getPosName(employeeDO.getPosCode());
+                data.put("posCode",employeeDO.getPosCode());
+                data.put("employeeName", employeeName);
+                data.put("employeePosition", position);
+                data.put("orgCode",userPrincipal.getCode().substring(0,4));
+            }
+            httpServletResponse.setHeader("Authorization", prefix + jwt);
+            return Result.OK(data).build();
+        } catch (DisabledException e) {
+            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
+            //throw new AuthenticationException("User is disabled!", e);
+        } catch (BadCredentialsException e) {
+            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
+            //throw new AuthenticationException("Bad credentials!", e);
+        }
+    }
 }
