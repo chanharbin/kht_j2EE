@@ -13,6 +13,11 @@ public enum ErrorCode {
     AUTHENTICATION_EXCEPTION(401, "没有权限"),
 
     /**
+     * 文件格式错误
+     */
+    FILE_EXT_ERROR(415, "文件格式错误"),
+
+    /**
      * 服务器端错误
      */
     SERVER_EXCEPTION(500, "服务器发生异常");
