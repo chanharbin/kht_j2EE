@@ -8,9 +8,18 @@ public enum ErrorCode {
     PARAM_ERR_COMMON(400, "Bad Request"),
 
     /**
+     * 身份认证错失败
+     */
+    AUTHENTICATION_EXCEPTION(401, "身份认证错失败"),
+
+    /**
      * 鉴权失败，没有权限
      */
-    AUTHENTICATION_EXCEPTION(401, "没有权限"),
+    FORBIDDEN__EXCEPTION(403,"没有权限"),
+    /**
+     * jwt失效
+     */
+    NOT_ACCEPTABLE(405,"token失效"),
 
     /**
      * 服务器端错误

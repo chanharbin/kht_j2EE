@@ -1,4 +1,6 @@
 package com.kht.backend.security;
+import com.kht.backend.entity.ErrorCode;
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.model.UserGrantedAuthority;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
@@ -58,8 +60,10 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
                 }
             }
         }
+
         System.out.println("bad decision");
-        throw new AccessDeniedException("no right");
+        throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"没有权限");
+        //throw new AccessDeniedException("no right");
     }
 
     @Override

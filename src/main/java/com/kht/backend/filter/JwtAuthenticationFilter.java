@@ -1,5 +1,7 @@
 package com.kht.backend.filter;
 
+import com.kht.backend.entity.ErrorCode;
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.util.JwtTokenProvider;
 import com.kht.backend.service.impl.UserPrincipalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private List<String> whiteList= Arrays.asList("/user/check-code","/user/login","/user/register","/employee/login");
+    private List<String> whiteList= Arrays.asList("/user/check-code","/user/login","/user/register","/employee/login","/");
     @Autowired
     private JwtTokenProvider tokenProvider;
     @Autowired
@@ -47,7 +49,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+                else{
+                    throw new ServiceException(ErrorCode.NOT_ACCEPTABLE, "token失效");
+                }
             } catch (Exception ex) {
+
                 logger.error("Could not set user authentication in security context", ex);
             }
         filterChain.doFilter(httpServletRequest, httpServletResponse);

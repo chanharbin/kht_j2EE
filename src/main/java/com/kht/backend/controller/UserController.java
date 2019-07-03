@@ -3,7 +3,9 @@ package com.kht.backend.controller;
 import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.dao.EmployeeDOMapper;
 import com.kht.backend.dataobject.*;
+import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.Result;
+import com.kht.backend.entity.ServiceException;
 import com.kht.backend.exception.AuthenticationException;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.impl.RedisServiceImpl;
@@ -74,9 +76,11 @@ public class UserController {
             httpServletResponse.setHeader("Authorization", prefix + jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {
-            throw new AuthenticationException("User is disabled!", e);
+            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
+            //throw new AuthenticationException("User is disabled!", e);
         } catch (BadCredentialsException e) {
-            throw new AuthenticationException("Bad credentials!", e);
+            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
+            //throw new AuthenticationException("Bad credentials!", e);
         }
     }
 
