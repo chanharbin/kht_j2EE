@@ -62,8 +62,8 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
         }
 
         System.out.println("bad decision");
-        throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"没有权限");
-        //throw new AccessDeniedException("no right");
+        //throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"没有权限");
+        throw new AccessDeniedException("no right");
     }
 
     @Override

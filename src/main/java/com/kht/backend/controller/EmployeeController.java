@@ -144,12 +144,17 @@ public class EmployeeController {
         }
         else{
             AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
-            acctOpenInfoDO.setInfoStatus("2");
-            UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-            acctOpenInfoDO.setEmployeeCode(currentUser.getCode());
-            acctOpenInfoDO.setAuditRemark(msg);
-            acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
-            return Result.OK("审核未通过结果已提交").build();
+            if(acctOpenInfoDO.getInfoStatus().equals("2") || acctOpenInfoDO.getInfoStatus().equals("1")){
+                throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"该用户已被审核，请勿重复提交");
+            }
+            else {
+                acctOpenInfoDO.setInfoStatus("2");
+                UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+                acctOpenInfoDO.setEmployeeCode(currentUser.getCode());
+                acctOpenInfoDO.setAuditRemark(msg);
+                acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
+                return Result.OK("审核未通过结果已提交").build();
+            }
         }
     }
 
