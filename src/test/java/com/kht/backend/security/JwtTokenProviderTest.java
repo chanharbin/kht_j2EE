@@ -1,5 +1,6 @@
 package com.kht.backend.security;
 
+import com.kht.backend.service.impl.RedisServiceImpl;
 import com.kht.backend.util.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +19,8 @@ public class JwtTokenProviderTest {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
     String token;
+    @Autowired
+    private RedisServiceImpl redisService;
     @Test
     public void generateToken() {
 
@@ -56,6 +59,12 @@ public class JwtTokenProviderTest {
 
     @Test
     public void validateToken() {
-        System.out.println();
+        Date now=new Date();
+        System.out.println(now.getTime());
+        System.out.println(now.getTime());
+    }
+    @Test
+    public void fucktoken() {
+        redisService.getJwtTime(5);
     }
 }

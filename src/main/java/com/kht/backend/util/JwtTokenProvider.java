@@ -32,6 +32,7 @@ public class JwtTokenProvider {
     @Value("${app.jwtExpirationInMs}")
     private long jwtExpirationInMs;
 
+    private final long softTimeInMs=5000;
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal=(UserPrincipal)authentication.getPrincipal();
         Date now=new Date();
@@ -64,7 +65,10 @@ public class JwtTokenProvider {
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(authToken).getBody();
             Date curTime=redisService.getJwtTime((int)claims.get("userCode"));
-            if(claims.getIssuedAt().after(curTime)){
+            System.out.println("redis time"+ curTime.getTime());
+            System.out.println("token time"+claims.getIssuedAt().getTime());
+            //claims > curTime
+            if(claims.getIssuedAt().getTime()+softTimeInMs<=curTime.getTime()){
                 logger.error("JWT time out");
                 throw new  UnsupportedJwtException("JWT time out");
             }

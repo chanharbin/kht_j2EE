@@ -50,7 +50,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
                 else{
-                    throw new ServiceException(ErrorCode.NOT_ACCEPTABLE, "token失效");
+                    //throw new ServiceException(ErrorCode.NOT_ACCEPTABLE, "token失效");
+                    httpServletResponse.sendError(ErrorCode.NOT_ACCEPTABLE.getStatusCode(),ErrorCode.NOT_ACCEPTABLE.getMsg());
+                    return;
                 }
             } catch (Exception ex) {
 

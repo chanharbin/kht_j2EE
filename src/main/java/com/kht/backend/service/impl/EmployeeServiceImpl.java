@@ -160,34 +160,39 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(acctOpenInfoDO == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资料编号错误");
         }
-        acctOpenInfoDO.setInfoStatus("1");
-        acctOpenInfoDO.setAuditRemark(msg);
-        UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        String employeeId = currentUser.getCode();
-        acctOpenInfoDO.setEmployeeCode(employeeId);
-        acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
-        CustAcctDO custAcctDO = new CustAcctDO();
-        BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(acctOpenInfoDO.getAnsOne());
-        stringBuffer.append(acctOpenInfoDO.getAnsTwo());
-        stringBuffer.append(acctOpenInfoDO.getAnsThree());
-        stringBuffer.append(acctOpenInfoDO.getAnsFour());
-        stringBuffer.append(acctOpenInfoDO.getAnsFive());
-        stringBuffer.append(acctOpenInfoDO.getAnsSix());
-        stringBuffer.append(acctOpenInfoDO.getAnsSeven());
-        stringBuffer.append(acctOpenInfoDO.getAnsEight());
-        stringBuffer.append(acctOpenInfoDO.getAnsNine());
-        stringBuffer.append(acctOpenInfoDO.getAnsTen());
-        char[] s = stringBuffer.toString().toCharArray();
-        GetPoint getPoint = new GetPoint(s);
-        String investorType = getPoint.getInvestorType();
-        custAcctDO.setInvestorType(investorType);
-        custAcctDO.setCloseTime(-1L);
-        String customerCode = accountService.increaseCustomerAccount(custAcctDO);
-        String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
-        accountService.increaseTradeAccount(customerCode,"0","00","0","0");
-        accountService.increaseDepositoryAccount(capitalCode,"00",acctOpenInfoDO.getBankCardCode());
+        else if(acctOpenInfoDO.getInfoStatus().equals("1")||acctOpenInfoDO.getInfoStatus().equals("2")){
+            throw new ServiceException((ErrorCode.PARAM_ERR_COMMON),"该用户已被审核，请勿重复提交");
+        }
+        else {
+            acctOpenInfoDO.setInfoStatus("1");
+            acctOpenInfoDO.setAuditRemark(msg);
+            UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+            String employeeId = currentUser.getCode();
+            acctOpenInfoDO.setEmployeeCode(employeeId);
+            acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
+            CustAcctDO custAcctDO = new CustAcctDO();
+            BeanUtils.copyProperties(acctOpenInfoDO, custAcctDO);
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append(acctOpenInfoDO.getAnsOne());
+            stringBuffer.append(acctOpenInfoDO.getAnsTwo());
+            stringBuffer.append(acctOpenInfoDO.getAnsThree());
+            stringBuffer.append(acctOpenInfoDO.getAnsFour());
+            stringBuffer.append(acctOpenInfoDO.getAnsFive());
+            stringBuffer.append(acctOpenInfoDO.getAnsSix());
+            stringBuffer.append(acctOpenInfoDO.getAnsSeven());
+            stringBuffer.append(acctOpenInfoDO.getAnsEight());
+            stringBuffer.append(acctOpenInfoDO.getAnsNine());
+            stringBuffer.append(acctOpenInfoDO.getAnsTen());
+            char[] s = stringBuffer.toString().toCharArray();
+            GetPoint getPoint = new GetPoint(s);
+            String investorType = getPoint.getInvestorType();
+            custAcctDO.setInvestorType(investorType);
+            custAcctDO.setCloseTime(-1L);
+            String customerCode = accountService.increaseCustomerAccount(custAcctDO);
+            String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
+            accountService.increaseTradeAccount(customerCode, "0", "00", "0", "0");
+            accountService.increaseDepositoryAccount(capitalCode, "00", acctOpenInfoDO.getBankCardCode());
+        }
     }
 
     @Override

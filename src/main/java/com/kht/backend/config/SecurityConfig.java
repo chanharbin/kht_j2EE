@@ -4,6 +4,7 @@ import com.kht.backend.filter.JwtAuthenticationFilter;
 import com.kht.backend.filter.RestfulSecurityInterceptor;
 import com.kht.backend.security.JwtAuthenticationEntryPoint;
 import com.kht.backend.security.MD5PasswordEncoder;
+import com.kht.backend.security.RestfulAccessDeniedHandler;
 import com.kht.backend.service.impl.UserPrincipalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserPrincipalServiceImpl userPrincipalService;
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
+    @Autowired
+    private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
     @Autowired
     private RestfulSecurityInterceptor restfulSecurityInterceptor;
 
@@ -75,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(unauthorizedHandler)
+                .accessDeniedHandler(restfulAccessDeniedHandler)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
