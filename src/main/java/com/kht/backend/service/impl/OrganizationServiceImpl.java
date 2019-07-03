@@ -136,16 +136,23 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Result getOrganizationUser(String orgCode,int pageNum) {
+        Page<Object> pages = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CustAcctDO> custAcctDOList = custAcctDOMapper.selectCustCodeByOrgCode(orgCode);
         List<UserFromOrg> userFromOrgList = custAcctDOList.stream().map(custAcctDO -> {
             UserFromOrg userFromOrg = this.convertFromDataObject(custAcctDO);
+            userFromOrg.setIdType(redisService.getDataDictionary("ID_TYPE","cust_acct",custAcctDO.getIdType()));
+            userFromOrg.setOrgName(redisService.getOrganizationName(custAcctDO.getOrgCode()));
             return userFromOrg;
         }).collect(Collectors.toList());
         if(userFromOrgList == null){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"该机构编号下的用户不存在");
         }
-        return Result.OK(userFromOrgList).build();
-
+        PageInfo<UserFromOrg> page = new PageInfo<>(userFromOrgList);
+        Map<String,Object> resultData = new LinkedHashMap<>();
+        resultData.put("pageSize",redisService.getParaValue("pageSize"));
+        resultData.put("totalNum",pages.getTotal());
+        resultData.put("userList",page.getList());
+        return Result.OK(resultData).build();
     }
 
     @Override

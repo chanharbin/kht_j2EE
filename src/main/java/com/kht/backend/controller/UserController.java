@@ -67,6 +67,7 @@ public class UserController {
                 EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
                 String employeeName = employeeDO.getEmployeeName();
                 String position = redisService.getPosName(employeeDO.getPosCode());
+                data.put("posCode",employeeDO.getPosCode());
                 data.put("employeeName", employeeName);
                 data.put("employeePosition", position);
             }

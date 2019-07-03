@@ -16,6 +16,7 @@ import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -130,6 +131,7 @@ public class EmployeeController {
         return result;
     }
 
+    @Transactional
     //用户审核
     @MethodLog(10)
     @RequestMapping(value = "/user/audit",method = PUT)
@@ -143,6 +145,9 @@ public class EmployeeController {
         else{
             AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
             acctOpenInfoDO.setInfoStatus("2");
+            UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+            acctOpenInfoDO.setEmployeeCode(currentUser.getCode());
+            acctOpenInfoDO.setAuditRemark(msg);
             acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
             return Result.OK("审核未通过结果已提交").build();
         }
@@ -150,7 +155,7 @@ public class EmployeeController {
 
     //根据机构名获取用户列表
     @MethodLog(9)
-    @RequestMapping(value = "/user",method = GET)
+    @RequestMapping(value = "/user/organization",method = GET)
     public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
                                        @RequestParam("orgCode") String orgCode){
         System.out.println(orgCode);

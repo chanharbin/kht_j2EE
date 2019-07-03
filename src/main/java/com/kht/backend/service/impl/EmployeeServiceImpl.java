@@ -12,8 +12,10 @@ import com.kht.backend.service.AccountService;
 import com.kht.backend.service.EmployeeService;
 import com.kht.backend.service.UserService;
 import com.kht.backend.service.model.EmployeeModel;
+import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
+import com.kht.backend.util.JwtTokenProvider;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private EmployeeDOMapper employeeDOMapper;
     @Autowired
@@ -48,6 +53,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private RedisServiceImpl redisService;
     @Autowired
     private PositionDOMapper positionDOMapper;
+    @Autowired
+    private HttpServletRequest httpServletRequest;
     @Transactional
     @Override
     public Result deleteEmployee(String employeeCode) {
@@ -147,7 +154,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return Result.OK(resultData).build();
     }
 
-
     @Override
     public void getUserValidationInfo(int infoCode,String msg) {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
@@ -156,6 +162,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         acctOpenInfoDO.setInfoStatus("1");
         acctOpenInfoDO.setAuditRemark(msg);
+        UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        String employeeId = currentUser.getCode();
+        acctOpenInfoDO.setEmployeeCode(employeeId);
         acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
         CustAcctDO custAcctDO = new CustAcctDO();
         BeanUtils.copyProperties(acctOpenInfoDO,custAcctDO);
