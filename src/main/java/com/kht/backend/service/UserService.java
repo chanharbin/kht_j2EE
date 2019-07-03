@@ -23,7 +23,7 @@ public interface UserService {
     public void modifyUserPassword(int userCode, String oldPassword, String password);
 
     //获取用户列表
-    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable);
+    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable,String employeeCode);
 
     //获取用户审核状态
     public Map<String, Object> getUserAndState(int userCode);

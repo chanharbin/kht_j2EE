@@ -150,15 +150,27 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable) {
+    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable,String employeeCode) {
+        String orgCode = employeeCode.substring(0,4);
+        System.out.println(orgCode);
         Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
         List<AcctOpenInfoDO> acctOpenInfoDOList;
         String tabCode = "acct_open_info";
-        if (filterable) {
-            //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
-            acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUser();
-        } else {
-            acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+        if(orgCode.equals("0000")) {
+            if (filterable) {
+                //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
+                acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUser();
+            } else {
+                acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
+            }
+        }
+        else{
+            if (filterable) {
+                //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
+                acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUserByOrg(orgCode);
+            } else {
+                acctOpenInfoDOList = acctOpenInfoDOMapper.listAllByOrg(orgCode);
+            }
         }
         if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
