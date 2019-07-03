@@ -523,7 +523,7 @@
     select
     <include refid="Base_Column_List" />
     from acct_open_info
-    where INFO_CODE = #{infoCode,jdbcType=INTEGER}
+    where INFO_CODE = #{infoCode,jdbcType=INTEGER} for update
   </select>
   <select id="listUnauditedUser" resultMap="BaseResultMap">
     select

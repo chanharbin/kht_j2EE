@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -299,7 +300,6 @@ public class UserServiceImpl implements UserService {
         if (imageDO == null) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交影像资料");
         }
-
         String orgName = redisService.getOrganizationName(acctOpenInfoDO.getOrgCode());
         String gender = redisService.getDataDictionary("GENDER", tabCode, acctOpenInfoDO.getGender());
         String idType = redisService.getDataDictionary("ID_TYPE", tabCode, acctOpenInfoDO.getIdType());

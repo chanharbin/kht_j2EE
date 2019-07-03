@@ -3,6 +3,8 @@ package com.kht.backend.service.model;
 public class UserFromOrg {
     private String custCode;
 
+    private Integer userCode;
+
     private String name;
 
     private String idType;
@@ -14,6 +16,10 @@ public class UserFromOrg {
     private String custStatus;
 
     private String gender;
+
+    private String idTypeName;
+
+    private String  OrgName;
 
     public String getCustCode() {
         return custCode;
@@ -69,5 +75,29 @@ public class UserFromOrg {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public Integer getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Integer userCode) {
+        this.userCode = userCode;
+    }
+
+    public String getIdTypeName() {
+        return idTypeName;
+    }
+
+    public void setIdTypeName(String idTypeName) {
+        this.idTypeName = idTypeName;
+    }
+
+    public String getOrgName() {
+        return OrgName;
+    }
+
+    public void setOrgName(String orgName) {
+        OrgName = orgName;
     }
 }
