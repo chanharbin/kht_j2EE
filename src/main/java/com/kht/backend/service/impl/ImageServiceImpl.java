@@ -6,6 +6,7 @@ import com.drew.imaging.FileTypeDetector;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.ImageService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedInputStream;
@@ -33,7 +34,7 @@ public class ImageServiceImpl implements ImageService {
             httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
             httpURLConnection.setRequestProperty("Cache-Control", "no-cache");
             httpURLConnection.setRequestProperty("Content-Type", ext.toLowerCase());
-            httpURLConnection.setRequestProperty("COOKIE", "william");
+            httpURLConnection.setRequestProperty("COOKIE", "kht");
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setDoInput(true);
             httpURLConnection.connect();
@@ -73,6 +74,27 @@ public class ImageServiceImpl implements ImageService {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "上传图片失败");
         }
         return null;
+    }
+
+    @Override
+    public void mkdirs(String path) {
+        if (path != null) {
+            File f = new File(path);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+        }
+    }
+
+    @Override
+    public String sha1ToPath(String sha1) {
+        String result = String.valueOf("");
+        if (sha1 != null && !sha1.trim().isEmpty()) {
+            String s1 = sha1.substring(0, 1);
+            String s2 = DigestUtils.sha1Hex(sha1.getBytes()).substring(0, 2);
+            result = s1 + File.separator + s2 + File.separator + sha1;
+        }
+        return result;
     }
 
     @Override
