@@ -32,8 +32,17 @@ public class ImageController {
     public Result saveImage(HttpServletRequest request) {
         List<String> imageUrlList = new ArrayList<>();
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+
+        String httpName = multipartHttpServletRequest.getParameter("name");
+        System.out.println(httpName);
+        String httpId = multipartHttpServletRequest.getParameter("id");
+        System.out.println(httpId);
+
         try {
             List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
+
+            System.out.println(images.size());
+
             if (images != null && images.size() > 0) {
                 for (MultipartFile image : images) {
                     if (image != null && !image.isEmpty()) {
