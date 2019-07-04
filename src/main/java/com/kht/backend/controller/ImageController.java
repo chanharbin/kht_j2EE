@@ -55,7 +55,7 @@ public class ImageController {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "图片上传失败");
         }
         Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("imageUrlList", imageUrl);
+        resultData.put("imageUrl", imageUrl);
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
         resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
         return Result.OK(resultData).build();
