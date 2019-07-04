@@ -25,7 +25,7 @@ public class ImageServiceImpl implements ImageService {
     public String uploadImage(String serverUrl, String file) {
         try {
             String ext = readExt(file);
-            URL url = new URL(serverUrl);
+            URL url = new URL(serverUrl + "/upload");
             URLConnection connection = url.openConnection();
             connection.setReadTimeout(50000);
             connection.setConnectTimeout(25000);
