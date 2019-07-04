@@ -34,6 +34,7 @@ public class ImageController {
         //MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
 
         System.out.println(image == null);
+        System.out.println(image.toString());
 
         try {
             //List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
