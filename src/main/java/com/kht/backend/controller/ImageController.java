@@ -33,7 +33,7 @@ public class ImageController {
     @ResponseBody
     @RequestMapping(value = "/image", method = POST)
     public Result saveImage(@RequestParam("file") MultipartFile image, HttpServletRequest httpServletRequest) {
-        List<String> imageUrlList = new ArrayList<>();
+        String imageUrl = null;
         try {
             if (image != null && !image.isEmpty()) {
                 String name = image.getOriginalFilename();
@@ -43,9 +43,8 @@ public class ImageController {
                 String path = System.getProperty("java.io.tmpdir") + File.separator + imageService.sha1ToPath(sha1);
                 imageService.mkdirs(path);
                 FileUtils.copyInputStreamToFile(image.getInputStream(), new File(path, fileName));
-                String imageUrl = imageService.uploadImage("http://119.23.239.101:4869", path + File.separator + fileName);
+                imageUrl = imageService.uploadImage("http://119.23.239.101:4869", path + File.separator + fileName);
                 if (imageUrl != null && !imageUrl.trim().isEmpty()) {
-                    imageUrlList.add(imageUrl);
                     File file = new File(path, fileName);
                     file.setWritable(true);
                     System.gc();
@@ -56,7 +55,7 @@ public class ImageController {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "图片上传失败");
         }
         Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("imageUrlList", imageUrlList);
+        resultData.put("imageUrlList", imageUrl);
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
         resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
         return Result.OK(resultData).build();
