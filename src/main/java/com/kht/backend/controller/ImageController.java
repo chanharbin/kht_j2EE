@@ -29,22 +29,19 @@ public class ImageController {
 
     @ResponseBody
     @RequestMapping(value = "/image", method = POST)
-    public Result saveImage(HttpServletRequest request) {
+    public Result saveImage(@RequestParam("file") MultipartFile image, HttpServletRequest request) {
         List<String> imageUrlList = new ArrayList<>();
-        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+        //MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
 
-        String httpName = multipartHttpServletRequest.getParameter("name");
-        System.out.println(httpName);
-        String httpId = multipartHttpServletRequest.getParameter("id");
-        System.out.println(httpId);
+        System.out.println(image == null);
 
         try {
-            List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
+            //List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
 
-            System.out.println(images.size());
+            //System.out.println(images.size());
 
-            if (images != null && images.size() > 0) {
-                for (MultipartFile image : images) {
+            //if (images != null && images.size() > 0) {
+                //for (MultipartFile image : images) {
                     if (image != null && !image.isEmpty()) {
                         String name = image.getOriginalFilename();
                         String ext = name.substring(name.lastIndexOf("."));
@@ -62,8 +59,8 @@ public class ImageController {
                             file.delete();
                         }
                     }
-                }
-            }
+                //}
+            //}
         }
         catch (Exception exception) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "图片上传失败");
