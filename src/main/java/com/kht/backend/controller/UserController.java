@@ -66,7 +66,7 @@ public class UserController {
             if (userPrincipal.getUserType().equals("0")) {
                 data.put("userCode", userPrincipal.getUserCode());
             }
-            httpServletResponse.setHeader("Authorization", prefix + jwt);
+            httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {
             //throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
@@ -117,7 +117,7 @@ public class UserController {
         String newJwt = jwtTokenProvider.generateToken(authentication);
         //UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(newJwt);
         //System.out.println(userPrincipal.getAuthorities());
-        httpServletResponse.setHeader("Authorization", prefix + newJwt);
+        httpServletResponse.setHeader("jwtauthorization", prefix + newJwt);
         return Result.OK("添加开户资料成功").build();
     }
 

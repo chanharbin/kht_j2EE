@@ -32,8 +32,8 @@ public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
     @Override
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         ServletServerHttpResponse servletServerResponse = (ServletServerHttpResponse) serverHttpResponse;
-        List<String> bearerToken=serverHttpRequest.getHeaders().get("Authorization");
-        List<String> responseToken=serverHttpResponse.getHeaders().get("Authorization");
+        List<String> bearerToken=serverHttpRequest.getHeaders().get("jwtauthorization");
+        List<String> responseToken=serverHttpResponse.getHeaders().get("jwtauthorization");
         if(responseToken!=null&&!responseToken.isEmpty()){
             return o;
         }
@@ -45,7 +45,7 @@ public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
             newToken=jwtTokenProvider.refreshToken(token);
         }
         if(newToken!=null){
-            servletServerResponse.getHeaders().add("Authorization","Bearer "+newToken);
+            servletServerResponse.getHeaders().add("jwtauthorization","Bearer "+newToken);
         }
         return o;
     }
