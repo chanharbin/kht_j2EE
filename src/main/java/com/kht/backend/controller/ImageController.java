@@ -9,12 +9,15 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -24,11 +27,14 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
+    @ResponseBody
     @RequestMapping(value = "/image", method = POST)
-    public Result saveImage(@RequestBody MultipartFile images[]) {
+    public Result saveImage(HttpServletRequest request) {
         List<String> imageUrlList = new ArrayList<>();
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
         try {
-            if (images != null && images.length > 0) {
+            List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
+            if (images != null && images.size() > 0) {
                 for (MultipartFile image : images) {
                     if (image != null && !image.isEmpty()) {
                         String name = image.getOriginalFilename();
