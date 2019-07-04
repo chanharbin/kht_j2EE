@@ -30,6 +30,7 @@ public class ImageController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    /*
     @ResponseBody
     @RequestMapping(value = "/image", method = POST)
     public Result saveImage(@RequestParam("file") MultipartFile image, HttpServletRequest httpServletRequest) {
@@ -56,6 +57,45 @@ public class ImageController {
         }
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("imageUrl", imageUrl);
+        String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
+        resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
+        return Result.OK(resultData).build();
+    }
+    */
+
+    @ResponseBody
+    @RequestMapping(value = "/image", method = POST)
+    public Result saveImage(HttpServletRequest httpServletRequest) {
+        List<String> imageUrlList = new ArrayList<>();
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) httpServletRequest;
+        try {
+            List<MultipartFile> images = multipartHttpServletRequest.getFiles("images");
+            if (images != null && images.size() > 0) {
+                for (MultipartFile image: images) {
+                    if (image != null && !image.isEmpty()) {
+                        String name = image.getOriginalFilename();
+                        String ext = name.substring(name.lastIndexOf("."));
+                        String sha1 = DigestUtils.sha1Hex(image.getInputStream());
+                        String fileName = sha1 + ext;
+                        String path = System.getProperty("java.io.tmpdir") + File.separator + imageService.sha1ToPath(sha1);
+                        imageService.mkdirs(path);
+                        FileUtils.copyInputStreamToFile(image.getInputStream(), new File(path, fileName));
+                        String imageUrl = imageService.uploadImage("http://119.23.239.101:4869", path + File.separator + fileName);
+                        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                            imageUrlList.add(imageUrl);
+                            File file = new File(path, fileName);
+                            file.setWritable(true);
+                            System.gc();
+                            file.delete();
+                        }
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "图片上传失败");
+        }
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("imageUrlList", imageUrlList);
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
         resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
         return Result.OK(resultData).build();
