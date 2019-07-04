@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -30,10 +31,10 @@ public class ImageController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    /*
+
     @ResponseBody
     @RequestMapping(value = "/image", method = POST)
-    public Result saveImage(@RequestParam("file") MultipartFile image, HttpServletRequest httpServletRequest) {
+    public Result saveImage(@RequestParam("file") MultipartFile image, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String imageUrl = null;
         try {
             if (image != null && !image.isEmpty()) {
@@ -58,12 +59,14 @@ public class ImageController {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("imageUrl", imageUrl);
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
-        resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
+        String newJwt=jwtTokenProvider.refreshToken(jwt);
+        resultData.put("jwtauthorization","Bearer "+ newJwt);
+        httpServletResponse.setHeader("jwtauthorization","Bearer "+ newJwt);
         return Result.OK(resultData).build();
     }
-    */
 
-    @ResponseBody
+
+    /*@ResponseBody
     @RequestMapping(value = "/image", method = POST)
     public Result saveImage(HttpServletRequest httpServletRequest) {
         List<String> imageUrlList = new ArrayList<>();
@@ -99,5 +102,5 @@ public class ImageController {
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
         resultData.put("jwtauthorization", jwtTokenProvider.refreshToken(jwt));
         return Result.OK(resultData).build();
-    }
+    }*/
 }
