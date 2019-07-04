@@ -42,7 +42,7 @@ public class OperationLogAspect {
         operaLogDO.setLogCode(0);
         operaLogDO.setLogTime(System.currentTimeMillis());
         if (jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest) == null) {
-            operaLogDO.setEmployeeCode("1000zxc00001");
+            operaLogDO.setEmployeeCode("10001234561789000");
         }
         else {
             operaLogDO.setEmployeeCode(jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest).getCode());
