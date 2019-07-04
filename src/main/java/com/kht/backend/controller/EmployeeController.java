@@ -206,7 +206,7 @@ public class EmployeeController {
                 data.put("employeePosition", position);
                 data.put("orgCode",userPrincipal.getCode().substring(0,4));
             }
-            httpServletResponse.setHeader("Authorization", prefix + jwt);
+            httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {
             throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
