@@ -75,6 +75,7 @@ public class UserController {
             //throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
             throw new AuthenticationException("Bad credentials!", e);
         }
+
     }
 
     @PostMapping(value = "/user/register")
