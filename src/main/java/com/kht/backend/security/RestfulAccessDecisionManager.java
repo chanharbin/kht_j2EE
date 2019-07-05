@@ -46,8 +46,8 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager{
                 UserGrantedAuthority userGrantedAuthority=(UserGrantedAuthority) grantedAuthority;
                 url=userGrantedAuthority.getUrl();
                 method=userGrantedAuthority.getOperaType();
-                //System.out.println("url "+url);
-                //System.out.println("method "+method);
+                System.out.println("url "+url);
+                System.out.println("method "+method);
                 matcher=new AntPathRequestMatcher(url);
                 if(matcher.matches(request)&&
                         method.equals(request.getMethod())){

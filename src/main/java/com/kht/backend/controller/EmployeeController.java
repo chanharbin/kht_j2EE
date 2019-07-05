@@ -179,7 +179,7 @@ public class EmployeeController {
     public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
                                        @RequestParam("orgCode") String orgCode){
         UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        if(orgCode.equals(userPrincipalFromRequest.getCode().substring(0,4))) {
+        if(orgCode.equals(userPrincipalFromRequest.getCode().substring(0,4)) || userPrincipalFromRequest.getCode().substring(0,4).equals("0000")) {
             Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum);
             return organizationUser;
         }

@@ -47,6 +47,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     private RedisServiceImpl redisService;
     @Resource
     private ValueOperations<String,Object> valueOperations;
+    @Autowired
+    private AcctOpenInfoDOMapper acctOpenInfoDOMapper;
 
 
     @Transactional
@@ -137,11 +139,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Result getOrganizationUser(String orgCode,int pageNum) {
         Page<Object> pages = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
-        List<CustAcctDO> custAcctDOList = custAcctDOMapper.selectCustCodeByOrgCode(orgCode);
-        List<UserFromOrg> userFromOrgList = custAcctDOList.stream().map(custAcctDO -> {
-            UserFromOrg userFromOrg = this.convertFromDataObject(custAcctDO);
-            userFromOrg.setIdType(redisService.getDataDictionary("ID_TYPE","cust_acct",custAcctDO.getIdType()));
-            userFromOrg.setOrgName(redisService.getOrganizationName(custAcctDO.getOrgCode()));
+        List<AcctOpenInfoDO> custAcctDOList = acctOpenInfoDOMapper.listAllByOrg(orgCode);
+        List<UserFromOrg> userFromOrgList = custAcctDOList.stream().map(acctOpenInfoDO -> {
+            UserFromOrg userFromOrg = this.convertFromDataObject(acctOpenInfoDO);
+            userFromOrg.setIdType(redisService.getDataDictionary("ID_TYPE","cust_acct",acctOpenInfoDO.getIdType()));
+            userFromOrg.setOrgName(redisService.getOrganizationName(acctOpenInfoDO.getOrgCode()));
             return userFromOrg;
         }).collect(Collectors.toList());
         if(userFromOrgList == null){
@@ -176,12 +178,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         }).collect(Collectors.toList());
         return organizationModelList;
     }
-    private UserFromOrg convertFromDataObject(CustAcctDO custAcctDO){
-        if(custAcctDO == null){
+    private UserFromOrg convertFromDataObject(AcctOpenInfoDO acctOpenInfoDO){
+        if(acctOpenInfoDO == null){
             return null;
         }
         UserFromOrg userFromOrg = new UserFromOrg();
-        BeanUtils.copyProperties(custAcctDO,userFromOrg);
+        BeanUtils.copyProperties(acctOpenInfoDO,userFromOrg);
         return userFromOrg;
     }
     private OrganizationModel convertFromDO(OrganizationDO organizationDO){
