@@ -60,8 +60,10 @@ public class ImageController {
         resultData.put("imageUrl", imageUrl);
         String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
         String newJwt=jwtTokenProvider.refreshToken(jwt);
-        resultData.put("jwtauthorization","Bearer "+ newJwt);
-        httpServletResponse.setHeader("jwtauthorization","Bearer "+ newJwt);
+        if(newJwt!=null){
+            resultData.put("jwtauthorization","Bearer "+ newJwt);
+            httpServletResponse.setHeader("jwtauthorization","Bearer "+ newJwt);
+        }
         return Result.OK(resultData).build();
     }
 

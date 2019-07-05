@@ -2,6 +2,9 @@ package com.kht.backend.security;
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.ServiceException;
 import com.kht.backend.service.model.UserGrantedAuthority;
+import com.kht.backend.util.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -17,53 +20,53 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 @Service
-public class RestfulAccessDecisionManager implements AccessDecisionManager{
-    //TODO 白名单待完善
-    private List<String> whiteList= Arrays.asList("/user/check-code","/user/login","/user/register","/employee/login");
+public class RestfulAccessDecisionManager implements AccessDecisionManager {
+    private static final Logger logger = LoggerFactory.getLogger(RestfulAccessDecisionManager.class);
+    private List<String> whiteList = Arrays.asList("/user/check-code", "/user/login", "/user/register", "/employee/login");
+
+    /**
+     * 自定义鉴权
+     * @param authentication
+     * @param object
+     * @param configAttributes
+     * @throws AccessDeniedException
+     * @throws InsufficientAuthenticationException
+     */
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         HttpServletRequest request = ((FilterInvocation) object).getHttpRequest();
-        HttpServletResponse response=((FilterInvocation) object).getHttpResponse();
-        String url,method;
+        HttpServletResponse response = ((FilterInvocation) object).getHttpResponse();
+        String url, method;
         AntPathRequestMatcher matcher;
-        System.out.println("current url "+request.getRequestURI());
-        System.out.println("request.getMethod "+request.getMethod());
-        if(request.getRequestURI().equals("/error")){
+        logger.debug("current url " + request.getRequestURI() + "  " + request.getMethod());
+        if (request.getRequestURI().equals("/error")) {
             return;
         }
-        /*
-        if(authentication.getAuthorities()==null){
-            for(String whiteUrl:whiteList){
-                matcher = new AntPathRequestMatcher(whiteUrl);
-                if(matcher.matches(request)){
+        //根据用户能执行的url列表判断是否允许用户执行发送的url
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (grantedAuthority instanceof UserGrantedAuthority) {
+                UserGrantedAuthority userGrantedAuthority = (UserGrantedAuthority) grantedAuthority;
+                url = userGrantedAuthority.getUrl();
+                method = userGrantedAuthority.getOperaType();
+                logger.debug("user url :" + url + " " + method);
+                matcher = new AntPathRequestMatcher(url);
+                if (matcher.matches(request) &&
+                        method.equals(request.getMethod())) {
                     return;
                 }
-            }
-        }*/
-        for(GrantedAuthority grantedAuthority:authentication.getAuthorities()){
-            if(grantedAuthority instanceof UserGrantedAuthority){
-                UserGrantedAuthority userGrantedAuthority=(UserGrantedAuthority) grantedAuthority;
-                url=userGrantedAuthority.getUrl();
-                method=userGrantedAuthority.getOperaType();
-                System.out.println("url "+url);
-                System.out.println("method "+method);
-                matcher=new AntPathRequestMatcher(url);
-                if(matcher.matches(request)&&
-                        method.equals(request.getMethod())){
-                        return;
-                }
-            }else if(grantedAuthority.getAuthority().equals("ROLE_ANONYMOUS")){
-                for(String whiteUrl:whiteList){
+            } else if (grantedAuthority.getAuthority().equals("ROLE_ANONYMOUS")) {
+                for (String whiteUrl : whiteList) {
                     matcher = new AntPathRequestMatcher(whiteUrl);
-                    if(matcher.matches(request)){
+                    if (matcher.matches(request)) {
                         return;
                     }
                 }
             }
         }
 
-        System.out.println("bad decision");
+        logger.debug("bad decision");
         //throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"没有权限");
         throw new AccessDeniedException("no right");
     }

@@ -33,13 +33,11 @@ public class RedisServiceImpl {
     @Autowired
     private PositionDOMapper positionDOMapper;
 
-    private final String jwtBlackKey="jwtBlackKey";
-    private final String jwtRefreshKey="jwtRefreshKey";
+    private final String jwtBlackKey = "jwtBlackKey";
     @Value("${app.jwtExpirationInMs}")
     private Long jwtExpirationInMs;
-    private Long jwtRefreshInSecond=30L;
+
     /**
-     *
      * @param orgCode
      * @return 机构名称
      */
@@ -52,7 +50,7 @@ public class RedisServiceImpl {
             organizationDO = (OrganizationDO) valueOperations.get("org" + orgCode);
         } else {
             organizationDO = organizationDOMapper.selectByPrimaryKey(orgCode);
-            valueOperations.set("org"+orgCode,organizationDO);
+            valueOperations.set("org" + orgCode, organizationDO);
         }
         if (organizationDO != null) {
             return organizationDO.getOrgName();
@@ -60,7 +58,7 @@ public class RedisServiceImpl {
         return null;
     }
 
-    public boolean updateOrganization(OrganizationDO organizationDO){
+    public boolean updateOrganization(OrganizationDO organizationDO) {
         try {
             organizationDOMapper.updateByPrimaryKeySelective(organizationDO);
             String key = "org" + organizationDO.getOrgCode();
@@ -68,70 +66,66 @@ public class RedisServiceImpl {
                 redisTemplate.delete(key);
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
      * 删除机构缓存
-     * @param  orgCode
+     *
+     * @param orgCode
      * @return
      */
-    public boolean deleteOrganization(String orgCode){
-        try{
+    public boolean deleteOrganization(String orgCode) {
+        try {
             organizationDOMapper.deleteByPrimaryKey(orgCode);
             String key = "org" + orgCode;
-            if(redisTemplate.hasKey(key)){
+            if (redisTemplate.hasKey(key)) {
                 redisTemplate.delete(key);
             }
-            return  true;
-        }
-        catch (Exception e){
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
-     * @param paraName
-     * return 系统参数值
+     * @param paraName return 系统参数值
      */
-    public String getParaValue(String paraName){
-        if(paraName == null){
+    public String getParaValue(String paraName) {
+        if (paraName == null) {
             return null;
         }
         String paraValue;
         String key = "sys" + paraName;
         SysParaDO sysParaDO = new SysParaDO();
-        if(redisTemplate.hasKey(key)){
-            paraValue = (String)valueOperations.get(key);
-        }
-        else{
+        if (redisTemplate.hasKey(key)) {
+            paraValue = (String) valueOperations.get(key);
+        } else {
             sysParaDO = sysParaDOMapper.selectByParaName(paraName);
-            valueOperations.set(key,sysParaDO.getParaValue());
+            valueOperations.set(key, sysParaDO.getParaValue());
             paraValue = sysParaDO.getParaValue();
         }
         return paraValue;
     }
-    public boolean updataParaValue(SysParaDO sysParaDO){
+
+    public boolean updataParaValue(SysParaDO sysParaDO) {
         String paraName = sysParaDO.getParaName();
         try {
             sysParaDOMapper.updateByPrimaryKey(sysParaDO);
             String key = "sys" + paraName;
-            if(redisTemplate.hasKey(key)) {
+            if (redisTemplate.hasKey(key)) {
                 redisTemplate.delete(key);
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
 
     }
 
     /**
-     *
      * @param colCode
      * @param tabCode
      * @param valueCode
@@ -144,10 +138,9 @@ public class RedisServiceImpl {
         String key = colCode + tabCode + valueCode;
         if (redisTemplate.hasKey(key)) {
             return (String) valueOperations.get(key);
-        }
-        else{
+        } else {
             String value = subDataDictDOMapper.selectByColCodeAndTabCodeAndValueCode(colCode, tabCode, valueCode);
-            valueOperations.set(key,value);
+            valueOperations.set(key, value);
             return value;
         }
     }
@@ -162,51 +155,48 @@ public class RedisServiceImpl {
     /**
      * @return 系统参数列表
      */
-    public List<SysParaDO> getSystemParameterList(){
+    public List<SysParaDO> getSystemParameterList() {
         String sysKey = "SystemPara";
-        if(redisTemplate.hasKey(sysKey)){
+        if (redisTemplate.hasKey(sysKey)) {
             System.out.println("get from redis");
-            return (List<SysParaDO>)valueOperations.get(sysKey);
-        }
-        else{
+            return (List<SysParaDO>) valueOperations.get(sysKey);
+        } else {
             List<SysParaDO> sysParaDOS = sysParaDOMapper.listAll();
-            valueOperations.set(sysKey,sysParaDOS);
+            valueOperations.set(sysKey, sysParaDOS);
             return sysParaDOS;
         }
     }
 
-    public boolean updataSysParaList(){
+    public boolean updataSysParaList() {
         try {
             String key = "SystemPara";
             if (redisTemplate.hasKey(key)) {
                 redisTemplate.delete(key);
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
+
     /**
-     * @param posCode
-     * return posName
+     * @param posCode return posName
      */
-    public String getPosName(int posCode){
+    public String getPosName(int posCode) {
         StringBuffer stringBuffer = new StringBuffer("position");
         stringBuffer.append(posCode);
         String key = stringBuffer.toString();
-        if(redisTemplate.hasKey(key)){
+        if (redisTemplate.hasKey(key)) {
             System.out.println("get from redis");
-            return (String)valueOperations.get(key);
-        }
-        else{
+            return (String) valueOperations.get(key);
+        } else {
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(posCode);
-            valueOperations.set(key,positionDO.getPosName());
+            valueOperations.set(key, positionDO.getPosName());
             return positionDO.getPosName();
         }
     }
 
-    public boolean updataPosName(PositionDO positionDO){
+    public boolean updataPosName(PositionDO positionDO) {
         try {
             Integer posCode = positionDO.getPosCode();
             String key = "position" + String.valueOf(posCode);
@@ -215,49 +205,30 @@ public class RedisServiceImpl {
                 redisTemplate.delete(key);
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
+
     /**
-     * 生成token的黑名单
+     * 存放最新token的产生时间
+     *
      * @param userCode
      */
-    public void setJwtBlackList(int userCode,Date time){
-        valueOperations.set(jwtBlackKey+userCode,time,jwtExpirationInMs, TimeUnit.MILLISECONDS);
+    public void setJwtBlackList(int userCode, long time) {
+        valueOperations.set(jwtBlackKey + userCode, time, jwtExpirationInMs, TimeUnit.MILLISECONDS);
     }
 
     /**
      * 获取最新token的产生时间
+     *
      * @param userCode
      * @return
      */
-    public Date getJwtTime(int userCode){
-        if(redisTemplate.hasKey(jwtBlackKey+userCode)){
-            return (Date)valueOperations.get(jwtBlackKey+userCode);
+    public long getJwtTime(int userCode) {
+        if (redisTemplate.hasKey(jwtBlackKey + userCode)) {
+            return (long) valueOperations.get(jwtBlackKey + userCode);
         }
-        return new Date(0L);
-    }
-    /**
-     * 在redis中插入userCode，用于表明是否应该刷新token
-     * @param userCode
-     */
-    public void setJwtRefreshStatus(int userCode){
-        valueOperations.set(jwtRefreshKey+userCode,true,jwtRefreshInSecond, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 获取当前用户是否应该刷新token
-     * @param userCode
-     * @return
-     */
-    public Boolean getJwtRefreshStatus(int userCode){
-        if(redisTemplate.hasKey(jwtRefreshKey+userCode)){
-            return (boolean)valueOperations.get(jwtRefreshKey+userCode);
-        }
-        //获取失败则加入redis
-        setJwtRefreshStatus(userCode);
-        return false;
+        return 0L;
     }
 }

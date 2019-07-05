@@ -8,11 +8,22 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 @Component
 public class MD5PasswordEncoder implements PasswordEncoder {
+    /**
+     * 匹配加密前的密码和加密后的密码是否相同
+     * @param rawPassword
+     * @param encodedPassword
+     * @return
+     */
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
         return encodedPassword.equals(getMD5((String)rawPassword));
     }
 
+    /**
+     * md5加密
+     * @param rawPassword
+     * @return
+     */
     @Override
     public String encode(CharSequence rawPassword) {
         return getMD5((String)rawPassword);

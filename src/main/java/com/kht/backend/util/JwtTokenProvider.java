@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import com.kht.backend.service.model.UserPrincipal;
+
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -32,19 +34,34 @@ public class JwtTokenProvider {
     @Value("${app.jwtExpirationInMs}")
     private long jwtExpirationInMs;
 
-    private final long softTimeInMs=5000;
+    //验证宽松时间
+    private final long validateSoftTimeInMs = 5000;
+    //刷新宽松时间
+    private final long refreshSoftTimeInMs=jwtExpirationInMs/2;
+
+    /**
+     * 生成token
+     * @param authentication
+     * @return
+     */
     public String generateToken(Authentication authentication) {
-        UserPrincipal userPrincipal=(UserPrincipal)authentication.getPrincipal();
-        Date now=new Date();
-        redisService.setJwtBlackList(userPrincipal.getUserCode(),now);
-        Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Date now = new Date();
+        redisService.setJwtBlackList(userPrincipal.getUserCode(), now.getTime());
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
         return Jwts.builder()
                 .setClaims(userPrincipal.convertToMap())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512,jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
+
+    /**
+     * 从请求头中直接生成userPrincipal
+     * @param request
+     * @return
+     */
     public UserPrincipal getUserPrincipalFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("jwtauthorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -52,28 +69,40 @@ public class JwtTokenProvider {
         }
         return null;
     }
+
+    /**
+     * 由token生成userPrincipal 供spring security使用
+     * @param token
+     * @return
+     */
     public UserPrincipal getUserPrincipalFromJWT(String token) {
-        Claims claims=Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
         return UserPrincipal.create(claims);
     }
-    public  boolean validateToken(String authToken){
+
+    /**
+     * 验证token是否过期
+     * @param authToken
+     * @return
+     */
+    public boolean validateToken(String authToken) {
         try {
-            Claims claims=Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(authToken).getBody();
-            Date curTime=redisService.getJwtTime((int)claims.get("userCode"));
-            System.out.println("redis time"+ curTime.getTime());
-            System.out.println("token time"+claims.getIssuedAt().getTime());
+            long curTime = redisService.getJwtTime((int) claims.get("userCode"));
+            logger.debug("redis time" + curTime);
+            logger.debug("token time" + claims.getIssuedAt().getTime());
             //claims > curTime
-            if(claims.getIssuedAt().getTime()+softTimeInMs<=curTime.getTime()){
+            if (claims.getIssuedAt().getTime() + validateSoftTimeInMs <= curTime) {
                 logger.error("JWT time out");
-                throw new  UnsupportedJwtException("JWT time out");
+                throw new UnsupportedJwtException("JWT time out");
             }
             return true;
-        }catch (SignatureException ex) {
+        } catch (SignatureException ex) {
             logger.error("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token");
@@ -86,16 +115,28 @@ public class JwtTokenProvider {
         }
         return false;
     }
-    public Map<String,Object> getUserCodeAndTimeFromJwt(String token){
-        Map<String,Object>stringObjectMap=new HashMap<>();
-        Claims claims=Jwts.parser()
+
+    /**
+     * 从token中获取userCode
+     * @param token
+     * @return
+     */
+    public Map<String, Object> getUserCodeAndTimeFromJwt(String token) {
+        Map<String, Object> stringObjectMap = new HashMap<>();
+        Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        stringObjectMap.put("userCode",claims.get("userCode"));
-        stringObjectMap.put("time",claims.getIssuedAt());
+        stringObjectMap.put("userCode", claims.get("userCode"));
+        stringObjectMap.put("time", claims.getIssuedAt());
         return stringObjectMap;
     }
+
+    /**
+     * 从请求头中获取token
+     * @param request
+     * @return
+     */
     public String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("jwtauthorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -103,25 +144,32 @@ public class JwtTokenProvider {
         }
         return null;
     }
+
+    /**
+     * 刷新token，如果当前请求时间没有到离token过期时间的一半是不刷新
+     * @param token
+     * @return
+     */
     public String refreshToken(String token) {
-        if(validateToken(token)){
+        if (validateToken(token)) {
             final Claims claims = Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(token)
                     .getBody();
+            Date now = new Date();
+            long curTime=redisService.getJwtTime((int) claims.get("userCode"));
             //判断是否应该刷新token
-            if(redisService.getJwtRefreshStatus((int)claims.get("userCode"))){
-                //System.out.println("dont need to refresh");
+            if (curTime+refreshSoftTimeInMs<now.getTime()) {
+                logger.debug("dont need to refresh");
                 return token;
             }
-            Date now=new Date();
-            Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
-            redisService.setJwtBlackList((int)claims.get("userCode"),now);
+            redisService.setJwtBlackList((int) claims.get("userCode"), now.getTime());
+            Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
             return Jwts.builder()
                     .setClaims(claims)
                     .setIssuedAt(now)
                     .setExpiration(expiryDate)
-                    .signWith(SignatureAlgorithm.HS512,jwtSecret)
+                    .signWith(SignatureAlgorithm.HS512, jwtSecret)
                     .compact();
         }
         return null;

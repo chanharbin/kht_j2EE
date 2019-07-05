@@ -71,7 +71,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
 
-
                 .cors()
                 .and()
                 .csrf().disable()
@@ -84,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 //TODO登录url
-                .antMatchers("/user/check-code","/", "/user/register", "/user/login","/employee/login").permitAll()
+                .antMatchers("/user/check-code", "/", "/user/register", "/user/login", "/employee/login").permitAll()
                 .anyRequest().authenticated();
 
 
