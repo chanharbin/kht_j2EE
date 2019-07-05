@@ -206,6 +206,7 @@ public class EmployeeController {
                 data.put("employeePosition", position);
                 data.put("orgCode",userPrincipal.getCode().substring(0,4));
             }
+            redisService.setJwtRefreshStatus(userPrincipal.getUserCode());
             httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
             return Result.OK(data).build();
         } catch (DisabledException e) {

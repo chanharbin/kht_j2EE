@@ -105,19 +105,24 @@ public class JwtTokenProvider {
     }
     public String refreshToken(String token) {
         if(validateToken(token)){
-        Date now=new Date();
-        Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
-        final Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
-        redisService.setJwtBlackList((int)claims.get("userCode"),now);
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512,jwtSecret)
-                .compact();
+            final Claims claims = Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+            //判断是否应该刷新token
+            if(redisService.getJwtRefreshStatus((int)claims.get("userCode"))){
+                //System.out.println("dont need to refresh");
+                return token;
+            }
+            Date now=new Date();
+            Date expiryDate=new Date(now.getTime()+jwtExpirationInMs);
+            redisService.setJwtBlackList((int)claims.get("userCode"),now);
+            return Jwts.builder()
+                    .setClaims(claims)
+                    .setIssuedAt(now)
+                    .setExpiration(expiryDate)
+                    .signWith(SignatureAlgorithm.HS512,jwtSecret)
+                    .compact();
         }
         return null;
     }

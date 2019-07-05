@@ -67,6 +67,7 @@ public class UserController {
                 data.put("userCode", userPrincipal.getUserCode());
             }
             httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
+            redisService.setJwtRefreshStatus(userPrincipal.getUserCode());
             return Result.OK(data).build();
         } catch (DisabledException e) {
             //throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");

@@ -2,6 +2,8 @@ package com.kht.backend.filter;
 
 import com.kht.backend.entity.ErrorCode;
 import com.kht.backend.entity.ServiceException;
+import com.kht.backend.service.impl.RedisServiceImpl;
+import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.JwtTokenProvider;
 import com.kht.backend.service.impl.UserPrincipalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 String jwt = tokenProvider.getJwtFromRequest(httpServletRequest);
                 if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                    UserDetails userDetails = tokenProvider.getUserPrincipalFromJWT(jwt);
+                    UserPrincipal userDetails = tokenProvider.getUserPrincipalFromJWT(jwt);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

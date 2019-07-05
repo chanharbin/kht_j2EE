@@ -34,8 +34,10 @@ public class RedisServiceImpl {
     private PositionDOMapper positionDOMapper;
 
     private final String jwtBlackKey="jwtBlackKey";
+    private final String jwtRefreshKey="jwtRefreshKey";
     @Value("${app.jwtExpirationInMs}")
     private Long jwtExpirationInMs;
+    private Long jwtRefreshInSecond=30L;
     /**
      *
      * @param orgCode
@@ -236,5 +238,26 @@ public class RedisServiceImpl {
             return (Date)valueOperations.get(jwtBlackKey+userCode);
         }
         return new Date(0L);
+    }
+    /**
+     * 在redis中插入userCode，用于表明是否应该刷新token
+     * @param userCode
+     */
+    public void setJwtRefreshStatus(int userCode){
+        valueOperations.set(jwtRefreshKey+userCode,true,jwtRefreshInSecond, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 获取当前用户是否应该刷新token
+     * @param userCode
+     * @return
+     */
+    public Boolean getJwtRefreshStatus(int userCode){
+        if(redisTemplate.hasKey(jwtRefreshKey+userCode)){
+            return (boolean)valueOperations.get(jwtRefreshKey+userCode);
+        }
+        //获取失败则加入redis
+        setJwtRefreshStatus(userCode);
+        return false;
     }
 }
