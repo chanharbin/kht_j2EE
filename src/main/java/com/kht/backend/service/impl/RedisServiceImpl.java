@@ -231,4 +231,8 @@ public class RedisServiceImpl {
         }
         return 0L;
     }
+
+    /*public boolean getJwtKeyStatus(int useCode){
+        if(redisTemplate.hasKey())
+    }*/
 }

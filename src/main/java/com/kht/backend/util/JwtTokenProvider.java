@@ -35,11 +35,9 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     //验证宽松时间
-    private final long validateSoftTimeInMs = 50000L;
+    private final long validateSoftTimeInMs = 500000L;
     //刷新宽松时间
     private final long refreshSoftTimeInMs=50000L;
-    //必须刷新时间
-    private final long refreshCompulsoryTimeInMs=2700000L;
     /**
      * 生成token
      * @param authentication
@@ -158,14 +156,15 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
             Date curTime = new Date();
+
             long tokenTime=redisService.getJwtTime((int) claims.get("userCode"));
-            /*logger.debug("toekn time"+tokenTime);
-            logger.debug("curtime "+curTime.getTime());
-            logger.debug("soft time"+refreshSoftTimeInMs);
+            logger.error("redis time"+tokenTime);
+            logger.error("curtime "+curTime.getTime());
+            /*logger.debug("soft time"+refreshSoftTimeInMs);
             logger.debug("CompulsoryTime"+refreshCompulsoryTimeInMs);
             logger.debug("jwtExpirationInMs"+jwtExpirationInMs);*/
             //判断是否应该刷新token
-            if ((tokenTime+refreshSoftTimeInMs>curTime.getTime())&&(tokenTime+refreshCompulsoryTimeInMs>curTime.getTime())) {
+            if ((claims.getIssuedAt().getTime()<tokenTime)&&(tokenTime+refreshSoftTimeInMs>curTime.getTime())) {
                 logger.debug("dont need to refresh");
                 return token;
             }
