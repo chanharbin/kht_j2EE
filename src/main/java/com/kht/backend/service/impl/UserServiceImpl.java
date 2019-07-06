@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
     private RedisTemplate redisTemplate;
     @Resource
     private ValueOperations<String, Object> valueOperations;
-    @Value("${app.pageSize}")
-    private int pageSize;
+
     private final String otpKey = "otp";
     //验证码过期时间 单位秒
     private long otpExpirationInSecond = 900;
@@ -157,7 +156,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getUserInfoList(int pageNum, boolean filterable,String employeeCode) {
         String orgCode = employeeCode.substring(0,4);
         System.out.println(orgCode);
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<AcctOpenInfoDO> acctOpenInfoDOList;
         String tabCode = "acct_open_info";
         if(orgCode.equals("0000")) {
@@ -191,11 +190,11 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("userList", userListResponseList);
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     public Map<String,Object> getUserListByEmployeeCodeAndStartTimeAndEndTIme(int pageNum,String employeeCode,Long startTime,Long endTime){
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         String tabCode = "acct_open_info";
         if(startTime==null||endTime==null){
             startTime=getNeedTime(0,0,0,0).getTime();
@@ -217,7 +216,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("userList", userListResponseList);
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     /**

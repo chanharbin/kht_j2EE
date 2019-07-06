@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Map<String, Object> getAllCustomerAccount(int pageNum) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CustAcctDO> custAcctDOList = custAcctDOMapper.listAll();
         if (custAcctDOList == null || custAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "客户列表不存在");
@@ -98,12 +98,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("customerAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
     public Map<String, Object> getCustomerAccountByOrgCode(int pageNum, String orgCode) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CustAcctDO> custAcctDOList = custAcctDOMapper.selectCustCodeByOrgCode(orgCode);
         if (custAcctDOList == null || custAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "客户列表不存在");
@@ -112,12 +112,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("customerAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
     public Map<String, Object> getCustomerAccountByOpenTime(int pageNum, long startTime, long endTime) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CustAcctDO> custAcctDOList = custAcctDOMapper.selectByOpenTime(startTime, endTime);
         if (custAcctDOList == null || custAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "客户列表不存在");
@@ -126,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("customerAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
@@ -205,7 +205,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Map<String, Object> getAllCapitalAccount(int pageNum) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CapAcctDO> capAcctDOList = capAcctDOMapper.listAll();
         if (capAcctDOList == null || capAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "资金列表不存在");
@@ -214,12 +214,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("capitalAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
     public Map<String, Object> getCapitalAccountByOrgCode(int pageNum, String orgCode) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CapAcctDO> capAcctDOList = capAcctDOMapper.selectByOrgCode(orgCode);
         if (capAcctDOList == null || capAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "资金列表不存在");
@@ -228,12 +228,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("capitalAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
     public Map<String, Object> getCapitalAccountByOpenTime(int pageNum, long startTime, long endTime) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<CapAcctDO> capAcctDOList = capAcctDOMapper.selectByOpenTime(startTime, endTime);
         if (capAcctDOList == null || capAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "资金列表不存在");
@@ -242,7 +242,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("capitalAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
 
@@ -348,7 +348,7 @@ public class AccountServiceImpl implements AccountService {
                 .collect(Collectors.toList());
     }
     public Map<String, Object> getAllDepositoryAccount(int pageNum) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<DepAcctDO> depAcctDOList = depAcctDOMapper.listAll();
         if (depAcctDOList == null || depAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "存管账户不存在");
@@ -357,11 +357,11 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("depositoryAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     public Map<String, Object> getDepositoryAccountByOrgCode(int pageNum,String orgCode) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<DepAcctDO> depAcctDOList = depAcctDOMapper.selectByOrgCode(orgCode);
         if (depAcctDOList == null || depAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "存管账户不存在");
@@ -370,11 +370,11 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("depositoryAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     public Map<String, Object> getDepositoryAccountByOpenTime(int pageNum, long startTime, long endTime) {
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<DepAcctDO> depAcctDOList = depAcctDOMapper.selectByOpenTime(startTime,endTime);
         if (depAcctDOList == null || depAcctDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "存管账户不存在");
@@ -383,7 +383,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("depositoryAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     /**
@@ -446,7 +446,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Map<String,Object>getAllTradeAccount(int pageNum){
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.listAll();
         if(trdAcctDOList==null|trdAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "证券账户不存在");
@@ -455,11 +455,11 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("tradeAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     public Map<String,Object>getTradeAccountByOrgCode(int pageNum,String orgCode){
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByOrgCode(orgCode);
         if(trdAcctDOList==null|trdAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "证券账户不存在");
@@ -468,11 +468,11 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("tradeAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     public Map<String,Object>getTradeAccountByOpenTime(int pageNum, long startTime, long endTime){
-        Page<Object> objectPage = PageHelper.startPage(pageNum, pageSize);
+        Page<Object> objectPage = PageHelper.startPage(pageNum,  Integer.parseInt(redisService.getParaValue("pageSize")));
         List<TrdAcctDO> trdAcctDOList=trdAcctDOMapper.selectByOpenTime(startTime,endTime);
         if(trdAcctDOList==null|trdAcctDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "证券账户不存在");
@@ -481,7 +481,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("totalNum", page.getTotal());
         data.put("tradeAccountList", page.getList());
-        data.put("pageSize", pageSize);
+        data.put("pageSize",  Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
     private Long getBirthDayFromIdCode(String idCode) {
