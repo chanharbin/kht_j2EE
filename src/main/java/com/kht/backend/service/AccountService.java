@@ -25,7 +25,7 @@ public interface AccountService {
     //获取存管账户
     public List<Map<String,Object>> getDepositoryAccountByCustCode(String customerCode);
     //新增证券账户
-    public String increaseTradeAccount(String customerCode,String stkEx,String stkBd, String custType,String trdUnit);
+    public String increaseTradeAccount(String customerCode,String stkEx,String stkBd,String trdUnit);
     //获取证券账户
     public List<Map<String,Object>> getTradeAccount(String customerCode);
 

@@ -190,7 +190,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             custAcctDO.setCloseTime(-1L);
             String customerCode = accountService.increaseCustomerAccount(custAcctDO);
             String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
-            accountService.increaseTradeAccount(customerCode, "0", "00", "0", "0");
+            accountService.increaseTradeAccount(customerCode, "0", "00", "0");
             accountService.increaseDepositoryAccount(capitalCode, "00", acctOpenInfoDO.getBankCardCode());
         }
     }

@@ -263,7 +263,7 @@ public class AccountServiceImpl implements AccountService {
         if (!md5PasswordEncoder.matches(oldPassword, capAcctDO.getCapPwd())) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "密码错误");
         }
-        capAcctDO.setCapPwd(newPassword);
+        capAcctDO.setCapPwd(md5PasswordEncoder.encode(newPassword));
         int affectRow = capAcctDOMapper.updateByPrimaryKeySelective(capAcctDO);
         if (affectRow == 0) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "修改密码失败");
@@ -392,18 +392,16 @@ public class AccountServiceImpl implements AccountService {
      * @param customerCode
      * @param stkEx
      * @param stkBd
-     * @param custType
      * @param trdUnit
      * @return 证券账户主码
      */
     @Override
     @Transactional
-    public String increaseTradeAccount(String customerCode, String stkEx, String stkBd,
-                                       String custType, String trdUnit) {
+    public String increaseTradeAccount(String customerCode, String stkEx, String stkBd, String trdUnit) {
         TrdAcctDO trdAcctDO = new TrdAcctDO();
         trdAcctDO.setTrdCode(idProvider.getTrdId(stkBd));
         trdAcctDO.setCustCode(customerCode);
-        trdAcctDO.setCustType(custType);
+        trdAcctDO.setCustType("0");
         trdAcctDO.setStkBd(stkBd);
         trdAcctDO.setStkEx(stkEx);
         trdAcctDO.setTrdUnit(trdUnit);
@@ -412,7 +410,7 @@ public class AccountServiceImpl implements AccountService {
         trdAcctDO.setTdrStatus("0");
         int affectRow = trdAcctDOMapper.insertSelective(trdAcctDO);
         if (affectRow <= 0) {
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "证券账户插入");
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "添加证券账户失败");
         }
         return trdAcctDO.getTrdCode();
     }

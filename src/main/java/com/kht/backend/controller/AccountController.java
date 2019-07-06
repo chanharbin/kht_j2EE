@@ -28,6 +28,14 @@ public class AccountController {
         return Result.OK(trdAcctDOList).build();
     }
 
+    @PostMapping("/user/trade-account")
+    public Result increaseUserTradeAccount(@RequestParam("custCode")String customerCode,
+                                           @RequestParam("stkEx") String stkEx,
+                                           @RequestParam("stkBd") String stkBd,
+                                           @RequestParam("trdUnit") String trdUnit){
+        accountService.increaseTradeAccount(customerCode,stkEx,stkBd,trdUnit);
+        return Result.OK("添加证券账户成功").build();
+    }
     @GetMapping("/user/capital-account")
     public Result getUserCapitalAccount(@RequestParam("custCode")String customerCode){
         List<Map<String,Object>> capitalAccountInfoResponseList =accountService. getCapitalAccountByCustCode(customerCode);

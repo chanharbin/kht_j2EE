@@ -59,9 +59,13 @@ public class UserController {
     public Result authenticateUser(@RequestParam("telephone") Long telephone, @RequestParam("password") String password, HttpServletResponse httpServletResponse) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
+            UserPrincipal userPrincipal=(UserPrincipal)authentication.getPrincipal();
+            if(!userPrincipal.getUserType().equals("0")){
+                throw new DisabledException("账户错误");
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
-            UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(jwt);
+            //UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(jwt);
             Map<String, Object> data = new LinkedHashMap<>();
             if (userPrincipal.getUserType().equals("0")) {
                 data.put("userCode", userPrincipal.getUserCode());

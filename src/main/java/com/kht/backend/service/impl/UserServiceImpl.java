@@ -1,6 +1,7 @@
 package com.kht.backend.service.impl;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -61,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Resource
     private ValueOperations<String, Object> valueOperations;
 
+    private ObjectMapper objectMapper=new ObjectMapper();
     private final String otpKey = "otp";
     //验证码过期时间 单位秒
     private long otpExpirationInSecond = 900;
@@ -319,31 +321,23 @@ public class UserServiceImpl implements UserService {
         String gender = redisService.getDataDictionary("GENDER", tabCode, acctOpenInfoDO.getGender());
         String idType = redisService.getDataDictionary("ID_TYPE", tabCode, acctOpenInfoDO.getIdType());
         String education = redisService.getDataDictionary("EDUCATION", tabCode, acctOpenInfoDO.getEducation());
-        //String bankType=redisService.getDataDictionary("BANK_TYPE",tabCode,acctOpenInfoDO.getBankType());
-        //String openChannel=redisService.getDataDictionary("OPEN_CHANNEL",tabCode,acctOpenInfoDO.getOpenChannel());
+        String bankType=redisService.getDataDictionary("BANK_TYPE",tabCode,acctOpenInfoDO.getBankType());
+        String openChannel=redisService.getDataDictionary("OPEN_CHANNEL",tabCode,acctOpenInfoDO.getOpenChannel());
         String infoStatus = redisService.getDataDictionary("INFO_STATUS", tabCode, acctOpenInfoDO.getInfoStatus());
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("infoCode", acctOpenInfoDO.getInfoCode());
-        data.put("imgCode", acctOpenInfoDO.getImgCode());
-        data.put("name", acctOpenInfoDO.getName());
-        data.put("gender", gender);
-        data.put("idType", idType);
-        data.put("idCode", acctOpenInfoDO.getIdCode());
-        data.put("idEffDate", acctOpenInfoDO.getIdEffDate());
-        data.put("idExpDat", acctOpenInfoDO.getIdExpDate());
-        data.put("telephone", acctOpenInfoDO.getTelephone());
-        data.put("email", acctOpenInfoDO.getEmail());
-        data.put("address", acctOpenInfoDO.getAddress());
-        data.put("occupation", acctOpenInfoDO.getOccupation());
-        data.put("company", acctOpenInfoDO.getCompany());
-        data.put("education", education);
-        data.put("orgName", orgName);
-        data.put("idFront", imageDO.getIdFront());
-        data.put("idBack", imageDO.getIdBack());
-        data.put("face", imageDO.getFace());
-        data.put("infoStatus", infoStatus);
-        data.put("auditRemark", acctOpenInfoDO.getAuditRemark());
-        data.put("birthday", getBirthDayFromIdCode(acctOpenInfoDO.getIdCode()));
+        String investorType=redisService.getDataDictionary("INVESTOR_TYPE", tabCode, acctOpenInfoDO.getInvestorType());
+        String stkEx=redisService.getDataDictionary("STK_EX", tabCode, acctOpenInfoDO.getStkEx());
+        String stkBd=redisService.getDataDictionary("STK_BD", tabCode, acctOpenInfoDO.getStkBd());
+        Map<String, Object> data = objectMapper.convertValue(acctOpenInfoDO,Map.class);
+        data.put("orgName",orgName);
+        data.put("genderName",gender);
+        data.put("idTypeName",idType);
+        data.put("educationName",education);
+        data.put("bankTypeName",bankType);
+        data.put("openChannelName",openChannel);
+        data.put("infoStatusName",infoStatus);
+        data.put("investorTypeName",investorType);
+        data.put("stkExName",stkEx);
+        data.put("stkBdName",stkBd);
         return data;
     }
 
