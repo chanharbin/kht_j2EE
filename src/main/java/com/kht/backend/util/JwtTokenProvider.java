@@ -149,7 +149,7 @@ public class JwtTokenProvider {
      * @param token
      * @return
      */
-    public String refreshToken(String token) {
+    public synchronized String refreshToken(String token) {
         if (validateToken(token)) {
             final Claims claims = Jwts.parser()
                     .setSigningKey(jwtSecret)
