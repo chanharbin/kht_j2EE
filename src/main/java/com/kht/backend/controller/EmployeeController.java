@@ -4,6 +4,7 @@ package com.kht.backend.controller;
 import com.kht.backend.aspect.MethodLog;
 import com.kht.backend.dao.AcctOpenInfoDOMapper;
 import com.kht.backend.dao.EmployeeDOMapper;
+import com.kht.backend.dao.UserDOMapper;
 import com.kht.backend.dataobject.AcctOpenInfoDO;
 import com.kht.backend.dataobject.EmployeeDO;
 import com.kht.backend.dataobject.UserDO;
@@ -35,6 +36,8 @@ import java.util.Map;
 
 @RestController
 public class EmployeeController {
+    @Autowired
+    private UserDOMapper userDOMapper;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -116,6 +119,7 @@ public class EmployeeController {
         Integer i_posCode = employeeDOI.getPosCode();
         EmployeeDO employeeDO = new EmployeeDO();
         UserDO userDO = new UserDO();
+        UserDO userDO1 = userDOMapper.selectByPrimaryKey(userCode);
         employeeDO.setUserCode(userCode);
         employeeDO.setEmployeeCode(employeeCode);
         employeeDO.setTelephone(telphone);
@@ -136,6 +140,9 @@ public class EmployeeController {
         if(!pwd.equals("1")) {
             pwd = passwordEncoder.encode(pwd);
             userDO.setPassword(pwd);
+        }
+        else{
+            userDO.setPassword(userDO1.getPassword());
         }
         userDO.setTelephone(telphone);
         userDO.setUserCode(userCode);
