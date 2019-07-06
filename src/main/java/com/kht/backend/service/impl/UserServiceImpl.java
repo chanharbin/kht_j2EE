@@ -338,6 +338,9 @@ public class UserServiceImpl implements UserService {
         data.put("investorTypeName",investorType);
         data.put("stkExName",stkEx);
         data.put("stkBdName",stkBd);
+        data.put("idFront",imageDO.getIdFront());
+        data.put("idBack",imageDO.getIdBack());
+        data.put("face",imageDO.getFace());
         return data;
     }
 
