@@ -73,7 +73,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void getOtp(Long telephone) {
-        int otpValue = (int) (Math.random() * 10000);
+        //需要按照一定的规则生成OTP验证码
+        Random random = new Random();
+        int otpValue = random.nextInt(8999);
+        otpValue+=1000;
+        //int otpValue = (int) (Math.random() * 10000);
         valueOperations.set(otpKey + telephone, otpValue, otpExpirationInSecond, TimeUnit.SECONDS);
         logger.info("telephone " + telephone + " get checkCode :" + otpValue);
     }
