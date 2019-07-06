@@ -42,7 +42,7 @@ public class SystemParameterServiceImpl implements SystemParameterService {
     @Override
     public void modifySystemParameter(int paraCode, String paraValue) {
         SysParaDO sysParaDO=sysparaDOMapper.selectByPrimaryKey(paraCode);
-
+        sysParaDO.setParaValue(paraValue);
         if( !redisService.updataParaValue(sysParaDO)){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改参数失败");
         }

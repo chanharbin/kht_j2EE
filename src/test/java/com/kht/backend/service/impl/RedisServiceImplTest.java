@@ -1,6 +1,10 @@
 package com.kht.backend.service.impl;
 
 import com.kht.backend.App;
+import com.kht.backend.dao.SysParaDOMapper;
+import com.kht.backend.dataobject.SysParaDO;
+import com.kht.backend.entity.ErrorCode;
+import com.kht.backend.entity.ServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,8 @@ import static org.junit.Assert.*;
 public class RedisServiceImplTest {
     @Autowired
     private RedisServiceImpl redisService;
+    @Autowired
+    SysParaDOMapper sysparaDOMapper;
     @Test
     public void getOrganizationName() {
     }
@@ -35,5 +41,10 @@ public class RedisServiceImplTest {
     @Test
     public void getPosionName(){
         System.out.println(redisService.getPosName(2));
+    }
+
+    @Test
+    public void updataParaValue() {
+
     }
 }
