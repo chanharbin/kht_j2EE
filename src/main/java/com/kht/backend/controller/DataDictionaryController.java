@@ -22,6 +22,9 @@ public class DataDictionaryController {
     @Autowired
     private DataDictionaryService dataDictionaryService;
 
+    @Autowired
+    private RedisServiceImpl redisService;
+
     public DataDictionaryController(RedisServiceImpl redisService) {
         String paraValue = redisService.getParaValue("pageSize");
         try {
@@ -41,6 +44,11 @@ public class DataDictionaryController {
     @MethodLog(13)
     @RequestMapping(value = "/data-dictionary", method = GET, produces = "application/json;charset=UTF-8")
     public Result getAllDataDictionaries(@RequestParam("pageNum") int pageNum) {
+        try {
+            pageSize = Integer.parseInt(redisService.getParaValue("pageSize"));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         PageHelper.startPage(pageNum, pageSize);
         List<DataDictionaryModel> dataDictionaryModelList = dataDictionaryService.getAllDataDictionaries();
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
