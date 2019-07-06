@@ -61,4 +61,6 @@ public interface EmployeeDOMapper {
     List<EmployeeDO> listAll();
 
     EmployeeDO selectByUserCode(Integer userCode);
+
+    EmployeeDO selectByTelephone(Long telephone);
 }

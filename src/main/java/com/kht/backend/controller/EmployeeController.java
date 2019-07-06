@@ -110,6 +110,10 @@ public class EmployeeController {
             return Result.OK("您当前无权限修改信息").build();
         }
         else{*/
+        UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        int userCode_I = userPrincipalFromRequest.getUserCode();
+        EmployeeDO employeeDOI = employeeDOMapper.selectByUserCode(userCode_I);
+        Integer i_posCode = employeeDOI.getPosCode();
         EmployeeDO employeeDO = new EmployeeDO();
         UserDO userDO = new UserDO();
         employeeDO.setUserCode(userCode);
@@ -121,11 +125,18 @@ public class EmployeeController {
         if(employeeStatus.equals("1")||employeeStatus.equals("2")){
             employeeDO.setPosCode(1);
         }
-        employeeDO.setPosCode(posCode);
+        if(i_posCode == 5) {
+            employeeDO.setPosCode(posCode);
+        }
+        else{
+            throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"您无权限修改其他员工信息");
+        }
         employeeDO.setEmployeeName(employeeName);
         employeeDO.setEmployeeStatus(employeeStatus);
-        pwd = passwordEncoder.encode(pwd);
-        userDO.setPassword(pwd);
+        if(!pwd.equals("1")) {
+            pwd = passwordEncoder.encode(pwd);
+            userDO.setPassword(pwd);
+        }
         userDO.setTelephone(telphone);
         userDO.setUserCode(userCode);
         userDO.setUserType("1");
@@ -191,29 +202,38 @@ public class EmployeeController {
     //员工登录
     @PostMapping("/employee/login")
     public Result authenticateUser(@RequestParam("telephone") Long telephone, @RequestParam("password") String password, HttpServletResponse httpServletResponse) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtTokenProvider.generateToken(authentication);
-            UserPrincipal userPrincipal = jwtTokenProvider.getUserPrincipalFromJWT(jwt);
-            Map<String, Object> data = new LinkedHashMap<>();
-            if (userPrincipal.getUserType().equals("1")) {
-                EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
-                String employeeName = employeeDO.getEmployeeName();
-                String position = redisService.getPosName(employeeDO.getPosCode());
-                data.put("posCode",employeeDO.getPosCode());
-                data.put("employeeName", employeeName);
-                data.put("employeePosition", position);
-                data.put("orgCode",userPrincipal.getCode().substring(0,4));
+        EmployeeDO employeeDO1 = employeeDOMapper.selectByTelephone(telephone);
+        if(employeeDO1 == null){
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"暂无此账号");
+        }
+        if (employeeDO1.getEmployeeStatus().equals("0")) {
+            try {
+                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(String.valueOf(telephone), password));
+                UserPrincipal userPrincipal = ( UserPrincipal )authentication.getPrincipal();
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String jwt = jwtTokenProvider.generateToken(authentication);
+                Map<String, Object> data = new LinkedHashMap<>();
+                if (userPrincipal.getUserType().equals("1")) {
+                    EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(userPrincipal.getCode());
+                    String employeeName = employeeDO.getEmployeeName();
+                    String position = redisService.getPosName(employeeDO.getPosCode());
+                    data.put("posCode", employeeDO.getPosCode());
+                    data.put("employeeName", employeeName);
+                    data.put("employeePosition", position);
+                    data.put("orgCode", userPrincipal.getCode().substring(0, 4));
+                }
+                httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
+                return Result.OK(data).build();
+            } catch (DisabledException e) {
+                throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION, "User is disabled!");
+                //throw new AuthenticationException("User is disabled!", e);
+            } catch (BadCredentialsException e) {
+                throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION, "Bad credentials!");
+                //throw new AuthenticationException("Bad credentials!", e);
             }
-            httpServletResponse.setHeader("jwtauthorization", prefix + jwt);
-            return Result.OK(data).build();
-        } catch (DisabledException e) {
-            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"User is disabled!");
-            //throw new AuthenticationException("User is disabled!", e);
-        } catch (BadCredentialsException e) {
-            throw new ServiceException(ErrorCode.AUTHENTICATION_EXCEPTION,"Bad credentials!");
-            //throw new AuthenticationException("Bad credentials!", e);
+        }
+        else{
+            throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"您无权限登录");
         }
     }
 }

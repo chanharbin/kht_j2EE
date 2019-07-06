@@ -209,4 +209,10 @@
     from employee
     where USER_CODE = #{userCode,jdbcType=INTEGER}
   </select>
+  <select id="selectByTelephone" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from employee
+    where TELEPHONE = #{telephone,jdbcType=BIGINT}
+  </select>
 </mapper>
