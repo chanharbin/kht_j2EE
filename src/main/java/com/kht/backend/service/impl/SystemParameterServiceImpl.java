@@ -22,11 +22,12 @@ import java.util.Map;
 public class SystemParameterServiceImpl implements SystemParameterService {
     @Autowired
     SysParaDOMapper sysparaDOMapper;
-    @Value("${app.pageSize}")
-    private int pageSize;
+
+    @Autowired
+    private RedisServiceImpl redisService;
     @Override
     public Map<String,Object>  getAllSystemParameters(int pageNum){
-        Page<Object> objectPage= PageHelper.startPage(pageNum,pageSize);
+        Page<Object> objectPage= PageHelper.startPage(pageNum,Integer.parseInt(redisService.getParaValue("pageSize")));
         List<SysParaDO> sysParaDOList =sysparaDOMapper.listAll();
         if(sysParaDOList==null||sysParaDOList.isEmpty()){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"无系统参数");
@@ -40,8 +41,9 @@ public class SystemParameterServiceImpl implements SystemParameterService {
 
     @Override
     public void modifySystemParameter(int paraCode, String paraValue) {
-        int affectRow=sysparaDOMapper.updateParaValueByPrimaryKeySelective(paraCode,paraValue);
-        if(affectRow==0){
+        SysParaDO sysParaDO=sysparaDOMapper.selectByPrimaryKey(paraCode);
+
+        if( !redisService.updataParaValue(sysParaDO)){
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改参数失败");
         }
         //return Result.OK("修改参数成功").build();
