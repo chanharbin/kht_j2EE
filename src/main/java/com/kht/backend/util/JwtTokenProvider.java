@@ -35,10 +35,11 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     //验证宽松时间
-    private final long validateSoftTimeInMs = 5000;
+    private final long validateSoftTimeInMs = 50000L;
     //刷新宽松时间
-    private final long refreshSoftTimeInMs=jwtExpirationInMs/2;
-
+    private final long refreshSoftTimeInMs=50000L;
+    //必须刷新时间
+    private final long refreshCompulsoryTimeInMs=2700000L;
     /**
      * 生成token
      * @param authentication
@@ -156,18 +157,23 @@ public class JwtTokenProvider {
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(token)
                     .getBody();
-            Date now = new Date();
-            long curTime=redisService.getJwtTime((int) claims.get("userCode"));
+            Date curTime = new Date();
+            long tokenTime=redisService.getJwtTime((int) claims.get("userCode"));
+            /*logger.debug("toekn time"+tokenTime);
+            logger.debug("curtime "+curTime.getTime());
+            logger.debug("soft time"+refreshSoftTimeInMs);
+            logger.debug("CompulsoryTime"+refreshCompulsoryTimeInMs);
+            logger.debug("jwtExpirationInMs"+jwtExpirationInMs);*/
             //判断是否应该刷新token
-            if (curTime+refreshSoftTimeInMs<now.getTime()) {
+            if ((tokenTime+refreshSoftTimeInMs>curTime.getTime())&&(tokenTime+refreshCompulsoryTimeInMs>curTime.getTime())) {
                 logger.debug("dont need to refresh");
                 return token;
             }
-            redisService.setJwtBlackList((int) claims.get("userCode"), now.getTime());
-            Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+            redisService.setJwtBlackList((int) claims.get("userCode"),curTime .getTime());
+            Date expiryDate = new Date(curTime.getTime() + jwtExpirationInMs);
             return Jwts.builder()
                     .setClaims(claims)
-                    .setIssuedAt(now)
+                    .setIssuedAt(curTime)
                     .setExpiration(expiryDate)
                     .signWith(SignatureAlgorithm.HS512, jwtSecret)
                     .compact();

@@ -368,6 +368,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 从身份证号码中获取生日
      * @param idCode
      * @return
      */
@@ -375,7 +376,7 @@ public class UserServiceImpl implements UserService {
         Date date;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         if (idCode.length() == 18) {
-            System.out.println(idCode.substring(6, 14));
+            //System.out.println(idCode.substring(6, 14));
             try {
                 date = simpleDateFormat.parse(idCode.substring(6, 14));
             } catch (ParseException e) {
