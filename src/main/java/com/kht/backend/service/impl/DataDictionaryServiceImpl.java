@@ -32,6 +32,8 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Autowired
     private MainDataDictDOMapper mainDataDictDOMapper;
 
+    @Autowired
+    RedisServiceImpl redisService;
     public DataDictionaryServiceImpl(RedisServiceImpl redisService) {
         String paraValue = redisService.getParaValue("pageSize");
         try {
@@ -56,6 +58,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
      */
     @Override
     public Result getDataDictionariesByColName(String colName, int pageNum) {
+        int pageSize=Integer.parseInt(redisService.getParaValue("pageSize"));
         PageHelper.startPage(pageNum,pageSize);
         List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName);
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);

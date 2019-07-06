@@ -20,6 +20,8 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Autowired
     private OperaLogDOMapper operaLogDOMapper;
 
+    @Autowired
+    private RedisServiceImpl redisService;
     public OperationLogServiceImpl(RedisServiceImpl redisService) {
         String paraValue = redisService.getParaValue("pageSize");
         try {
@@ -38,6 +40,7 @@ public class OperationLogServiceImpl implements OperationLogService {
      */
     @Override
     public Result getAllOperationLogs(int pageNum) {
+        int pageSize=Integer.parseInt(redisService.getParaValue("pageSize"));
         PageHelper.startPage(pageNum,pageSize);
         List<OperationLogModel> operationLogModelList = operaLogDOMapper.listAll();
         PageInfo<OperationLogModel> page = new PageInfo<>(operationLogModelList);
@@ -75,6 +78,7 @@ public class OperationLogServiceImpl implements OperationLogService {
      */
     @Override
     public Result getOperationLogsByLogTime(int pageNum, Long startTime, Long endTime) {
+        int pageSize=Integer.parseInt(redisService.getParaValue("pageSize"));
         PageHelper.startPage(pageNum,pageSize);
         List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByLogTime(startTime, endTime);
         PageInfo<OperationLogModel> page = new PageInfo<>(operationLogModelList);
