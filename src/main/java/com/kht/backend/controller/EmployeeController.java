@@ -186,6 +186,7 @@ public class EmployeeController {
                 acctOpenInfoDO.setEmployeeCode(currentUser.getCode());
                 acctOpenInfoDO.setAuditRemark(msg);
                 acctOpenInfoDOMapper.updateByPrimaryKey(acctOpenInfoDO);
+                redisService.setRefreshStatus(acctOpenInfoDO.getUserCode(), true);
                 return Result.OK("审核未通过结果已提交").build();
             }
         }

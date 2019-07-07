@@ -16,6 +16,8 @@ import com.kht.backend.service.model.UserPrincipal;
 import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
 import com.kht.backend.util.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
@@ -190,7 +193,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
             accountService.increaseTradeAccount(customerCode, "0", "00", "0");
             accountService.increaseDepositoryAccount(capitalCode, "00", acctOpenInfoDO.getBankCardCode());
-            redisService.setRefreshStatus(acctOpenInfoDO.getUserCode(), true);
+
         }
     }
 

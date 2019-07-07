@@ -43,10 +43,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @return
      */
     private synchronized boolean judgeRefreshStatus(int userCode) {
+        logger.error("checking     "+userCode);
         if (redisService.getRefreshStatus(userCode)) {
+            logger.error("checking result True   ");
             redisService.setRefreshStatus(userCode, false);
             return true;
         }
+        logger.error("checking result false   ");
         return false;
     }
 
