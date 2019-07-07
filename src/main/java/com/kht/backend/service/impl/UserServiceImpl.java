@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Resource
     private ValueOperations<String, Object> valueOperations;
 
-    private ObjectMapper objectMapper=new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
     private final String otpKey = "otp";
     //验证码过期时间 单位秒
     private long otpExpirationInSecond = 900;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         //需要按照一定的规则生成OTP验证码
         Random random = new Random();
         int otpValue = random.nextInt(8999);
-        otpValue+=1000;
+        otpValue += 1000;
         //int otpValue = (int) (Math.random() * 10000);
         valueOperations.set(otpKey + telephone, otpValue, otpExpirationInSecond, TimeUnit.SECONDS);
         logger.info("telephone " + telephone + " get checkCode :" + otpValue);
@@ -155,21 +155,20 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable,String employeeCode) {
-        String orgCode = employeeCode.substring(0,4);
+    public Map<String, Object> getUserInfoList(int pageNum, boolean filterable, String employeeCode) {
+        String orgCode = employeeCode.substring(0, 4);
         System.out.println(orgCode);
         Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         List<AcctOpenInfoDO> acctOpenInfoDOList;
         String tabCode = "acct_open_info";
-        if(orgCode.equals("0000")) {
+        if (orgCode.equals("0000")) {
             if (filterable) {
                 //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
                 acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUser();
             } else {
                 acctOpenInfoDOList = acctOpenInfoDOMapper.listAll();
             }
-        }
-        else{
+        } else {
             if (filterable) {
                 //acctOpenInfoDOList = acctOpenInfoDOList.stream().filter(acctOpenInfoDO -> acctOpenInfoDO.getInfoStatus().equals("0")).collect(Collectors.toList());
                 acctOpenInfoDOList = acctOpenInfoDOMapper.listUnauditedUserByOrg(orgCode);
@@ -181,7 +180,7 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
-        if(page.getList()==null||page.getList().isEmpty()){
+        if (page.getList() == null || page.getList().isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         List<UserListResponse> userListResponseList = page.getList().stream()
@@ -195,19 +194,20 @@ public class UserServiceImpl implements UserService {
         data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
-    public Map<String,Object> getUserListByEmployeeCodeAndStartTimeAndEndTIme(int pageNum,String employeeCode,Long startTime,Long endTime){
+
+    public Map<String, Object> getUserListByEmployeeCodeAndStartTimeAndEndTIme(int pageNum, String employeeCode, Long startTime, Long endTime) {
         Page<Object> objectPage = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
         String tabCode = "acct_open_info";
-        if(startTime==null||endTime==null){
-            startTime=getNeedTime(0,0,0,0).getTime();
-            endTime=getNeedTime(23,59,59,0).getTime();
+        if (startTime == null || endTime == null) {
+            startTime = getNeedTime(0, 0, 0, 0).getTime();
+            endTime = getNeedTime(23, 59, 59, 0).getTime();
         }
-        List<AcctOpenInfoDO> acctOpenInfoDOList=acctOpenInfoDOMapper.selectByEmployeeCodeAndStartTimeAndEndTime(employeeCode,startTime,endTime);
+        List<AcctOpenInfoDO> acctOpenInfoDOList = acctOpenInfoDOMapper.selectByEmployeeCodeAndStartTimeAndEndTime(employeeCode, startTime, endTime);
         if (acctOpenInfoDOList == null || acctOpenInfoDOList.isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         PageInfo<AcctOpenInfoDO> page = new PageInfo<>(acctOpenInfoDOList);
-        if(page.getList()==null||page.getList().isEmpty()){
+        if (page.getList() == null || page.getList().isEmpty()) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "用户列表不存在");
         }
         List<UserListResponse> userListResponseList = page.getList().stream()
@@ -221,6 +221,7 @@ public class UserServiceImpl implements UserService {
         data.put("pageSize", Integer.parseInt(redisService.getParaValue("pageSize")));
         return data;
     }
+
     /**
      * 获取用户审核状态
      *
@@ -236,7 +237,7 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "获取用户开户信息失败");
         }
         data.put("infoStatus", redisService.getDataDictionary("INFO_STATUS", "acct_open_info", acctOpenInfoDO.getInfoStatus()));
-        data.put("auditRemark",acctOpenInfoDO.getAuditRemark());
+        data.put("auditRemark", acctOpenInfoDO.getAuditRemark());
         if (custAcctDO == null) {
             data.put("custCode", null);
         } else {
@@ -321,26 +322,26 @@ public class UserServiceImpl implements UserService {
         String gender = redisService.getDataDictionary("GENDER", tabCode, acctOpenInfoDO.getGender());
         String idType = redisService.getDataDictionary("ID_TYPE", tabCode, acctOpenInfoDO.getIdType());
         String education = redisService.getDataDictionary("EDUCATION", tabCode, acctOpenInfoDO.getEducation());
-        String bankType=redisService.getDataDictionary("BANK_TYPE",tabCode,acctOpenInfoDO.getBankType());
-        String openChannel=redisService.getDataDictionary("OPEN_CHANNEL",tabCode,acctOpenInfoDO.getOpenChannel());
+        String bankType = redisService.getDataDictionary("BANK_TYPE", tabCode, acctOpenInfoDO.getBankType());
+        String openChannel = redisService.getDataDictionary("OPEN_CHANNEL", tabCode, acctOpenInfoDO.getOpenChannel());
         String infoStatus = redisService.getDataDictionary("INFO_STATUS", tabCode, acctOpenInfoDO.getInfoStatus());
-        String investorType=redisService.getDataDictionary("INVESTOR_TYPE", tabCode, acctOpenInfoDO.getInvestorType());
-        String stkEx=redisService.getDataDictionary("STK_EX", tabCode, acctOpenInfoDO.getStkEx());
-        String stkBd=redisService.getDataDictionary("STK_BD", tabCode, acctOpenInfoDO.getStkBd());
-        Map<String, Object> data = objectMapper.convertValue(acctOpenInfoDO,Map.class);
-        data.put("orgName",orgName);
-        data.put("genderName",gender);
-        data.put("idTypeName",idType);
-        data.put("educationName",education);
-        data.put("bankTypeName",bankType);
-        data.put("openChannelName",openChannel);
-        data.put("infoStatusName",infoStatus);
-        data.put("investorTypeName",investorType);
-        data.put("stkExName",stkEx);
-        data.put("stkBdName",stkBd);
-        data.put("idFront",imageDO.getIdFront());
-        data.put("idBack",imageDO.getIdBack());
-        data.put("face",imageDO.getFace());
+        String investorType = redisService.getDataDictionary("INVESTOR_TYPE", tabCode, acctOpenInfoDO.getInvestorType());
+        String stkEx = redisService.getDataDictionary("STK_EX", tabCode, acctOpenInfoDO.getStkEx());
+        String stkBd = redisService.getDataDictionary("STK_BD", tabCode, acctOpenInfoDO.getStkBd());
+        Map<String, Object> data = objectMapper.convertValue(acctOpenInfoDO, Map.class);
+        data.put("orgName", orgName);
+        data.put("genderName", gender);
+        data.put("idTypeName", idType);
+        data.put("educationName", education);
+        data.put("bankTypeName", bankType);
+        data.put("openChannelName", openChannel);
+        data.put("infoStatusName", infoStatus);
+        data.put("investorTypeName", investorType);
+        data.put("stkExName", stkEx);
+        data.put("stkBdName", stkBd);
+        data.put("idFront", imageDO.getIdFront());
+        data.put("idBack", imageDO.getIdBack());
+        data.put("face", imageDO.getFace());
         return data;
     }
 
@@ -369,6 +370,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 从身份证号码中获取生日
+     *
      * @param idCode
      * @return
      */
@@ -387,7 +389,7 @@ public class UserServiceImpl implements UserService {
         return 0L;
     }
 
-    private Date getNeedTime(int hour,int minute,int second,int addDay,int ...args) {
+    private Date getNeedTime(int hour, int minute, int second, int addDay, int... args) {
         Calendar calendar = Calendar.getInstance();
         if (addDay != 0) {
             calendar.add(Calendar.DATE, addDay);

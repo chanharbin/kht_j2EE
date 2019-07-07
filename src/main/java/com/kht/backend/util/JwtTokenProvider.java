@@ -145,30 +145,40 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 刷新token，如果当前请求时间没有到离token过期时间的一半是不刷新
+     * 判断是否应该刷新token，如果当前token产生时间小于redis中的时间或当前这一刻的时间在redis时间的宽松范围内都不刷新token
+     * @param userCode
+     * @param tokenTime
+     * @param curTime
+     * @return
+     */
+    private synchronized boolean refreshJudge(int userCode,long tokenTime,long curTime){
+
+        long redisTime=redisService.getJwtTime(userCode);
+        logger.debug("redis time "+redisTime);
+        logger.error("curtime "+curTime);
+        if((tokenTime<redisTime)||(redisTime+refreshSoftTimeInMs>curTime)){
+            return false;
+        }
+        redisService.setJwtBlackList(userCode,curTime);
+        return true;
+    }
+    /**
+     * 刷新token
      * @param token
      * @return
      */
-    public synchronized String refreshToken(String token) {
+    public  String refreshToken(String token) {
         if (validateToken(token)) {
             final Claims claims = Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(token)
                     .getBody();
             Date curTime = new Date();
-
-            long tokenTime=redisService.getJwtTime((int) claims.get("userCode"));
-            logger.error("redis time"+tokenTime);
-            logger.error("curtime "+curTime.getTime());
-            /*logger.debug("soft time"+refreshSoftTimeInMs);
-            logger.debug("CompulsoryTime"+refreshCompulsoryTimeInMs);
-            logger.debug("jwtExpirationInMs"+jwtExpirationInMs);*/
             //判断是否应该刷新token
-            if ((claims.getIssuedAt().getTime()<tokenTime)&&(tokenTime+refreshSoftTimeInMs>curTime.getTime())) {
+            if (refreshJudge((int)claims.get("userCode"),claims.getIssuedAt().getTime(),curTime.getTime())) {
                 logger.debug("dont need to refresh");
                 return token;
             }
-            redisService.setJwtBlackList((int) claims.get("userCode"),curTime .getTime());
             Date expiryDate = new Date(curTime.getTime() + jwtExpirationInMs);
             return Jwts.builder()
                     .setClaims(claims)

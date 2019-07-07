@@ -48,22 +48,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private AccountService accountService;
     @Resource
-    private ValueOperations<String,Object> valueOperations;
+    private ValueOperations<String, Object> valueOperations;
     @Autowired
     private RedisServiceImpl redisService;
     @Autowired
     private PositionDOMapper positionDOMapper;
     @Autowired
     private HttpServletRequest httpServletRequest;
+
     @Transactional
     @Override
     public Result deleteEmployee(String employeeCode) {
-        if(employeeCode == null || employeeCode.equals("")){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工编号不存在");
+        if (employeeCode == null || employeeCode.equals("")) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "员工编号不存在");
         }
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(employeeCode);
-        if(employeeDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工不存在");
+        if (employeeDO == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "员工不存在");
         }
         Integer userCode = employeeDO.getUserCode();
         employeeDO.setEmployeeStatus("2");
@@ -73,18 +74,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public Result increaseEmployee(EmployeeDO employeeDO,String orgCode,UserDO userDO) {
+    public Result increaseEmployee(EmployeeDO employeeDO, String orgCode, UserDO userDO) {
         String employeeId = idProvider.getId(orgCode);
         employeeDO.setEmployeeCode(employeeId);
         int affectRow1 = userDOMapper.insertSelective(userDO);
         Integer userCode = userDO.getUserCode();
         employeeDO.setUserCode(userCode);
-        if(employeeDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"输入信息不完全");
+        if (employeeDO == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "输入信息不完全");
         }
         int affectRow = employeeDOMapper.insertSelective(employeeDO);
-        if(affectRow <= 0 || affectRow1 <= 0){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"插入信息失败");
+        if (affectRow <= 0 || affectRow1 <= 0) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "插入信息失败");
         }
         return Result.OK("添加员工信息成功").build();
     }
@@ -96,17 +97,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public Result modifyEmployee(EmployeeDO employeeDO,UserDO userDO) {
+    public Result modifyEmployee(EmployeeDO employeeDO, UserDO userDO) {
         EmployeeDO employeeDOVer = employeeDOMapper.selectByPrimaryKey(employeeDO.getEmployeeCode());
-        if(employeeDOVer == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工编号不存在");
+        if (employeeDOVer == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "员工编号不存在");
         }
         int affectRow = employeeDOMapper.updateByPrimaryKey(employeeDO);
         int affectRow1 = userDOMapper.updateByPrimaryKey(userDO);
-        if(affectRow <= 0 || affectRow1 <= 0){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"修改员工信息失败");
-        }
-        else{
+        if (affectRow <= 0 || affectRow1 <= 0) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "修改员工信息失败");
+        } else {
+            redisService.setRefreshStatus(userDO.getUserCode(), true);
             return Result.OK("修改成功").build();
         }
     }
@@ -116,16 +117,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeDO> employeeDOList = employeeDOMapper.selectByName(name);
         List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
             EmployeeModel employeeModel = new EmployeeModel();
-            BeanUtils.copyProperties(employeeDO,employeeModel);
+            BeanUtils.copyProperties(employeeDO, employeeModel);
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
             employeeModel.setPosition(positionDO.getPosName());
-            employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
+            employeeModel.setEmployeeStatus(redisService.getDataDictionary("EMPLOYEE_STATUS", "employee", employeeDO.getEmployeeStatus()));
             return employeeModel;
         }).collect(Collectors.toList());
-        if(employeeDOList == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"找不到员工信息");
-        }
-        else{
+        if (employeeDOList == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "找不到员工信息");
+        } else {
             return Result.OK(employeeModelList).build();
         }
     }
@@ -136,34 +136,32 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeDO> employeeDOList = employeeDOMapper.listAll();
         List<EmployeeModel> employeeModelList = employeeDOList.stream().map(employeeDO -> {
             EmployeeModel employeeModel = new EmployeeModel();
-            BeanUtils.copyProperties(employeeDO,employeeModel);
+            BeanUtils.copyProperties(employeeDO, employeeModel);
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
             employeeModel.setPosition(positionDO.getPosName());
-            employeeModel.setEmployeeStatusName(redisService.getDataDictionary("EMPLOYEE_STATUS","employee",employeeDO.getEmployeeStatus()));
+            employeeModel.setEmployeeStatusName(redisService.getDataDictionary("EMPLOYEE_STATUS", "employee", employeeDO.getEmployeeStatus()));
             return employeeModel;
         }).collect(Collectors.toList());
         /*List<EmployeeModel> employeeModels = employeeModelList.stream().filter(employeeModel -> employeeModel.getEmployeeStatus().equals("在职")).collect(Collectors.toList());*/
-        if(employeeDOList == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"员工信息获取失败");
+        if (employeeDOList == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "员工信息获取失败");
         }
         PageInfo<EmployeeModel> page = new PageInfo<>(employeeModelList);
-        Map<String,Object> resultData = new LinkedHashMap<>();
-        resultData.put("pageSizes",redisService.getParaValue("pageSize"));
-        resultData.put("employee_num",pages.getTotal());
-        resultData.put("employees",page.getList());
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("pageSizes", redisService.getParaValue("pageSize"));
+        resultData.put("employee_num", pages.getTotal());
+        resultData.put("employees", page.getList());
         return Result.OK(resultData).build();
     }
 
     @Override
-    public void getUserValidationInfo(int infoCode,String msg) {
+    public void getUserValidationInfo(int infoCode, String msg) {
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
-        if(acctOpenInfoDO == null){
-            throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"资料编号错误");
-        }
-        else if(acctOpenInfoDO.getInfoStatus().equals("1")||acctOpenInfoDO.getInfoStatus().equals("2")){
-            throw new ServiceException((ErrorCode.PARAM_ERR_COMMON),"该用户已被审核，请勿重复提交");
-        }
-        else {
+        if (acctOpenInfoDO == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "资料编号错误");
+        } else if (acctOpenInfoDO.getInfoStatus().equals("1") || acctOpenInfoDO.getInfoStatus().equals("2")) {
+            throw new ServiceException((ErrorCode.PARAM_ERR_COMMON), "该用户已被审核，请勿重复提交");
+        } else {
             acctOpenInfoDO.setInfoStatus("1");
             acctOpenInfoDO.setAuditRemark(msg);
             UserPrincipal currentUser = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
@@ -192,18 +190,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             String capitalCode = accountService.increaseCapitalAccount(customerCode, "000000");
             accountService.increaseTradeAccount(customerCode, "0", "00", "0");
             accountService.increaseDepositoryAccount(capitalCode, "00", acctOpenInfoDO.getBankCardCode());
+            redisService.setRefreshStatus(acctOpenInfoDO.getUserCode(), true);
         }
     }
 
     @Override
     public Result getEmployeeById(String id) {
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id);
-        if(employeeDO == null){
-                throw new ServiceException(ErrorCode.SERVER_EXCEPTION,"获取员工信息失败");
-            }
+        if (employeeDO == null) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "获取员工信息失败");
+        }
         return Result.OK(employeeDO).build();
     }
-
 
 
 }

@@ -32,6 +32,7 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
 
     /**
      * 从数据库读取用户
+     *
      * @param username
      * @return
      * @throws UsernameNotFoundException
@@ -39,39 +40,39 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Long telephone=Long.parseLong(username);
-        UserDO userDO=userDOMapper.selectByTelephone(telephone);
-        if(userDO==null){
+        Long telephone = Long.parseLong(username);
+        UserDO userDO = userDOMapper.selectByTelephone(telephone);
+        if (userDO == null) {
             throw new UsernameNotFoundException("User not found with username or email : " + userDO.getUserCode());
         }
         List<GrantedAuthority> authorities;
-        String code=null;
+        String code = null;
         switch (userDO.getUserType()) {
             case "0": {
                 CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userDO.getUserCode());
-                int posCode=0;
+                int posCode = 0;
                 if (custAcctDO != null) {
-                    code=custAcctDO.getCustCode();
+                    code = custAcctDO.getCustCode();
                 }
                 //posCode 6未提交开户信息 7待审核 8审核不通过 9审核通过
-                AcctOpenInfoDO acctOpenInfoDO=acctOpenInfoDOMapper.selectByUserCode(userDO.getUserCode());
-                if(acctOpenInfoDO==null){
-                    posCode=6;
+                AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userDO.getUserCode());
+                if (acctOpenInfoDO == null) {
+                    posCode = 6;
                 } else {
-                    if(acctOpenInfoDO.getInfoStatus().equals("1")){
-                    posCode=9;
+                    if (acctOpenInfoDO.getInfoStatus().equals("1")) {
+                        posCode = 9;
                     }
-                    if(acctOpenInfoDO.getInfoStatus().equals("0")) {
+                    if (acctOpenInfoDO.getInfoStatus().equals("0")) {
                         posCode = 7;
                     }
-                    if(acctOpenInfoDO.getInfoStatus().equals("2")){
-                        posCode=8;
+                    if (acctOpenInfoDO.getInfoStatus().equals("2")) {
+                        posCode = 8;
                     }
                 }
-                if(posCode==0){
+                if (posCode == 0) {
                     throw new UsernameNotFoundException("empty posCode");
                 }
-                List<OperationDO> operationDOList=operationDOMapper.selectByPosition(posCode);
+                List<OperationDO> operationDOList = operationDOMapper.selectByPosition(posCode);
                 authorities = operationDOList.stream()
                         .filter(operationDO -> operationDO != null && operationDO.getUrl() != null)
                         .map(operationDO -> new UserGrantedAuthority(operationDO.getUrl(), operationDO.getOperaType()))
@@ -87,16 +88,15 @@ public class UserPrincipalServiceImpl implements UserDetailsService {
                             .filter(operationDO -> operationDO != null && operationDO.getUrl() != null)
                             .map(operationDO -> new UserGrantedAuthority(operationDO.getUrl(), operationDO.getOperaType()))
                             .collect(Collectors.toList());
-                }
-                else{
-                    throw new UsernameNotFoundException("user :"+userDO.getUserCode()+" can not found");
+                } else {
+                    throw new UsernameNotFoundException("user :" + userDO.getUserCode() + " can not found");
                 }
                 break;
             }
             default:
                 throw new UsernameNotFoundException("UserType Error");
         }
-        UserPrincipal userPrincipal=UserPrincipal.create(userDO, code, authorities);
+        UserPrincipal userPrincipal = UserPrincipal.create(userDO, code, authorities);
         return userPrincipal;
     }
 }

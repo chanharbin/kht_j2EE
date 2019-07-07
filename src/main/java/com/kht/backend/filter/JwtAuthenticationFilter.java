@@ -32,6 +32,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private RedisServiceImpl redisService;
+
+    @Autowired
+    private  UserPrincipalServiceImpl userPrincipalService;
+    /**
+     * 线程保护判断token是否需要刷新权限
+     * @param userCode
+     * @return
+     */
+    private synchronized boolean judgeRefreshStatus(int userCode) {
+        if (redisService.getRefreshStatus(userCode)) {
+            redisService.setRefreshStatus(userCode, false);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         AntPathRequestMatcher matcher;
@@ -48,6 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = tokenProvider.getJwtFromRequest(httpServletRequest);
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 UserPrincipal userDetails = tokenProvider.getUserPrincipalFromJWT(jwt);
+                if(judgeRefreshStatus(userDetails.getUserCode())){
+                    logger.debug("need to update authorities");
+                    userDetails=(UserPrincipal) userPrincipalService.loadUserByUsername(userDetails.getUsername());
+                }
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

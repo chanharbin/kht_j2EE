@@ -69,8 +69,7 @@ public class ImageServiceImpl implements ImageService {
                 String md5 = info.getString("md5");
                 return String.format("%s/%s", serverUrl, md5);
             }
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "上传图片失败");
         }
         return null;
@@ -109,8 +108,7 @@ public class ImageServiceImpl implements ImageService {
                     return fileType.toString();
                 }
             }
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             throw new ServiceException(ErrorCode.FILE_EXT_ERROR, "读取图片ext信息失败");
         }
         return null;

@@ -36,6 +36,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     /**
      * 获取所有操作记录
+     *
      * @param pageNum
      * @return
      */
@@ -58,6 +59,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     /**
      * 根据操作人员获取操作记录
+     *
      * @param pageNum
      * @param employeeName
      * @return
@@ -81,6 +83,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     /**
      * 根据时间段获取操作记录
+     *
      * @param pageNum
      * @param startTime
      * @param endTime
@@ -93,19 +96,20 @@ public class OperationLogServiceImpl implements OperationLogService {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         List<OperationLogModel> operationLogModelList = operaLogDOMapper.selectByLogTime(startTime, endTime);
         PageInfo<OperationLogModel> page = new PageInfo<>(operationLogModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("totalNum",page.getTotal());
+        resultData.put("totalNum", page.getTotal());
 
-        resultData.put("data",page.getList());
+        resultData.put("data", page.getList());
         resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
     /**
      * 添加操作记录
+     *
      * @param operaLogDO
      * @return
      */

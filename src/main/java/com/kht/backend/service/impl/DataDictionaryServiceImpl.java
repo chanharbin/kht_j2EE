@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class DataDictionaryServiceImpl implements DataDictionaryService{
+public class DataDictionaryServiceImpl implements DataDictionaryService {
 
     @Autowired
     private SubDataDictDOMapper subDataDictDOMapper;
@@ -34,6 +34,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     @Autowired
     RedisServiceImpl redisService;
+
     public DataDictionaryServiceImpl(RedisServiceImpl redisService) {
         String paraValue = redisService.getParaValue("pageSize");
         try {
@@ -52,6 +53,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     /**
      * 根据字段名获取数据字典信息
+     *
      * @param colName
      * @param pageNum
      * @return
@@ -63,18 +65,19 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         List<DataDictionaryModel> dataDictionaryModelList = subDataDictDOMapper.selectByColName(colName);
         PageInfo<DataDictionaryModel> page = new PageInfo<>(dataDictionaryModelList);
         Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("totalNum",page.getTotal());
-        resultData.put("data",page.getList());
+        resultData.put("totalNum", page.getTotal());
+        resultData.put("data", page.getList());
         resultData.put("pageSize", pageSize);
         return Result.OK(resultData).build();
     }
 
     /**
-     *获取单个字段的数据字典信息
+     * 获取单个字段的数据字典信息
+     *
      * @param colCode
      * @param tabCode
      * @return
@@ -84,11 +87,12 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         List<ColumnValueModel> columnValueModelList = subDataDictDOMapper.selectColumnValues(colCode, tabCode);
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("data", columnValueModelList);
-        return  Result.OK(resultData).build();
+        return Result.OK(resultData).build();
     }
 
     /**
      * 获取数据字典的所有字段信息
+     *
      * @return
      */
     @Override
@@ -101,11 +105,12 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         }).collect(Collectors.toList());
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("data", columnModelList);
-        return  Result.OK(resultData).build();
+        return Result.OK(resultData).build();
     }
 
     /**
      * 添加数据字典的字段取值
+     *
      * @param mainCode
      * @param valueCode
      * @param value
@@ -120,7 +125,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         subDataDictDO.setValueCode(valueCode);
         subDataDictDO.setValue(value);
         int affectedRow = subDataDictDOMapper.insertSelective(subDataDictDO);
-        if(affectedRow <= 0){
+        if (affectedRow <= 0) {
             throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "添加数据字典信息失败");
         }
         int subCode = subDataDictDOMapper.selectSubCode(mainCode, valueCode);
@@ -129,6 +134,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
 
     /**
      * 删除数据字典的字段取值
+     *
      * @param subCode
      * @return
      */
@@ -136,14 +142,15 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
     @Override
     public Result removeDataDictionary(int subCode) {
         int affectedRow = subDataDictDOMapper.deleteByPrimaryKey(subCode);
-        if(affectedRow <= 0){
-            throw new ServiceException(ErrorCode. SERVER_EXCEPTION, "删除数据字典信息失败");
+        if (affectedRow <= 0) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "删除数据字典信息失败");
         }
         return Result.OK("删除数据字典信息成功").build();
     }
 
     /**
      * 修改数据字典的字段取值
+     *
      * @param subCode
      * @param valueCode
      * @param value
@@ -157,8 +164,8 @@ public class DataDictionaryServiceImpl implements DataDictionaryService{
         subDataDictDO.setValueCode(valueCode);
         subDataDictDO.setValue(value);
         int affectedRow = subDataDictDOMapper.updateByPrimaryKeySelective(subDataDictDO);
-        if(affectedRow <= 0){
-            throw new ServiceException(ErrorCode. SERVER_EXCEPTION, "修改数据字典信息失败");
+        if (affectedRow <= 0) {
+            throw new ServiceException(ErrorCode.SERVER_EXCEPTION, "修改数据字典信息失败");
         }
         return Result.OK("修改数据字典信息成功").build();
     }
