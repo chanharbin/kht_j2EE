@@ -60,7 +60,8 @@ public class JwtResponseBodyAdvice implements ResponseBodyAdvice {
         String token = null;
         String newToken = null;
 
-        if (bearerToken != null && bearerToken.size() == 1 && StringUtils.hasText(bearerToken.get(0)) && bearerToken.get(0).startsWith("Bearer ")&&!bearerToken.get(0).equals(responseToken.get(0))) {
+        if (bearerToken != null && bearerToken.size() == 1 && StringUtils.hasText(bearerToken.get(0)) && bearerToken.get(0).startsWith("Bearer ")
+                &&((responseToken==null&&responseToken.isEmpty())||(responseToken.get(0)==null)||(!bearerToken.get(0).equals(responseToken.get(0))))) {
             token = bearerToken.get(0).substring(7, bearerToken.get(0).length());
             newToken = jwtTokenProvider.refreshToken(token);
         }
