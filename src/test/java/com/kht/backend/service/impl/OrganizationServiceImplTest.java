@@ -62,13 +62,13 @@ public class OrganizationServiceImplTest {
         System.out.println(result.getData());
     }
 
-    @Test
+ /*   @Test
     public void getOrganizationUser() {
-        Result organizationUser = organizationService.getOrganizationUser("12", 10);
+        Result organizationUser = organizationService.getOrganizationUser("12", 10,true);
         String s = JSONObject.toJSONString(organizationUser.getData());
         System.out.println(s);
 
-    }
+    }*/
 
     @Test
     public void getOrganizationById() {

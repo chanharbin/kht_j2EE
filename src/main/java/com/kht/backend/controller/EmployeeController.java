@@ -91,7 +91,6 @@ public class EmployeeController {
     public Result deleteEmployee(@RequestParam("EMPLOYEE_CODE")String employeeCode){
         return employeeService.deleteEmployee(employeeCode);
     }
-    //ToTest
     //修改员工信息
     @MethodLog(5)
     @RequestMapping(value = "/employee",method = PUT)
@@ -105,14 +104,6 @@ public class EmployeeController {
                                  @RequestParam("employeePwd")String pwd,
                                  @RequestParam("telephone")long telphone,
                                  @RequestParam("employeeStatus")String employeeStatus){
-        /*UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
-        int userCode_I = userPrincipalFromRequest.getUserCode();
-        EmployeeDO employeeDOI = employeeDOMapper.selectByUserCode(userCode_I);
-        Integer i_posCode = employeeDOI.getPosCode();
-        if(i_posCode <= 3 || i_posCode <= posCode){
-            return Result.OK("您当前无权限修改信息").build();
-        }
-        else{*/
         UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         int userCode_I = userPrincipalFromRequest.getUserCode();
         EmployeeDO employeeDOI = employeeDOMapper.selectByUserCode(userCode_I);
@@ -129,8 +120,13 @@ public class EmployeeController {
         if(employeeStatus.equals("1")||employeeStatus.equals("2")){
             employeeDO.setPosCode(1);
         }
-        if(i_posCode == 5) {
-            employeeDO.setPosCode(posCode);
+        if(i_posCode >= 3) {
+            if(i_posCode >= posCode){
+                employeeDO.setPosCode(posCode);
+            }
+            else{
+                throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"您无法更改比您更高级的员工的岗位信息。");
+            }
         }
         else{
             throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"您无权限修改其他员工信息");
@@ -192,14 +188,27 @@ public class EmployeeController {
         }
     }
 
-    //根据机构名获取用户列表
+    //根据机构名获取已审核用户列表
     @MethodLog(9)
     @RequestMapping(value = "/user/organization",method = GET)
     public Result getUserListByOrgCode(@RequestParam("page_num")int pageNum,
                                        @RequestParam("orgCode") String orgCode){
         UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
         if(orgCode.equals(userPrincipalFromRequest.getCode().substring(0,4)) || userPrincipalFromRequest.getCode().substring(0,4).equals("0000")) {
-            Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum);
+            Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum,true);
+            return organizationUser;
+        }
+        else{
+            throw new ServiceException(ErrorCode.PARAM_ERR_COMMON,"您无法查询其他营业厅的用户列表");
+        }
+    }
+    //根据机构名获取未审核用户列表
+    @RequestMapping(value = "/inaudit_user/organization",method = GET)
+    public Result getInAuditUserListByOrgCode(@RequestParam("page_num")int pageNum,
+                                       @RequestParam("orgCode") String orgCode){
+        UserPrincipal userPrincipalFromRequest = jwtTokenProvider.getUserPrincipalFromRequest(httpServletRequest);
+        if(orgCode.equals(userPrincipalFromRequest.getCode().substring(0,4)) || userPrincipalFromRequest.getCode().substring(0,4).equals("0000")) {
+            Result organizationUser = organizationService.getOrganizationUser(orgCode, pageNum,false);
             return organizationUser;
         }
         else{
@@ -241,6 +250,7 @@ public class EmployeeController {
             }
         }
         else{
+            httpServletResponse.setStatus(403);
             throw new ServiceException(ErrorCode.FORBIDDEN__EXCEPTION,"您无权限登录");
         }
     }

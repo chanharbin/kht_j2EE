@@ -17,7 +17,7 @@ public interface OrganizationService {
     //修改机构信息
     public Result modifyOrganizationInfo(OrganizationDO organizationDO);
     //获取机构下所有的用户列表
-    public Result getOrganizationUser(String orgCode,int pageNum);
+    public Result getOrganizationUser(String orgCode,int pageNum,boolean isAudit);
 
     public Result getOrganizationById(String orgCode);
     //根据姓名获取机构
