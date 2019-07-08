@@ -17,6 +17,9 @@ import com.kht.backend.service.model.UserListResponse;
 import com.kht.backend.util.GetPoint;
 import com.kht.backend.util.IdProvider;
 import com.kht.backend.util.JwtTokenProvider;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -374,13 +377,17 @@ public class UserServiceImpl implements UserService {
      * @param idCode
      * @return
      */
-    private Long getBirthDayFromIdCode(String idCode) {
+    public Long getBirthDayFromIdCode(String idCode) {
         Date date;
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
         if (idCode.length() == 18) {
             //System.out.println(idCode.substring(6, 14));
             try {
                 date = simpleDateFormat.parse(idCode.substring(6, 14));
+                DateTime dateTime = formatter.parseDateTime("11111111");
+                System.out.println(dateTime.getMillis());
             } catch (ParseException e) {
                 return 0L;
             }

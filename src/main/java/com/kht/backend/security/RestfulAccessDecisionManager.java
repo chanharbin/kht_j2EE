@@ -40,7 +40,7 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager {
         HttpServletResponse response = ((FilterInvocation) object).getHttpResponse();
         String url, method;
         AntPathRequestMatcher matcher;
-        logger.debug("current url " + request.getRequestURI() + "  " + request.getMethod());
+        logger.error("current url " + request.getRequestURI() + "  " + request.getMethod());
         if (request.getRequestURI().equals("/error")) {
             return;
         }
@@ -50,7 +50,7 @@ public class RestfulAccessDecisionManager implements AccessDecisionManager {
                 UserGrantedAuthority userGrantedAuthority = (UserGrantedAuthority) grantedAuthority;
                 url = userGrantedAuthority.getUrl();
                 method = userGrantedAuthority.getOperaType();
-                logger.debug("user url :" + url + " " + method);
+                //logger.debug("user url :" + url + " " + method);
                 matcher = new AntPathRequestMatcher(url);
                 if (matcher.matches(request) &&
                         method.equals(request.getMethod())) {

@@ -72,6 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if(judgeRefreshStatus(userDetails.getUserCode())){
                     logger.debug("need to update authorities");
                     userDetails=(UserPrincipal) userPrincipalService.loadUserByUsername(userDetails.getUsername());
+                    logger.error("request before jwt"+jwt);
+                    String newJwt=tokenProvider.generateTokenFromUserPrincipal(userDetails);
+                    if(newJwt!=null){
+                        httpServletResponse.setHeader("jwtauthorization","Bearer "+newJwt);
+                    }
+                    logger.error("request after jwt"+newJwt);
                 }
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,

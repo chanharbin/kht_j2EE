@@ -34,7 +34,8 @@ public class ImageController {
 
     @ResponseBody
     @RequestMapping(value = "/image", method = POST)
-    public Result saveImage(@RequestParam("file") MultipartFile image, @RequestParam("order") Object fileOrder, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public Result saveImage(@RequestParam("file") MultipartFile image, @RequestParam("order") Object fileOrder,
+                            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String imageUrl = null;
         try {
             if (image != null && !image.isEmpty()) {
@@ -59,8 +60,11 @@ public class ImageController {
         Map<String, Object> resultData = new LinkedHashMap<>();
         resultData.put("imageUrl", imageUrl);
         resultData.put("order", fileOrder);
-        String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
-        String newJwt=jwtTokenProvider.refreshToken(jwt);
+        String newJwt=httpServletResponse.getHeader("jwtauthorization");
+        if(newJwt==null){
+            String jwt = jwtTokenProvider.getJwtFromRequest(httpServletRequest);
+            newJwt=jwtTokenProvider.refreshToken(jwt);
+        }
         if(newJwt!=null){
             resultData.put("jwtauthorization","Bearer "+ newJwt);
             httpServletResponse.setHeader("jwtauthorization","Bearer "+ newJwt);

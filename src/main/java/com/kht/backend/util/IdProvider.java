@@ -71,8 +71,8 @@ public class IdProvider {
             sequence=0L;
         }
         lastTimestamp=timestamp;
-        System.out.println(sequence);
-        System.out.println(timestamp);
+        //System.out.println(sequence);
+        //System.out.println(timestamp);
         return ((timestamp-twepoch))<<timestampLeftShift|sequence;
     }
 

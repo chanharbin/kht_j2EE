@@ -34,9 +34,11 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     //验证宽松时间
-    private final long validateSoftTimeInMs = 500000L;
+    private final long validateSoftTimeInMs = 50000L;
     //刷新宽松时间
     private final long refreshSoftTimeInMs=50000L;
+
+    private final long refreshNecessaryTimeInMs=500000L;
     /**
      * 生成token
      * @param authentication
@@ -55,6 +57,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateTokenFromUserPrincipal(UserPrincipal userPrincipal){
+        Date now = new Date();
+        redisService.setJwtBlackList(userPrincipal.getUserCode(), now.getTime());
+        logger.error("set redis time "+now.getTime());
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        return Jwts.builder()
+                .setClaims(userPrincipal.convertToMap())
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
     /**
      * 从请求头中直接生成userPrincipal
      * @param request
@@ -91,11 +105,11 @@ public class JwtTokenProvider {
             Claims claims = Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .parseClaimsJws(authToken).getBody();
-            long curTime = redisService.getJwtTime((int) claims.get("userCode"));
-            logger.debug("redis time" + curTime);
-            logger.debug("token time" + claims.getIssuedAt().getTime());
-            //claims > curTime
-            if (claims.getIssuedAt().getTime() + validateSoftTimeInMs <= curTime) {
+            long redisTime = redisService.getJwtTime((int) claims.get("userCode"));
+            logger.error("validate redis time" + redisTime);
+            logger.error("validate token time" + claims.getIssuedAt().getTime());
+            //token时间+宽松时间也小于redis中的时间则拒绝
+            if (claims.getIssuedAt().getTime() + validateSoftTimeInMs <= redisTime) {
                 logger.error("JWT time out");
                 throw new UnsupportedJwtException("JWT time out");
             }
@@ -153,11 +167,25 @@ public class JwtTokenProvider {
     private synchronized boolean refreshJudge(int userCode,long tokenTime,long curTime){
 
         long redisTime=redisService.getJwtTime(userCode);
-        logger.debug("redis time "+redisTime);
-        logger.error("curtime "+curTime);
-        if((tokenTime<redisTime)||(redisTime+refreshSoftTimeInMs>curTime)){
+        logger.error("judge  redis time "+redisTime);
+        logger.error("judge token time"+tokenTime);
+        logger.error("judge curtime "+curTime);
+        //当前时间超出必须刷新新时间则刷新
+        if(redisTime+refreshNecessaryTimeInMs<curTime){
+            logger.error("judge must refresh");
+            return true;
+        }
+        //token产生时间不大于redis时间不刷新
+        if(tokenTime<redisTime){
+            logger.error("judge token false");
             return false;
         }
+        //当前时间在宽松范围内不刷新
+        if(redisTime+refreshSoftTimeInMs>curTime){
+            logger.error("judge curtime false");
+            return false;
+        }
+        logger.error("judge true "+curTime);
         redisService.setJwtBlackList(userCode,curTime);
         return true;
     }
@@ -174,7 +202,7 @@ public class JwtTokenProvider {
                     .getBody();
             Date curTime = new Date();
             //判断是否应该刷新token
-            if (refreshJudge((int)claims.get("userCode"),claims.getIssuedAt().getTime(),curTime.getTime())) {
+            if (!refreshJudge((int)claims.get("userCode"),claims.getIssuedAt().getTime(),curTime.getTime())) {
                 logger.debug("dont need to refresh");
                 return token;
             }

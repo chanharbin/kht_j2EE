@@ -65,6 +65,7 @@ public class UserServiceImplTest {
 
     @Test
     public void increaseCapitalAccount() {
+        System.out.println(userService.getBirthDayFromIdCode("111111111111111111"));
     }
 
     @Test
