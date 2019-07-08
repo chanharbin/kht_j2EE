@@ -168,6 +168,8 @@ public class EmployeeController {
                                @RequestParam("INFO_STATUS")String infoStatus,
                                @RequestParam("FAIL_MSG")String msg){
         if(infoStatus.equals("success")){
+            AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByInfoCode(infoCode);
+            redisService.setRefreshStatus(acctOpenInfoDO.getUserCode(), true);
             employeeService.getUserValidationInfo(infoCode,msg);
             return Result.OK("审核通过结果结果已提交").build();
         }

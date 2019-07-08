@@ -34,11 +34,11 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     //验证宽松时间
-    private final long validateSoftTimeInMs = 50000L;
+    private final long validateSoftTimeInMs = 500000L;
     //刷新宽松时间
-    private final long refreshSoftTimeInMs=50000L;
+    private final long refreshSoftTimeInMs=500000L;
 
-    private final long refreshNecessaryTimeInMs=500000L;
+    private final long refreshNecessaryTimeInMs=5000000L;
     /**
      * 生成token
      * @param authentication
