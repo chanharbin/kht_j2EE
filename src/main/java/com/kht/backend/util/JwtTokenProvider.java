@@ -176,15 +176,18 @@ public class JwtTokenProvider {
             //判断是否应该刷新token
             if (refreshJudge((int)claims.get("userCode"),claims.getIssuedAt().getTime(),curTime.getTime())) {
                 logger.debug("dont need to refresh");
-                return null;
+                return token;
             }
             Date expiryDate = new Date(curTime.getTime() + jwtExpirationInMs);
-            return Jwts.builder()
+            String newToken= Jwts.builder()
                     .setClaims(claims)
                     .setIssuedAt(curTime)
                     .setExpiration(expiryDate)
                     .signWith(SignatureAlgorithm.HS512, jwtSecret)
                     .compact();
+            logger.error("old Token   :" +token);
+            logger.error("new Token   :"+newToken);
+            return newToken;
         }
         return null;
     }
