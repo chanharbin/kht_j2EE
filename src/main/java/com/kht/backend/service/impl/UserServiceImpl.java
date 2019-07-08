@@ -314,6 +314,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> getAccountOpeningInfo(int userCode) {
         String tabCode = "acct_open_info";
         AcctOpenInfoDO acctOpenInfoDO = acctOpenInfoDOMapper.selectByUserCode(userCode);
+
         if (acctOpenInfoDO == null) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交开户资料");
         }
@@ -321,6 +322,7 @@ public class UserServiceImpl implements UserService {
         if (imageDO == null) {
             throw new ServiceException(ErrorCode.PARAM_ERR_COMMON, "未提交影像资料");
         }
+
         String orgName = redisService.getOrganizationName(acctOpenInfoDO.getOrgCode());
         String gender = redisService.getDataDictionary("GENDER", tabCode, acctOpenInfoDO.getGender());
         String idType = redisService.getDataDictionary("ID_TYPE", tabCode, acctOpenInfoDO.getIdType());
@@ -345,6 +347,12 @@ public class UserServiceImpl implements UserService {
         data.put("idFront", imageDO.getIdFront());
         data.put("idBack", imageDO.getIdBack());
         data.put("face", imageDO.getFace());
+        CustAcctDO custAcctDO = custAcctDOMapper.selectByUserCode(userCode);
+        if(custAcctDO==null){
+            data.put("custCode",null);
+        }else{
+            data.put("custCode",custAcctDO.getCustCode());
+        }
         return data;
     }
 
