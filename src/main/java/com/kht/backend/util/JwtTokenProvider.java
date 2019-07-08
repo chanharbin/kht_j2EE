@@ -30,7 +30,6 @@ public class JwtTokenProvider {
     @Value("${app.jwtSecret}")
     private String jwtSecret;
 
-
     @Value("${app.jwtExpirationInMs}")
     private long jwtExpirationInMs;
 
@@ -177,7 +176,7 @@ public class JwtTokenProvider {
             //判断是否应该刷新token
             if (refreshJudge((int)claims.get("userCode"),claims.getIssuedAt().getTime(),curTime.getTime())) {
                 logger.debug("dont need to refresh");
-                return token;
+                return null;
             }
             Date expiryDate = new Date(curTime.getTime() + jwtExpirationInMs);
             return Jwts.builder()
