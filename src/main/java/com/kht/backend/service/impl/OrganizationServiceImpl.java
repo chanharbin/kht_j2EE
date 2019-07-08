@@ -137,9 +137,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public Result getOrganizationUser(String orgCode, int pageNum) {
+    public Result getOrganizationUser(String orgCode, int pageNum,boolean isAudit) {
         Page<Object> pages = PageHelper.startPage(pageNum, Integer.parseInt(redisService.getParaValue("pageSize")));
-        List<AcctOpenInfoDO> custAcctDOList = acctOpenInfoDOMapper.listAllByOrg(orgCode);
+        List<AcctOpenInfoDO> custAcctDOList;
+        if(isAudit){
+            custAcctDOList = acctOpenInfoDOMapper.listAllByOrg(orgCode);
+        }
+        else{
+            custAcctDOList = acctOpenInfoDOMapper.listUnauditedUserByOrg(orgCode);
+        }
         List<UserFromOrg> userFromOrgList = custAcctDOList.stream().map(acctOpenInfoDO -> {
             UserFromOrg userFromOrg = this.convertFromDataObject(acctOpenInfoDO);
             userFromOrg.setIdType(redisService.getDataDictionary("ID_TYPE", "cust_acct", acctOpenInfoDO.getIdType()));
