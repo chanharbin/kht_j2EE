@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 //TODO登录url
-                .antMatchers("/user/check-code", "/", "/user/register", "/user/login", "/employee/login").permitAll()
+                .antMatchers("/user/check-code", "/", "/user/register", "/user/login", "/employee/login", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated();
 
 

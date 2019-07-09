@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class RestfulAccessDecisionManager implements AccessDecisionManager {
     private static final Logger logger = LoggerFactory.getLogger(RestfulAccessDecisionManager.class);
-    private List<String> whiteList = Arrays.asList("/user/check-code", "/user/login", "/user/register", "/employee/login");
+    private List<String> whiteList = Arrays.asList("/user/check-code", "/user/login", "/user/register", "/employee/login","/swagger-ui.html");
 
     /**
      * 自定义鉴权

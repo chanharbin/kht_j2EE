@@ -43,13 +43,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @return
      */
     private synchronized boolean judgeRefreshStatus(int userCode) {
-        logger.error("checking     "+userCode);
+        logger.debug("checking     "+userCode);
         if (redisService.getRefreshStatus(userCode)) {
-            logger.error("checking result True   ");
+            logger.debug("checking result True   ");
             redisService.setRefreshStatus(userCode, false);
             return true;
         }
-        logger.error("checking result false   ");
+        logger.debug("checking result false   ");
         return false;
     }
 
@@ -72,12 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if(judgeRefreshStatus(userDetails.getUserCode())){
                     logger.debug("need to update authorities");
                     userDetails=(UserPrincipal) userPrincipalService.loadUserByUsername(userDetails.getUsername());
-                    logger.error("request before jwt"+jwt);
+                    logger.debug("request before jwt"+jwt);
                     String newJwt=tokenProvider.generateTokenFromUserPrincipal(userDetails);
                     if(newJwt!=null){
                         httpServletResponse.setHeader("jwtauthorization","Bearer "+newJwt);
                     }
-                    logger.error("request after jwt"+newJwt);
+                    logger.debug("request after jwt"+newJwt);
                 }
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -86,12 +86,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                //throw new ServiceException(ErrorCode.NOT_ACCEPTABLE, "token失效");
+                //throw new ServiceException(debugCode.NOT_ACCEPTABLE, "token失效");
                 httpServletResponse.sendError(ErrorCode.NOT_ACCEPTABLE.getStatusCode(), ErrorCode.NOT_ACCEPTABLE.getMsg());
                 return;
             }
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            logger.debug("Could not set user authentication in security context", ex);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
