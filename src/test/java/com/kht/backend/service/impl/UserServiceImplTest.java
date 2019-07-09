@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service.impl;
 
 import com.kht.backend.App;
@@ -90,4 +91,4 @@ public class UserServiceImplTest {
     public void getAllDataInfoList() {
         //System.out.println(userService.getBrithDayFromIdCode("410322199202152910"));
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.dao;
 
 import com.kht.backend.App;
@@ -20,4 +21,4 @@ public class UserDOMapperTest {
     }
 
 
-}
+}*/

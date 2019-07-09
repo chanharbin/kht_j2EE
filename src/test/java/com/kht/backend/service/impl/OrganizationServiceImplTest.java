@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
@@ -62,13 +63,15 @@ public class OrganizationServiceImplTest {
         System.out.println(result.getData());
     }
 
- /*   @Test
+ */
+/*   @Test
     public void getOrganizationUser() {
         Result organizationUser = organizationService.getOrganizationUser("12", 10,true);
         String s = JSONObject.toJSONString(organizationUser.getData());
         System.out.println(s);
 
-    }*/
+    }*//*
+
 
     @Test
     public void getOrganizationById() {
@@ -86,4 +89,4 @@ public class OrganizationServiceImplTest {
         int allCount = custAcctDOMapper.getAllCount("1000");
         System.out.println(allCount);
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.service.impl;
 
 import com.kht.backend.App;
@@ -27,3 +28,4 @@ public class MainDataTest {
 
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.security;
 
 import com.kht.backend.service.impl.RedisServiceImpl;
@@ -70,3 +71,4 @@ public class JwtTokenProviderTest {
         System.out.println(now.getTime());
     }
 }
+*/

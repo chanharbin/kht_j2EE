@@ -142,6 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             BeanUtils.copyProperties(employeeDO, employeeModel);
             PositionDO positionDO = positionDOMapper.selectByPrimaryKey(employeeDO.getPosCode());
             employeeModel.setPosition(positionDO.getPosName());
+            employeeModel.setOrgName(redisService.getOrganizationName(employeeDO.getEmployeeCode().substring(0,4)));
             employeeModel.setEmployeeStatusName(redisService.getDataDictionary("EMPLOYEE_STATUS", "employee", employeeDO.getEmployeeStatus()));
             return employeeModel;
         }).collect(Collectors.toList());

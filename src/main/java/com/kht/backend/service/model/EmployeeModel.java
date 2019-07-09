@@ -15,5 +15,6 @@ public class EmployeeModel {
     private String address;
     private String employeeStatus;
     private String employeeStatusName;
+    private String orgName;
 
 }

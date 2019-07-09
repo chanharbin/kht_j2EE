@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.security;
 
 import org.junit.Test;
@@ -16,4 +17,4 @@ public class MD5PasswordEncoderTest {
     public void matches() {
         System.out.println(md5PasswordEncoder.matches("123456","e10adc3949ba59abbe56e057f20f883e"));
     }
-}
+}*/

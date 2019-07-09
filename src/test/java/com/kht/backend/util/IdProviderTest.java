@@ -1,3 +1,4 @@
+/*
 package com.kht.backend.util;
 
 import com.kht.backend.App;
@@ -24,9 +25,11 @@ public class IdProviderTest {
 
     @Test
     public void nextId() {
-        /*for(int i=0;i<10;i++) {
+        */
+/*for(int i=0;i<10;i++) {
             System.out.println(idProvider.nextId());
-        }*/
+        }*//*
+
 
         String username="FFF013543GHJ";
         System.out.println(Long.parseLong(username));
@@ -38,4 +41,4 @@ public class IdProviderTest {
             System.out.println(idProvider.timeGen());
         }
     }
-}
+}*/
